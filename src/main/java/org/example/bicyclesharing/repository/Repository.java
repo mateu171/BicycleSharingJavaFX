@@ -2,6 +2,7 @@ package org.example.bicyclesharing.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public interface Repository<T, ID> {
 
@@ -15,9 +16,15 @@ public interface Repository<T, ID> {
 
   boolean deleteById(ID id);
 
+  Optional<T> findById(UUID uuid);
+
+  boolean deleteById(UUID uuid);
+
   boolean delete(T entity);
 
   boolean existsById(ID id);
+
+  boolean existsById(UUID uuid);
 
   long count();
 

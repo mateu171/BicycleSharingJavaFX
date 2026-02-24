@@ -7,7 +7,6 @@ import org.example.bicyclesharing.domain.enums.Role;
 
 public interface UserRepository extends Repository<User, UUID> {
 
-  List<User> findByRole(Role role);
 
   User findByLogin(String login);
 }

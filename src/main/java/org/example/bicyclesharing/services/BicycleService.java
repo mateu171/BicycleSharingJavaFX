@@ -22,7 +22,7 @@ public class BicycleService extends BaseService<Bicycle, UUID> {
   }
 
   public Bicycle getById(UUID id) {
-    return repository.findById(id).orElse(null);
+    return  new Bicycle("dfd",TypeBicycle.HIGHWAY,"23");//repository.findById(id).orElse(null);
   }
 
   public List<Bicycle> getByState(StateBicycle stateBicycle) {

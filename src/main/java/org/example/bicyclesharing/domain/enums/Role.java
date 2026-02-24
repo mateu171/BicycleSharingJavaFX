@@ -1,7 +1,7 @@
 package org.example.bicyclesharing.domain.enums;
 
 public enum Role {
-  CLIENT("користувач"), ADMIN("адміністратор");
+  CLIENT("користувач");
   private final Object name;
 
   Role(String name) {

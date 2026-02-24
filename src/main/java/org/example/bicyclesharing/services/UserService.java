@@ -37,8 +37,4 @@ public class UserService extends BaseService<User, UUID> {
     return userRepository.findByLogin(login);
   }
 
-  public List<User> getByRole(Role role) {
-    return userRepository.findByRole(role);
-  }
-
 }

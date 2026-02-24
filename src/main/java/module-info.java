@@ -8,7 +8,10 @@ module org.example.bicyclesharing {
   requires org.kordamp.bootstrapfx.core;
   requires jbcrypt;
   requires jakarta.mail;
+  requires java.sql;
 
   opens org.example.bicyclesharing to javafx.fxml;
   exports org.example.bicyclesharing;
+  opens org.example.bicyclesharing.presentation to javafx.fxml;
+  opens org.example.bicyclesharing.viewModel to javafx.fxml;
 }

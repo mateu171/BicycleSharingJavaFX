@@ -27,7 +27,8 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
 
   @Override
   protected User mapRow(ResultSet rs) throws SQLException {
-    return new User(
+    return User.fromDatabase(
+        UUID.fromString(rs.getString("id")),
         rs.getString("login"),
         rs.getString("password"),
         rs.getString("email"),

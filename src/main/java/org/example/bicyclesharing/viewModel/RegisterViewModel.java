@@ -1,6 +1,8 @@
 package org.example.bicyclesharing.viewModel;
 
 import java.io.IOException;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,6 +33,11 @@ public class RegisterViewModel {
   @FXML
   private Button loginButton;
 
+  private final StringProperty login = new SimpleStringProperty();
+  private final StringProperty password = new SimpleStringProperty();
+  private final StringProperty email = new SimpleStringProperty();
+  private final StringProperty emailCode = new SimpleStringProperty();
+
   private final UserService userService;
 
   public RegisterViewModel() {
@@ -39,21 +46,26 @@ public class RegisterViewModel {
 
   @FXML
   private void initialize() {
+    loginField.textProperty().bindBidirectional(login);
+    passwordField.textProperty().bindBidirectional(password);
+    emailField.textProperty().bindBidirectional(email);
+    emailCodeField.textProperty().bindBidirectional(emailCode);
+
     registerButton.setOnAction(event -> onRegister());
   }
 
   private void onRegister() {
-    String login = loginField.getText();
-    String password = passwordField.getText();
-    String email = emailField.getText();
-    String emailCode = emailCodeField.getText();
+    String loginValue = login.get();
+    String passwordValue = password.get();
+    String emailValue = email.get();
+    String emailCodeValue = emailCode.get();
 
-    if (userService.existsByLogin(login)) {
+    if (userService.existsByLogin(loginValue)) {
       System.out.println("Користувач з таким логіном вже існує!");
       return;
     }
 
-    User user = new User(login, password, email, Role.CLIENT);
+    User user = new User(loginValue, passwordValue, emailValue, Role.CLIENT);
     userService.add(user);
 
     System.out.println("Користувач зареєстрований: " + user);
@@ -63,7 +75,6 @@ public class RegisterViewModel {
     try {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/bicyclesharing/presentation/LoginView.fxml"));
       Scene scene = new Scene(fxmlLoader.load());
-      LoginViewModel loginViewModel = fxmlLoader.getController();
       Stage stage = new Stage();
       stage.setTitle("Вхід у систему");
       stage.setScene(scene);
@@ -75,5 +86,4 @@ public class RegisterViewModel {
       e.printStackTrace();
     }
   }
-
 }

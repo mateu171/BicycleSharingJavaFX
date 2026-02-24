@@ -32,8 +32,7 @@
           onAction="#openLoginRegister"/>
       </HBox>
 
-      <Button fx:id="loginButton" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #FFE600; -fx-background-radius: 10;" text="Ввійти"
-              onAction="#onLogin"/>
+      <Button fx:id="loginButton" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #FFE600; -fx-background-radius: 10;" text="Ввійти"/>
 
     </VBox>
   </children>

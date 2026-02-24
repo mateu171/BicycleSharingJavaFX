@@ -8,7 +8,7 @@ import org.example.bicyclesharing.domain.interfaces.Entity;
 
 public abstract class BaseEntity implements Entity {
 
-  private final UUID id;
+  private UUID id;
   protected HashMap<String, List<String>> errors;
 
   protected BaseEntity() {
@@ -52,5 +52,10 @@ public abstract class BaseEntity implements Entity {
   @Override
   public int hashCode() {
     return id.hashCode();
+  }
+
+  @Override
+  public void setId(UUID id) {
+    this.id = id;
   }
 }

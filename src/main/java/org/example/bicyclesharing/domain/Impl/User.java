@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.domain.Impl;
 
+import java.util.UUID;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
@@ -19,12 +20,27 @@ public class User extends BaseEntity {
     validatePassword(password);
     setEmail(email);
     setRole(role);
-    System.out.println(this);
     if (!isValid()) {
       throw new CustomEntityValidationExeption(getErrors());
     }
 
     this.hashedPassword = PasswordHasher.hash(password);
+  }
+
+  public static User fromDatabase(
+      UUID id,
+      String login,
+      String hashedPassword,
+      String email,
+      Role role
+  ) {
+    User user = new User();
+    user.setId(id);
+    user.login = login;
+    user.hashedPassword = hashedPassword;
+    user.email = email;
+    user.role = role;
+    return user;
   }
 
   public String getLogin() {
@@ -86,5 +102,4 @@ public class User extends BaseEntity {
   public String toString() {
     return String.format("Логін: %s | Email: %s | Роль: %s", login, email, role);
   }
-
 }

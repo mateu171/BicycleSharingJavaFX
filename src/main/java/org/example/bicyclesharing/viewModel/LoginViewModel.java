@@ -10,10 +10,12 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
+import org.example.bicyclesharing.exception.AuthException;
+import org.example.bicyclesharing.services.AuthService;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.util.AppConfig;
 
-public class RegisterViewModel {
+public class LoginViewModel {
 
   @FXML
   private TextField loginField;
@@ -22,54 +24,47 @@ public class RegisterViewModel {
   private TextField passwordField;
 
   @FXML
-  private TextField emailField;
-  @FXML
-  private TextField emailCodeField;
-
-  @FXML
-  private Button registerButton;
-  @FXML
   private Button loginButton;
+  @FXML
+  private Button openRegisterWindow;
 
   private final UserService userService;
+  private final AuthService authService;
 
-  public RegisterViewModel() {
+  public LoginViewModel() {
     this.userService = AppConfig.userService();
+    this.authService = AppConfig.authService();
   }
 
   @FXML
   private void initialize() {
-    registerButton.setOnAction(event -> onRegister());
+    loginButton.setOnAction(event -> onLogin());
   }
 
-  private void onRegister() {
+  public void onLogin() {
     String login = loginField.getText();
     String password = passwordField.getText();
-    String email = emailField.getText();
-    String emailCode = emailCodeField.getText();
 
-    if (userService.existsByLogin(login)) {
-      System.out.println("Користувач з таким логіном вже існує!");
-      return;
+    try {
+      User currentUser = authService.authenticate(login, password);
+      System.out.println("Успішна авторизація");
+    } catch (AuthException exception) {
+      System.out.println(exception.getMessage());
     }
-
-    User user = new User(login, password, email, Role.CLIENT);
-    userService.add(user);
-
-    System.out.println("Користувач зареєстрований: " + user);
   }
 
-  public void openLoginWindow(ActionEvent event) {
+  public void openLoginRegister(ActionEvent event) {
     try {
-      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/bicyclesharing/presentation/LoginView.fxml"));
+      FXMLLoader fxmlLoader = new FXMLLoader(
+          getClass().getResource("/org/example/bicyclesharing/presentation/RegisterView.fxml"));
       Scene scene = new Scene(fxmlLoader.load());
-      LoginViewModel loginViewModel = fxmlLoader.getController();
+      RegisterViewModel registerViewModel = fxmlLoader.getController();
       Stage stage = new Stage();
       stage.setTitle("Вхід у систему");
       stage.setScene(scene);
       stage.show();
 
-      ((Stage) ((Button) event.getSource()).getScene().getWindow()).close();
+       ((Stage) ((Button) event.getSource()).getScene().getWindow()).close();
 
     } catch (IOException e) {
       e.printStackTrace();

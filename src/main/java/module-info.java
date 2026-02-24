@@ -9,6 +9,7 @@ module org.example.bicyclesharing {
   requires jbcrypt;
   requires jakarta.mail;
   requires java.sql;
+  requires java.desktop;
 
   opens org.example.bicyclesharing to javafx.fxml;
   exports org.example.bicyclesharing;

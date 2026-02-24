@@ -1,12 +1,12 @@
 package org.example.bicyclesharing.domain.Impl;
 
 import org.example.bicyclesharing.domain.enums.Role;
+import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 
 public class User extends BaseEntity {
-
   private String login;
-  private String password;
+  private String hashedPassword;
   private String email;
   private Role role;
 
@@ -15,15 +15,16 @@ public class User extends BaseEntity {
   }
 
   public User(String login, String password, String email, Role role) {
-    this();
     setLogin(login);
-    setPassword(password);
+    validatePassword(password);
     setEmail(email);
     setRole(role);
-
+    System.out.println(this);
     if (!isValid()) {
       throw new CustomEntityValidationExeption(getErrors());
     }
+
+    this.hashedPassword = PasswordHasher.hash(password);
   }
 
   public String getLogin() {
@@ -42,18 +43,16 @@ public class User extends BaseEntity {
   }
 
   public String getPassword() {
-    return password;
+    return hashedPassword;
   }
 
-  public void setPassword(String password) {
+  private void validatePassword(String password) {
     cleanErrors("password");
     if (password == null || password.trim().isEmpty()) {
       addError("password", "Пароль неповинен бути пустим!");
     } else if (password.length() < 8 || password.length() > 50) {
       addError("password", "password повинен бути не менше 8 символі і небільше 50");
     }
-
-    this.password = password;
   }
 
   public String getEmail() {

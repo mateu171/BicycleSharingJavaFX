@@ -29,7 +29,6 @@ public class UserService extends BaseService<User, UUID> {
 
   @Override
   public User add(User entity) {
-    entity.setPassword(PasswordHasher.hash(entity.getPassword()));
     return getRepository().save(entity);
   }
 

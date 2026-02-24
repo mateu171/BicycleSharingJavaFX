@@ -51,7 +51,7 @@ public class AppConfig {
 //    return new StationService(new JsonStationRepository("data/stations.json"));
 //  }
 //
-//  public static AuthService authService() {
-//    return new AuthService(new JsonUserRepository("data/users.json"));
-//  }
+  public static AuthService authService() {
+    return new AuthService(new UserRepositoryDB());
+  }
 }

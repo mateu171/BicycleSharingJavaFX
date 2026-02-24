@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="500" prefWidth="400" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.bicyclesharing.viewModel.RegisterViewModel">
+
+  <children>
+    <VBox alignment="CENTER" spacing="15" fillWidth="false">
+
+      <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Реєстрація" />
+
+      <HBox alignment="CENTER" spacing="5">
+        <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" />
+        <TextField fx:id="loginField" prefWidth="250" promptText="Login" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1;" />
+      </HBox>
+
+      <HBox alignment="CENTER" spacing="5">
+        <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" />
+        <TextField fx:id="passwordField" prefWidth="250" promptText="Password" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1;" />
+      </HBox>
+
+      <HBox alignment="CENTER" spacing="5">
+        <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" />
+        <TextField fx:id="emailField" prefWidth="250" promptText="Email Address" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1;" />
+      </HBox>
+
+      <HBox alignment="CENTER" spacing="5">
+        <ImageView fitHeight="20" fitWidth="20" pickOnBounds="true" preserveRatio="true" />
+        <TextField fx:id="emailCodeField" prefWidth="250" promptText="Enter Code from Email" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1;" />
+      </HBox>
+
+      <HBox alignment="CENTER">
+        <Button fx:id="loginButton"
+          prefHeight="25.0" prefWidth="150.0"
+          style="-fx-background-color: transparent; -fx-text-fill: #364153; -fx-underline: false;"
+          text="Вже маю аккаунт"
+          onAction="#openLoginWindow"/>
+      </HBox>
+
+      <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #FFE600; -fx-background-radius: 10;" text="Реєстрація" />
+
+    </VBox>
+  </children>
+</StackPane>

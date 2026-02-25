@@ -12,14 +12,7 @@ public class CustomEntityValidationExeption extends RuntimeException {
     this.errors = errors;
   }
 
-  @Override
-  public String getMessage() {
-    StringBuilder sb = new StringBuilder(super.getMessage());
-    sb.append("\n");
-    errors.forEach((field, message) ->
-    {
-      sb.append(field).append(": ").append(message).append("\n");
-    });
-    return sb.toString();
+  public Map<String, List<String>> getErrors() {
+    return errors;
   }
 }

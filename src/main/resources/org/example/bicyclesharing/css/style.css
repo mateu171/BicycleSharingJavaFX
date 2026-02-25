@@ -1,0 +1,37 @@
+
+.root-pane {
+  -fx-background-color: #FEFDFF;
+}
+
+.title-label {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+}
+
+.input-field {
+  -fx-background-radius: 5;
+  -fx-border-radius: 5;
+  -fx-border-color: gray;
+  -fx-border-width: 1;
+}
+
+.input-box {
+  -fx-background-color: #FBFBFD;
+  -fx-alignment: center;
+  -fx-spacing: 5;
+}
+
+.error-label {
+  -fx-font-size: 11px;
+  -fx-text-fill: red;
+}
+
+.link-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: #364153;
+}
+
+.primary-button {
+  -fx-background-color: #FFE600;
+  -fx-background-radius: 10;
+}

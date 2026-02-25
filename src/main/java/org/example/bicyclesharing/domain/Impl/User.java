@@ -52,7 +52,7 @@ public class User extends BaseEntity {
     if (login == null || login.trim().isEmpty()) {
       addError("login", "Логін неповинен бути пустим!");
     } else if (login.length() < 2 || login.length() > 50) {
-      addError("login", "Логін повинен бути не менше 2 символі і небільше 50");
+      addError("login", "Логін повинен бути не менше 2 символів і небільше 50");
     }
 
     this.login = login;
@@ -67,7 +67,7 @@ public class User extends BaseEntity {
     if (password == null || password.trim().isEmpty()) {
       addError("password", "Пароль неповинен бути пустим!");
     } else if (password.length() < 8 || password.length() > 50) {
-      addError("password", "password повинен бути не менше 8 символі і небільше 50");
+      addError("password", "password повинен бути не менше 8 символів і небільше 50");
     }
   }
 

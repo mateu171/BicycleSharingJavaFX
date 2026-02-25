@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.exception.AuthException;
 import org.example.bicyclesharing.services.AuthService;
@@ -65,7 +66,7 @@ public class LoginViewModel {
           getClass().getResource("/org/example/bicyclesharing/presentation/RegisterView.fxml"));
       Scene scene = new Scene(fxmlLoader.load());
       Stage stage = new Stage();
-      stage.setTitle("Вхід у систему");
+      stage.initStyle(StageStyle.UNDECORATED);
       stage.setScene(scene);
       stage.show();
 

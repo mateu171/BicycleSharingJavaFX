@@ -8,10 +8,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
+import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.util.AppConfig;
 
@@ -19,15 +22,20 @@ public class RegisterViewModel {
 
   @FXML
   private TextField loginField;
-
   @FXML
   private TextField passwordField;
-
   @FXML
   private TextField emailField;
   @FXML
   private TextField emailCodeField;
-
+  @FXML
+  private Label loginErrorLabel;
+  @FXML
+  private Label passwordErrorLabel;
+  @FXML
+  private Label emailErrorLabel;
+  @FXML
+  private Label emailCodeErrorLabel;
   @FXML
   private Button registerButton;
   @FXML
@@ -55,20 +63,34 @@ public class RegisterViewModel {
   }
 
   private void onRegister() {
+    clearErrors();
     String loginValue = login.get();
     String passwordValue = password.get();
     String emailValue = email.get();
     String emailCodeValue = emailCode.get();
 
     if (userService.existsByLogin(loginValue)) {
-      System.out.println("Користувач з таким логіном вже існує!");
+      //errorLabel.setText("Користувач з таким логіном вже існує!");
       return;
     }
 
-    User user = new User(loginValue, passwordValue, emailValue, Role.CLIENT);
-    userService.add(user);
+    try {
 
-    System.out.println("Користувач зареєстрований: " + user);
+      User user = new User(loginValue, passwordValue, emailValue, Role.CLIENT);
+      userService.add(user);
+      System.out.println("Користувач зареєстрований: " + user);
+    }
+    catch (CustomEntityValidationExeption e) {
+      e.getErrors().forEach((field, messages) -> {
+        String msg = String.join("\n", messages);
+        switch (field) {
+          case "login" -> loginErrorLabel.setText(msg);
+          case "password" -> passwordErrorLabel.setText(msg);
+          case "email" -> emailErrorLabel.setText(msg);
+          case "emailCode" -> emailCodeErrorLabel.setText(msg);
+        }
+      });
+    }
   }
 
   public void openLoginWindow(ActionEvent event) {
@@ -76,8 +98,8 @@ public class RegisterViewModel {
       FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/bicyclesharing/presentation/LoginView.fxml"));
       Scene scene = new Scene(fxmlLoader.load());
       Stage stage = new Stage();
-      stage.setTitle("Вхід у систему");
       stage.setScene(scene);
+      stage.initStyle(StageStyle.UNDECORATED);
       stage.show();
 
       ((Stage) ((Button) event.getSource()).getScene().getWindow()).close();
@@ -85,5 +107,13 @@ public class RegisterViewModel {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+
+  private  void clearErrors()
+  {
+    loginErrorLabel.setText("");
+    emailErrorLabel.setText("");
+    passwordErrorLabel.setText("");
+    emailCodeErrorLabel.setText("");
   }
 }

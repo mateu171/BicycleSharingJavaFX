@@ -19,7 +19,7 @@
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
           <TextField fx:id="loginField" prefWidth="250" promptText="Login" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
-          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -113;">
+          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -115;">
                   <image>
                      <Image url="@../art/icon/user.png" />
                   </image></ImageView>
@@ -30,7 +30,7 @@
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
           <TextField fx:id="passwordField" prefWidth="250" promptText="Password" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
-          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -113;">
+          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -115;">
                   <image>
                      <Image url="@../art/icon/key.png" />
                   </image></ImageView>
@@ -39,19 +39,25 @@
       </VBox>
 
       <VBox alignment="CENTER" spacing="2">
-        <StackPane>
-          <TextField fx:id="emailField" prefWidth="250" promptText="Email Address" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
-          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -113;">
-                  <image>
-                     <Image url="@../art/icon/mail.png" />
-                  </image></ImageView>
-        </StackPane>
+        <HBox alignment="CENTER_LEFT" spacing="5">
+          <StackPane>
+            <TextField fx:id="emailField" prefWidth="170.0" promptText="Email Address" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
+            <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -75;">
+              <image>
+                <Image url="@../art/icon/mail.png" />
+              </image>
+            </ImageView>
+          </StackPane>
+
+          <Button fx:id="sendCodeButton" onAction="#onSendCodeToEmail" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #FFE600; -fx-background-radius: 5;" text="Відправити" wrapText="true" />
+        </HBox>
+
         <Label fx:id="emailErrorLabel" maxWidth="250" style="-fx-font-size: 11px;" textFill="red" wrapText="true" />
       </VBox>
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="emailCodeField" prefWidth="250" promptText="Enter Code from Email" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
+          <TextField fx:id="emailCodeField" disable="true" prefWidth="250" promptText="Enter Code from Email" style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true" style="-fx-translate-x: -113;">
                   <image>
                      <Image url="@../art/icon/computer.png" />
@@ -60,12 +66,10 @@
         <Label fx:id="emailCodeErrorLabel" maxWidth="250" style="-fx-font-size: 11px;" textFill="red" wrapText="true" />
       </VBox>
 
-      <!-- Login Button -->
       <HBox alignment="CENTER">
         <Button fx:id="loginButton" onAction="#openLoginWindow" prefHeight="25.0" prefWidth="150.0" style="-fx-background-color: transparent; -fx-text-fill: #364153;" text="Вже маю аккаунт" />
       </HBox>
 
-      <!-- Register Button -->
       <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #FFE600; -fx-background-radius: 10;" text="Реєстрація" />
 
     </VBox>

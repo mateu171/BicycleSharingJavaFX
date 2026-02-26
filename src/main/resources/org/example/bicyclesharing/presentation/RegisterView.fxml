@@ -10,77 +10,74 @@
 <?import javafx.scene.layout.VBox?>
 
 <StackPane prefHeight="500" prefWidth="400"
-  style="-fx-background-color: #FEFDFF; -fx-background-radius: 30; -fx-border-radius: 30; -fx-border-color: gray; -fx-border-width: 1;"
+  styleClass="stack-pane-root"
   xmlns="http://javafx.com/javafx/25"
   xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="org.example.bicyclesharing.controller.RegisterController">
+  fx:controller="org.example.bicyclesharing.controller.RegisterController"
+  stylesheets="@../css/style.css">
 
   <children>
     <VBox fx:id="registrationPane" alignment="CENTER" fillWidth="false" spacing="5">
-      <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Реєстрація" />
+      <Label styleClass="label-title" text="Реєстрація" />
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="loginField" prefWidth="250" promptText="Login"
-            style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
+          <TextField fx:id="loginField" prefWidth="250" promptText="Login" styleClass="text-field-style"/>
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/user.png"/></image>
           </ImageView>
         </StackPane>
-        <Label fx:id="loginErrorLabel" maxWidth="250" style="-fx-font-size: 12px; -fx-font-weight: bold" textFill="red" wrapText="true"/>
+        <Label fx:id="loginErrorLabel" maxWidth="250" styleClass="label-error"/>
       </VBox>
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="passwordField" prefWidth="250" promptText="Password"
-            style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
+          <TextField fx:id="passwordField" prefWidth="250" promptText="Password" styleClass="text-field-style" />
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/key.png"/></image>
           </ImageView>
         </StackPane>
-        <Label fx:id="passwordErrorLabel" maxWidth="250" style="-fx-font-size: 12px; -fx-font-weight: bold" textFill="red" wrapText="true"/>
+        <Label fx:id="passwordErrorLabel" maxWidth="250" styleClass="label-error"/>
       </VBox>
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="emailField" prefWidth="250" promptText="Email Address"
-            style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
+          <TextField fx:id="emailField" prefWidth="250" promptText="Email Address" styleClass="text-field-style" />
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/mail.png"/></image>
           </ImageView>
         </StackPane>
-        <Label fx:id="emailErrorLabel" maxWidth="250" style="-fx-font-size: 12px; -fx-font-weight: bold" textFill="red" wrapText="true"/>
+        <Label fx:id="emailErrorLabel" maxWidth="250" styleClass="label-error"/>
       </VBox>
 
       <HBox alignment="CENTER">
         <Button fx:id="loginButton" onAction="#openLoginWindow" prefHeight="25.0" prefWidth="150.0"
-          style="-fx-background-color: transparent; -fx-text-fill: #364153;" text="Вже маю аккаунт"/>
+          styleClass="button-secondary" text="Вже маю аккаунт"/>
       </HBox>
 
       <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0" onAction="#onRegister"
-        style="-fx-background-color: #FFE600;  -fx-background-radius: 10;" text="Реєстрація"/>
+        styleClass="button-primary" text="Реєстрація"/>
     </VBox>
 
     <VBox fx:id="confirmationPane" alignment="CENTER" fillWidth="false" spacing="5" visible="false">
-      <Label style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Підтвердіть Email" />
+      <Label styleClass="label-title" text="Підтвердіть Email" />
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="emailCodeField" prefWidth="250" promptText="Введіть код з Email"
-            style="-fx-background-radius: 5; -fx-border-radius: 5; -fx-border-color: gray; -fx-border-width: 1; -fx-padding: 0 0 0 20;" />
+          <TextField fx:id="emailCodeField" prefWidth="250" promptText="Введіть код з Email" styleClass="text-field-style" />
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
             style="-fx-translate-x: -113;">
             <image><Image url="@../art/icon/computer.png"/></image>
           </ImageView>
         </StackPane>
-        <Label fx:id="emailCodeErrorLabel" maxWidth="250" style="-fx-font-size: 12px; -fx-font-weight: bold" textFill="red" wrapText="true"/>
+        <Label fx:id="emailCodeErrorLabel" maxWidth="250" styleClass="label-error"/>
       </VBox>
 
       <Button fx:id="confirmCodeButton" prefHeight="25.0" prefWidth="150.0" onAction="#onConfirmCode"
-        style="-fx-background-color: #FFE600; -fx-background-radius: 10;" text="Підтвердити"/>
+        styleClass="button-primary" text="Підтвердити"/>
     </VBox>
   </children>
 </StackPane>

@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -24,11 +25,11 @@ public class LoginViewModel {
 
   @FXML
   private TextField passwordField;
+  @FXML
+  private Label errorMessage;
 
   @FXML
   private Button loginButton;
-  @FXML
-  private Button openRegisterWindow;
 
   private final UserService userService;
   private final AuthService authService;
@@ -49,14 +50,14 @@ public class LoginViewModel {
   }
 
   public void onLogin() {
-    String loginValue = login.get();
-    String passwordValue = password.get();
+    String loginValue = login.get() == null ? "" : login.get().trim();
+    String passwordValue = password.get() == null ? "" : password.get().trim();
 
     try {
       User currentUser = authService.authenticate(loginValue, passwordValue);
       System.out.println("Успішна авторизація");
     } catch (AuthException exception) {
-      System.out.println(exception.getMessage());
+      errorMessage.setText(exception.getMessage());
     }
   }
 

@@ -41,12 +41,15 @@ public class RegisterViewModel {
   private Label emailCodeErrorLabel;
   @FXML
   private Button registerButton;
-  private User tempUser;
-  @FXML private VBox registrationPane;
-  @FXML private VBox confirmationPane;
-  @FXML private Button confirmCodeButton;
+  @FXML
+  private VBox registrationPane;
+  @FXML
+  private VBox confirmationPane;
+  @FXML
+  private Button confirmCodeButton;
 
   private int sentCode;
+  private User tempUser;
 
   private final StringProperty login = new SimpleStringProperty();
   private final StringProperty password = new SimpleStringProperty();

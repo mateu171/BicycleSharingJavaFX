@@ -13,7 +13,7 @@
   style="-fx-background-color: #FEFDFF; -fx-background-radius: 30; -fx-border-radius: 30; -fx-border-color: gray; -fx-border-width: 1;"
   xmlns="http://javafx.com/javafx/25"
   xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="org.example.bicyclesharing.viewModel.LoginViewModel">
+  fx:controller="org.example.bicyclesharing.controller.LoginController">
 
   <children>
     <VBox alignment="CENTER" spacing="5" fillWidth="false">
@@ -62,14 +62,15 @@
           fx:id="registerButton"
           style="-fx-background-color: transparent; -fx-text-fill: #364153;"
           text="Ще не маю аккаунт"
-          onAction="#openLoginRegister"/>
+          onAction="#openRegisterWindow"/>
       </HBox>
 
       <Button fx:id="loginButton"
         prefHeight="25.0"
         prefWidth="100.0"
         style="-fx-background-color: #FFE600; -fx-background-radius: 10;"
-        text="Ввійти"/>
+        text="Ввійти"
+        onAction="#onLogin"/>
 
     </VBox>
   </children>

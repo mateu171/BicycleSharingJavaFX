@@ -13,7 +13,7 @@
   style="-fx-background-color: #FEFDFF; -fx-background-radius: 30; -fx-border-radius: 30; -fx-border-color: gray; -fx-border-width: 1;"
   xmlns="http://javafx.com/javafx/25"
   xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="org.example.bicyclesharing.viewModel.RegisterViewModel">
+  fx:controller="org.example.bicyclesharing.controller.RegisterController">
 
   <children>
     <VBox fx:id="registrationPane" alignment="CENTER" fillWidth="false" spacing="5">
@@ -60,8 +60,8 @@
           style="-fx-background-color: transparent; -fx-text-fill: #364153;" text="Вже маю аккаунт"/>
       </HBox>
 
-      <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0"
-        style="-fx-background-color: #FFE600; -fx-background-radius: 10;" text="Реєстрація"/>
+      <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0" onAction="#onRegister"
+        style="-fx-background-color: #FFE600;  -fx-background-radius: 10;" text="Реєстрація"/>
     </VBox>
 
     <VBox fx:id="confirmationPane" alignment="CENTER" fillWidth="false" spacing="5" visible="false">
@@ -79,7 +79,7 @@
         <Label fx:id="emailCodeErrorLabel" maxWidth="250" style="-fx-font-size: 12px; -fx-font-weight: bold" textFill="red" wrapText="true"/>
       </VBox>
 
-      <Button fx:id="confirmCodeButton" prefHeight="25.0" prefWidth="150.0"
+      <Button fx:id="confirmCodeButton" prefHeight="25.0" prefWidth="150.0" onAction="#onConfirmCode"
         style="-fx-background-color: #FFE600; -fx-background-radius: 10;" text="Підтвердити"/>
     </VBox>
   </children>

@@ -15,4 +15,5 @@ module org.example.bicyclesharing {
   exports org.example.bicyclesharing;
   opens org.example.bicyclesharing.presentation to javafx.fxml;
   opens org.example.bicyclesharing.viewModel to javafx.fxml;
+  opens org.example.bicyclesharing.controller to javafx.fxml;
 }

@@ -2,6 +2,8 @@ package org.example.bicyclesharing.viewModel;
 
 import java.io.IOException;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
@@ -19,134 +21,78 @@ import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.services.VerificationService;
-import org.example.bicyclesharing.util.AppConfig;
-
 public class RegisterViewModel {
-
-  @FXML
-  private TextField loginField;
-  @FXML
-  private TextField passwordField;
-  @FXML
-  private TextField emailField;
-  @FXML
-  private TextField emailCodeField;
-  @FXML
-  private Label loginErrorLabel;
-  @FXML
-  private Label passwordErrorLabel;
-  @FXML
-  private Label emailErrorLabel;
-  @FXML
-  private Label emailCodeErrorLabel;
-  @FXML
-  private Button registerButton;
-  @FXML
-  private VBox registrationPane;
-  @FXML
-  private VBox confirmationPane;
-  @FXML
-  private Button confirmCodeButton;
-
-  private int sentCode;
-  private User tempUser;
-
-  private final StringProperty login = new SimpleStringProperty();
-  private final StringProperty password = new SimpleStringProperty();
-  private final StringProperty email = new SimpleStringProperty();
-  private final StringProperty emailCode = new SimpleStringProperty();
 
   private final UserService userService;
   private final VerificationService verificationService;
 
-  public RegisterViewModel() {
-    this.userService = AppConfig.userService();
-    this.verificationService = AppConfig.verificationService();
+  public StringProperty login = new SimpleStringProperty("");
+  public StringProperty password = new SimpleStringProperty("");
+  public StringProperty email = new SimpleStringProperty("");
+  public StringProperty emailCode = new SimpleStringProperty("");
+
+  public StringProperty loginError = new SimpleStringProperty("");
+  public StringProperty passwordError = new SimpleStringProperty("");
+  public StringProperty emailError = new SimpleStringProperty("");
+  public StringProperty emailCodeError = new SimpleStringProperty("");
+
+  public BooleanProperty confirmationVisible = new SimpleBooleanProperty(false);
+  public BooleanProperty registrationVisible = new SimpleBooleanProperty(true);
+
+  private int sentCode;
+  private User tempUser;
+
+  public RegisterViewModel(UserService userService,
+      VerificationService verificationService) {
+    this.userService = userService;
+    this.verificationService = verificationService;
   }
 
-  @FXML
-  private void initialize() {
-    loginField.textProperty().bindBidirectional(login);
-    passwordField.textProperty().bindBidirectional(password);
-    emailField.textProperty().bindBidirectional(email);
-    emailCodeField.textProperty().bindBidirectional(emailCode);
-
-    registerButton.setOnAction(event -> onRegister());
-    confirmCodeButton.setOnAction(e -> onConfirmCode());
-  }
-
-
-  private void onRegister() {
+  public void register() {
     clearErrors();
 
-    String loginValue = loginField.getText() == null ? "" : loginField.getText().trim();
-    String passwordValue = passwordField.getText() == null ? "" : passwordField.getText().trim();
-    String emailValue = emailField.getText() == null ? "" : emailField.getText().trim();
-
     try {
-      tempUser = new User(loginValue, passwordValue, emailValue, Role.CLIENT);
+      tempUser = new User(
+          login.get(),
+          password.get(),
+          email.get(),
+          Role.CLIENT
+      );
+
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {
         String msg = String.join("\n", messages);
         switch (field) {
-          case "login" -> loginErrorLabel.setText(msg);
-          case "password" -> passwordErrorLabel.setText(msg);
-          case "email" -> emailErrorLabel.setText(msg);
+          case "login" -> loginError.set(msg);
+          case "password" -> passwordError.set(msg);
+          case "email" -> emailError.set(msg);
         }
       });
       return;
     }
 
     try {
-      sentCode = verificationService.sendVerificationCode(emailValue);
-
-      registrationPane.setVisible(false);
-      confirmationPane.setVisible(true);
-      emailCodeField.requestFocus();
-
+      sentCode = verificationService.sendVerificationCode(email.get());
+      registrationVisible.set(false);
+      confirmationVisible.set(true);
     } catch (Exception ex) {
-      emailErrorLabel.setText("Не вдалося відправити код!");
-      ex.printStackTrace();
+      emailError.set("Не вдалося відправити код!");
     }
   }
 
-  public void openLoginWindow(ActionEvent event) {
-    try {
-      FXMLLoader fxmlLoader = new FXMLLoader(
-          getClass().getResource("/org/example/bicyclesharing/presentation/LoginView.fxml"));
-      Scene scene = new Scene(fxmlLoader.load());
-      Stage stage = new Stage();
-      stage.setScene(scene);
-      stage.initStyle(StageStyle.UNDECORATED);
-      stage.show();
-      ((Stage) ((Button) event.getSource()).getScene().getWindow()).close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
-
-
-  private void clearErrors() {
-    loginErrorLabel.setText("");
-    emailErrorLabel.setText("");
-    passwordErrorLabel.setText("");
-    emailCodeErrorLabel.setText("");
-  }
-  private void onConfirmCode() {
-    emailErrorLabel.setText("");
-    String code = emailCodeField.getText() == null ? "" : emailCodeField.getText().trim();
-    if (!String.valueOf(sentCode).equals(code)) {
-      emailCodeErrorLabel.setText("Невірний код!");
+  public void confirmCode() {
+    if (!String.valueOf(sentCode).equals(emailCode.get())) {
+      emailCodeError.set("Невірний код!");
       return;
     }
 
-    try {
-      userService.add(tempUser);
-      System.out.println("Користувач зареєстрований: " + tempUser);
-    } catch (CustomEntityValidationExeption e) {
-      e.getErrors().forEach((field, messages) -> {
-        emailCodeErrorLabel.setText(String.join("\n", messages));
-      });
-    }
+    userService.add(tempUser);
+  }
+
+  private void clearErrors() {
+    loginError.set("");
+    passwordError.set("");
+    emailError.set("");
+    emailCodeError.set("");
   }
 }

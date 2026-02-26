@@ -67,7 +67,7 @@ public class User extends BaseEntity {
     if (password == null || password.trim().isEmpty()) {
       addError("password", "Пароль неповинен бути пустим!");
     } else if (password.length() < 8 || password.length() > 50) {
-      addError("password", "password повинен бути не менше 8 символів і небільше 50");
+      addError("password", "Пароль повинен бути не менше 8 символів і небільше 50");
     }
   }
 

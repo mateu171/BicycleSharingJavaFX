@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.example.bicyclesharing.domain.Impl.User;
@@ -40,8 +41,10 @@ public class RegisterViewModel {
   private Label emailCodeErrorLabel;
   @FXML
   private Button registerButton;
-  @FXML
-  private Button sendCodeButton;
+  private User tempUser;
+  @FXML private VBox registrationPane;
+  @FXML private VBox confirmationPane;
+  @FXML private Button confirmCodeButton;
 
   private int sentCode;
 
@@ -65,71 +68,20 @@ public class RegisterViewModel {
     emailField.textProperty().bindBidirectional(email);
     emailCodeField.textProperty().bindBidirectional(emailCode);
 
-    emailCodeField.setDisable(true);
-
     registerButton.setOnAction(event -> onRegister());
-
-    sendCodeButton.disableProperty().bind(
-        Bindings.createBooleanBinding(
-            () -> !isValidEmail(emailField.getText()),
-            emailField.textProperty()
-        )
-    );
+    confirmCodeButton.setOnAction(e -> onConfirmCode());
   }
 
-  public void onSendCodeToEmail() {
-    emailErrorLabel.setText("");
-    String emailValue = email.get() == null ? "" : email.get().trim();
-
-    if (!isValidEmail(emailValue)) {
-      emailErrorLabel.setText("Некоректний формат email");
-      return;
-    }
-
-    try {
-      sentCode = verificationService.sendVerificationCode(emailValue);
-      emailErrorLabel.setText("Код надіслано на ваш email!");
-      emailCodeField.setDisable(false);
-      emailCodeField.requestFocus();
-    } catch (Exception e) {
-      emailErrorLabel.setText("Не вдалося відправити код!");
-      e.printStackTrace();
-    }
-  }
 
   private void onRegister() {
     clearErrors();
 
-    boolean hasErrors = false;
-
-    String loginValue = login.get();
-    String passwordValue = password.get();
-    String emailValue = email.get();
-    String emailCodeValue = emailCode.get();
-
-    if (userService.existsByLogin(loginValue)) {
-      loginErrorLabel.setText("Користувач з таким логіном вже існує!");
-      hasErrors = true;
-    }
-
-    if (!emailCodeField.isDisabled()) {
-      if (emailCodeValue == null || emailCodeValue.trim().isEmpty()) {
-        emailCodeErrorLabel.setText("Введіть код підтвердження!");
-        hasErrors = true;
-      } else if (!emailCodeValue.equals(String.valueOf(sentCode))) {
-        emailCodeErrorLabel.setText("Невірний код підтвердження!");
-        hasErrors = true;
-      }
-    }
-
-    if (hasErrors) {
-      return;
-    }
+    String loginValue = loginField.getText() == null ? "" : loginField.getText().trim();
+    String passwordValue = passwordField.getText() == null ? "" : passwordField.getText().trim();
+    String emailValue = emailField.getText() == null ? "" : emailField.getText().trim();
 
     try {
-      User user = new User(loginValue, passwordValue, emailValue, Role.CLIENT);
-      userService.add(user);
-      System.out.println("Користувач зареєстрований: " + user);
+      tempUser = new User(loginValue, passwordValue, emailValue, Role.CLIENT);
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {
         String msg = String.join("\n", messages);
@@ -137,9 +89,21 @@ public class RegisterViewModel {
           case "login" -> loginErrorLabel.setText(msg);
           case "password" -> passwordErrorLabel.setText(msg);
           case "email" -> emailErrorLabel.setText(msg);
-          case "emailCode" -> emailCodeErrorLabel.setText(msg);
         }
       });
+      return;
+    }
+
+    try {
+      sentCode = verificationService.sendVerificationCode(emailValue);
+
+      registrationPane.setVisible(false);
+      confirmationPane.setVisible(true);
+      emailCodeField.requestFocus();
+
+    } catch (Exception ex) {
+      emailErrorLabel.setText("Не вдалося відправити код!");
+      ex.printStackTrace();
     }
   }
 
@@ -158,14 +122,28 @@ public class RegisterViewModel {
     }
   }
 
+
   private void clearErrors() {
     loginErrorLabel.setText("");
     emailErrorLabel.setText("");
     passwordErrorLabel.setText("");
     emailCodeErrorLabel.setText("");
   }
+  private void onConfirmCode() {
+    emailErrorLabel.setText("");
+    String code = emailCodeField.getText() == null ? "" : emailCodeField.getText().trim();
+    if (!String.valueOf(sentCode).equals(code)) {
+      emailCodeErrorLabel.setText("Невірний код!");
+      return;
+    }
 
-  private boolean isValidEmail(String email) {
-    return email != null && email.matches("^[a-zA-Z0-9]+@gmail\\.com$");
+    try {
+      userService.add(tempUser);
+      System.out.println("Користувач зареєстрований: " + tempUser);
+    } catch (CustomEntityValidationExeption e) {
+      e.getErrors().forEach((field, messages) -> {
+        emailCodeErrorLabel.setText(String.join("\n", messages));
+      });
+    }
   }
 }

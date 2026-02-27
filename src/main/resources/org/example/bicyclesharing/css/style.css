@@ -1,43 +1,56 @@
 
 .stack-pane-root {
-  -fx-background-color: #FEFDFF;
-  -fx-background-radius: 30;
-  -fx-border-radius: 30;
-  -fx-border-color: gray;
-  -fx-border-width: 1;
-}
-
-.vbox-container {
-  -fx-alignment: center;
-  -fx-spacing: 5;
-  -fx-fill-width: false;
+  -fx-background-color: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);
+  -fx-background-radius: 20;
+  -fx-border-radius: 20;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0.2, 0, 5);
+  -fx-padding: 15;
 }
 
 .label-title {
-  -fx-font-size: 18px;
+  -fx-font-size: 20px;
   -fx-font-weight: bold;
+  -fx-text-fill: #364153;
 }
 
 .text-field-style {
-  -fx-background-radius: 5;
-  -fx-border-radius: 5;
-  -fx-border-color: gray;
-  -fx-border-width: 1;
-  -fx-padding: 0 0 0 20;
+  -fx-background-color: transparent;
+  -fx-border-color: #ccc;
+  -fx-border-width: 0 0 1 0;
+  -fx-padding: 5 5 5 25;
+}
+
+.text-field-style:focused {
+  -fx-border-color: #FFE600;
+  -fx-border-width: 0 0 2 0;
 }
 
 .button-primary {
   -fx-background-color: #FFE600;
   -fx-background-radius: 10;
+  -fx-font-weight: bold;
+}
+
+.button-primary:hover {
+  -fx-background-color: #FFD000;
+  -fx-cursor: hand;
+}
+
+.button-primary:pressed {
+  -fx-background-color: #E6C800;
 }
 
 .button-secondary {
   -fx-background-color: transparent;
   -fx-text-fill: #364153;
 }
+.button-secondary:hover {
+  -fx-text-fill: #000000;
+  -fx-underline: true;
+  -fx-cursor: hand;
+}
 
 .label-error {
   -fx-font-size: 12px;
-  -fx-font-weight: bold;
-  -fx-text-fill: red;
+  -fx-text-fill: #d32f2f;
 }

@@ -1,15 +1,9 @@
 package org.example.bicyclesharing.controller;
 
-import java.io.IOException;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.viewModel.RegisterViewModel;
 
@@ -29,6 +23,7 @@ public class RegisterController {
   @FXML private VBox registrationPane;
 
   private RegisterViewModel viewModel;
+  private MainController mainController;
 
   @FXML
   private void initialize() {
@@ -63,18 +58,13 @@ public class RegisterController {
     viewModel.confirmCode();
   }
 
+  public void setMainController(MainController mainController) {
+    this.mainController = mainController;
+  }
+
   @FXML
-  private void openLoginWindow(javafx.event.ActionEvent event) throws IOException {
-    FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/bicyclesharing/presentation/LoginView.fxml"));
-    Scene scene = new Scene(loader.load());
-
-    Stage stage = new Stage();
-    stage.setScene(scene);
-    stage.initStyle(StageStyle.UNDECORATED);
-    stage.show();
-
-    Stage currentStage = (Stage) ((Button) event.getSource()).getScene().getWindow();
-    currentStage.close();
+  private void openLoginWindow() {
+    mainController.showLogin();
   }
 
 }

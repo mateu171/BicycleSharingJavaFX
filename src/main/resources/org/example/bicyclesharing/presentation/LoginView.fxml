@@ -42,13 +42,12 @@
             </image>
           </ImageView>
         </StackPane>
+        <Label fx:id="errorMessage" maxWidth="250" styleClass="label-error" textFill="red" wrapText="true" />
       </VBox>
 
-      <Label fx:id="errorMessage" maxWidth="250" styleClass="label-error" textFill="red" wrapText="true" />
-
-      <HBox alignment="CENTER">
+      <VBox alignment="CENTER">
         <Button fx:id="registerButton" onAction="#openRegisterWindow" prefHeight="25.0" prefWidth="150.0" styleClass="button-secondary" text="Ще не маю аккаунт" />
-      </HBox>
+      </VBox>
 
       <Button fx:id="loginButton" onAction="#onLogin" prefHeight="25.0" prefWidth="100.0" styleClass="button-primary" text="Ввійти" />
 

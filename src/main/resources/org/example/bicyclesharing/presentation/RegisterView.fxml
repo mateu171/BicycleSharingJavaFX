@@ -28,7 +28,7 @@
             <image><Image url="@../art/icon/user.png"/></image>
           </ImageView>
         </StackPane>
-        <Label fx:id="loginErrorLabel" maxWidth="250" styleClass="label-error"/>
+        <Label fx:id="loginErrorLabel" maxWidth="250" styleClass="label-error" wrapText="true"/>
       </VBox>
 
       <VBox alignment="CENTER" spacing="2">
@@ -39,7 +39,7 @@
             <image><Image url="@../art/icon/key.png"/></image>
           </ImageView>
         </StackPane>
-        <Label fx:id="passwordErrorLabel" maxWidth="250" styleClass="label-error"/>
+        <Label fx:id="passwordErrorLabel" maxWidth="250" styleClass="label-error" wrapText="true"/>
       </VBox>
 
       <VBox alignment="CENTER" spacing="2">
@@ -50,7 +50,7 @@
             <image><Image url="@../art/icon/mail.png"/></image>
           </ImageView>
         </StackPane>
-        <Label fx:id="emailErrorLabel" maxWidth="250" styleClass="label-error"/>
+        <Label fx:id="emailErrorLabel" maxWidth="250" styleClass="label-error" wrapText="true"/>
       </VBox>
 
       <HBox alignment="CENTER">
@@ -73,7 +73,7 @@
             <image><Image url="@../art/icon/computer.png"/></image>
           </ImageView>
         </StackPane>
-        <Label fx:id="emailCodeErrorLabel" maxWidth="250" styleClass="label-error"/>
+        <Label fx:id="emailCodeErrorLabel" maxWidth="250" styleClass="label-error" wrapText="true"/>
       </VBox>
 
       <Button fx:id="confirmCodeButton" prefHeight="25.0" prefWidth="150.0" onAction="#onConfirmCode"

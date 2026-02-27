@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.MainController"
+  fx:id="contentPane"
+  prefWidth="400"
+  prefHeight="500"
+  stylesheets="@../css/style.css"
+  styleClass="stack-pane-root">
+</StackPane>

@@ -4,12 +4,21 @@ import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 public class MainController {
 
   @FXML
   private StackPane contentPane;
+  @FXML
+  private Button closeButton;
+  @FXML
+  private Button minimizeButton;
+  @FXML
+  private HBox titleBar;
 
   public void showLogin() {
     load("/org/example/bicyclesharing/presentation/LoginView.fxml");
@@ -38,4 +47,17 @@ public class MainController {
       e.printStackTrace();
     }
   }
+
+  public void closeWindow()
+  {
+    Stage stage = (Stage) closeButton.getScene().getWindow();
+    stage.close();
+  }
+
+  public void minimizeWindow()
+  {
+    Stage stage = (Stage) minimizeButton.getScene().getWindow();
+    stage.setIconified(true);
+  }
+
   }

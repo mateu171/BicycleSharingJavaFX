@@ -42,6 +42,24 @@ public class RegisterController {
     emailErrorLabel.textProperty().bind(viewModel.emailError);
     emailCodeErrorLabel.textProperty().bind(viewModel.emailCodeError);
 
+    loginField.textProperty().addListener((obs, oldText, newText) -> viewModel.loginError.set(""));
+    passwordField.textProperty().addListener((obs, oldText, newText) -> viewModel.passwordError.set(""));
+    emailField.textProperty().addListener((obs, oldText, newText) -> viewModel.emailError.set(""));
+    emailCodeField.textProperty().addListener((obs, oldText, newText) -> viewModel.emailCodeError.set(""));
+
+    loginField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (isNowFocused) viewModel.loginError.set("");
+    });
+    passwordField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (isNowFocused) viewModel.passwordError.set("");
+    });
+    emailField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (isNowFocused) viewModel.emailError.set("");
+    });
+    emailCodeField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (isNowFocused) viewModel.emailCodeError.set("");
+    });
+
     confirmationPane.visibleProperty()
         .bind(viewModel.confirmationVisible);
     registrationPane.visibleProperty()

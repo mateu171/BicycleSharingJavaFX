@@ -21,6 +21,16 @@ public class LoginController {
     passwordField.textProperty().bindBidirectional(viewModel.password);
     errorMessage.textProperty().bind(viewModel.errorMessage);
 
+    loginField.textProperty().addListener((obs, oldText, newText) -> viewModel.errorMessage.set(""));
+    passwordField.textProperty().addListener((obs, oldText, newText) -> viewModel.errorMessage.set(""));
+
+    loginField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (isNowFocused) viewModel.errorMessage.set("");
+    });
+    passwordField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+      if (isNowFocused) viewModel.errorMessage.set("");
+    });
+
   }
   @FXML
   private void onLogin()

@@ -4,7 +4,7 @@
   -fx-background-radius: 20;
   -fx-border-radius: 20;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0.2, 0, 5);
-  -fx-padding: 15;
+  -fx-padding: 5,15,5,15;
 }
 
 .label-title {
@@ -53,4 +53,16 @@
 .label-error {
   -fx-font-size: 12px;
   -fx-text-fill: #d32f2f;
+}
+
+.title-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: black;
+  -fx-font-size: 14;
+  -fx-padding: 0;
+  -fx-min-width: 25;
+  -fx-min-height: 20;
+}
+.title-button:hover {
+  -fx-background-color: #e74c3c;
 }

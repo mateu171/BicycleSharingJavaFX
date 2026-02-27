@@ -14,11 +14,9 @@ public class LoginViewModel {
   public StringProperty password = new SimpleStringProperty("");
   public StringProperty errorMessage = new SimpleStringProperty("");
 
-  private final UserService userService;
   private final AuthService authService;
 
   public LoginViewModel() {
-    this.userService = AppConfig.userService();
     this.authService = AppConfig.authService();
   }
 

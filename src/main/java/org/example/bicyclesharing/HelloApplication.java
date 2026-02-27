@@ -1,15 +1,13 @@
 package org.example.bicyclesharing;
 
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.MainController;
-import org.example.bicyclesharing.viewModel.RegisterViewModel;
 
 public class HelloApplication extends Application {
 

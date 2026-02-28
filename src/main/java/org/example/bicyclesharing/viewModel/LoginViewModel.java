@@ -17,9 +17,14 @@ public class LoginViewModel {
   public BooleanProperty loginSuccess = new SimpleBooleanProperty(false);
 
   private final AuthService authService;
+  private User currentUser;
 
   public LoginViewModel() {
     this.authService = AppConfig.authService();
+  }
+
+  public User getCurrentUser() {
+    return currentUser;
   }
 
   public void login() {
@@ -27,10 +32,9 @@ public class LoginViewModel {
     String passwordValue = password.get() == null ? "" : password.get().trim();
 
     try {
-      User currentUser = authService.authenticate(loginValue, passwordValue);
+       currentUser = authService.authenticate(loginValue, passwordValue);
       errorMessage.set("");
       loginSuccess.set(true);
-      System.out.println("Успішна авторизація: " + currentUser.getLogin());
     } catch (AuthException e) {
       errorMessage.set(e.getMessage());
     }

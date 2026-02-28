@@ -36,7 +36,7 @@
               <Image url="@../art/icon/anotheruser.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnProfile" text="Профіль" styleClass="menu-button"/>
+          <Button fx:id="btnProfile" text="Профіль" styleClass="menu-button" onAction="#onShowProfile"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
@@ -77,7 +77,7 @@
 
       </VBox>
 
-      <StackPane fx:id="contentArea"
+      <StackPane fx:id="contentPane"
         HBox.hgrow="ALWAYS"
         styleClass="content-area"/>
 

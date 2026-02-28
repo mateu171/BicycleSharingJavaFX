@@ -71,9 +71,10 @@ public class LoginController {
       Stage stage = new Stage();
       stage.initStyle(StageStyle.TRANSPARENT);
       stage.setScene(new Scene(root));
-      stage.setTitle("Main Menu");
       stage.show();
 
+      MainMenuController controller = loader.getController();
+      controller.setCurrentUser(viewModel.getCurrentUser());
       ((Stage) loginField.getScene().getWindow()).close();
 
     } catch (IOException e) {

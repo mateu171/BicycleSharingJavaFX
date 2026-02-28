@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
+<StackPane prefHeight="500" prefWidth="400"
+  styleClass="stack-pane-root"
+  xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.ProfileController"
+  stylesheets="@../css/style.css">
+
+  <children>
+    <VBox alignment="CENTER" fillWidth="false" spacing="5">
+      <Label styleClass="label-title" text="Профіль" />
+
+      <VBox alignment="CENTER" spacing="2">
+        <StackPane>
+          <TextField fx:id="loginField" prefWidth="250" promptText="Login" styleClass="text-field-style"/>
+          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
+            style="-fx-translate-x: -115;">
+            <image><Image url="@../art/icon/user.png"/></image>
+          </ImageView>
+        </StackPane>
+        <Label fx:id="loginErrorLabel" maxWidth="250" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
+      <VBox alignment="CENTER" spacing="2">
+        <StackPane>
+          <TextField fx:id="passwordField" prefWidth="250" promptText="Password" styleClass="text-field-style" />
+          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
+            style="-fx-translate-x: -115;">
+            <image><Image url="@../art/icon/key.png"/></image>
+          </ImageView>
+        </StackPane>
+        <Label fx:id="passwordErrorLabel" maxWidth="250" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
+      <VBox alignment="CENTER" spacing="2">
+        <StackPane>
+          <TextField fx:id="emailField" prefWidth="250" promptText="Email Address" styleClass="text-field-style" />
+          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
+            style="-fx-translate-x: -115;">
+            <image><Image url="@../art/icon/mail.png"/></image>
+          </ImageView>
+        </StackPane>
+        <Label fx:id="emailErrorLabel" maxWidth="250" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
+      <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0" onAction="#onUpdate"
+        styleClass="button-primary" text="Змінити"/>
+    </VBox>
+  </children>
+</StackPane>

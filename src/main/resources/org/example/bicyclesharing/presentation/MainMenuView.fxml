@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.HBox?>
-<StackPane prefHeight="500" prefWidth="400"
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<StackPane prefHeight="600" prefWidth="900"
   styleClass="stack-pane-root"
   stylesheets="@../css/style.css"
   xmlns="http://javafx.com/javafx/25"
@@ -12,12 +13,76 @@
   fx:controller="org.example.bicyclesharing.controller.MainMenuController">
 
   <AnchorPane>
-    <HBox fx:id="titleBar" spacing="5"
+
+    <HBox fx:id="titleBar"
+      spacing="5"
       AnchorPane.topAnchor="0"
       AnchorPane.rightAnchor="10">
-      <Button fx:id="minimizeButton" onAction="#minimizeWindow" styleClass="title-button" text="—" />
-      <Button fx:id="fullSizeButton" onAction="#fullSize" styleClass="title-button" text="□" />
-      <Button fx:id="closeButton" onAction="#closeWindow" styleClass="title-button" text="✕" />
+      <Button fx:id="minimizeButton" onAction="#minimizeWindow" styleClass="title-button" text="—"/>
+      <Button fx:id="fullSizeButton" onAction="#fullSize" styleClass="title-button" text="□"/>
+      <Button fx:id="closeButton" onAction="#closeWindow" styleClass="title-button" text="✕"/>
     </HBox>
+
+    <HBox AnchorPane.topAnchor="40"
+      AnchorPane.bottomAnchor="0"
+      AnchorPane.leftAnchor="0"
+      AnchorPane.rightAnchor="0">
+
+      <VBox fx:id="sidebar" styleClass="sidebar">
+
+        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../art/icon/anotheruser.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnProfile" text="Профіль" styleClass="menu-button"/>
+        </HBox>
+
+        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../art/icon/balance.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnBalance" text="Баланс" styleClass="menu-button"/>
+        </HBox>
+
+        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../art/icon/bicycle.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnHistory" text="Історія поїздок" styleClass="menu-button"/>
+        </HBox>
+
+        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../art/icon/info.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnGuide" text="Інструкція" styleClass="menu-button"/>
+        </HBox>
+
+        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../art/icon/settings.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnSettings" text="Налаштування" styleClass="menu-button"/>
+        </HBox>
+
+      </VBox>
+
+      <StackPane fx:id="contentArea"
+        HBox.hgrow="ALWAYS"
+        styleClass="content-area"/>
+
+    </HBox>
+
   </AnchorPane>
+
 </StackPane>

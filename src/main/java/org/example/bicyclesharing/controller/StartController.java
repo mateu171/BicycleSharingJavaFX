@@ -9,7 +9,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class MainController {
+public class StartController {
 
   @FXML
   private StackPane contentPane;

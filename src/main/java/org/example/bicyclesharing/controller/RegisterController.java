@@ -23,7 +23,7 @@ public class RegisterController {
   @FXML private VBox registrationPane;
 
   private RegisterViewModel viewModel;
-  private MainController mainController;
+  private StartController startController;
 
   @FXML
   private void initialize() {
@@ -76,13 +76,13 @@ public class RegisterController {
     viewModel.confirmCode();
   }
 
-  public void setMainController(MainController mainController) {
-    this.mainController = mainController;
+  public void setMainController(StartController startController) {
+    this.startController = startController;
   }
 
   @FXML
   private void openLoginWindow() {
-    mainController.showLogin();
+    startController.showLogin();
   }
 
 }

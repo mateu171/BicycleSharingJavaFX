@@ -107,3 +107,8 @@
 .sidebar:hover .menu-button-text {
   -fx-opacity: 1;
 }
+
+.balance-circle {
+  -fx-background-color: #FFE600;
+  -fx-background-radius: 200;
+}

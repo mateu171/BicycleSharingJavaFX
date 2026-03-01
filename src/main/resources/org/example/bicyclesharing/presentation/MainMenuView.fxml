@@ -5,6 +5,7 @@
 
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
 <StackPane prefHeight="600" prefWidth="900"
   styleClass="stack-pane-root"
   stylesheets="@../css/style.css"
@@ -45,7 +46,7 @@
               <Image url="@../art/icon/balance.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnBalance" text="Баланс" styleClass="menu-button"/>
+          <Button fx:id="btnBalance" text="Баланс" styleClass="menu-button" onAction="#onShowBallance"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
@@ -79,7 +80,13 @@
 
       <StackPane fx:id="contentPane"
         HBox.hgrow="ALWAYS"
-        styleClass="content-area"/>
+        styleClass="content-area">
+
+        <HBox.margin>
+          <Insets top="0" right="10" bottom="0" left="10"/>
+        </HBox.margin>
+
+      </StackPane>
 
     </HBox>
 

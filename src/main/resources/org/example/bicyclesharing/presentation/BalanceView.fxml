@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+  styleClass="stack-pane-root">
+
+  <VBox spacing="25"
+    alignment="CENTER"
+    prefWidth="500">
+
+    <Label text="Баланс"
+      styleClass="label-title"/>
+
+    <StackPane prefWidth="200"
+      prefHeight="200"
+      maxWidth="200"
+      maxHeight="200"
+      styleClass="balance-circle">
+
+      <VBox alignment="CENTER" spacing="5">
+        <Label text="Your balance"
+          style="-fx-text-fill: #364153;"/>
+
+        <Label text="0.50₴"
+          style="-fx-font-size: 26px;
+                              -fx-font-weight: bold;
+                              -fx-text-fill: #364153;"/>
+      </VBox>
+    </StackPane>
+
+    <!-- Select amount -->
+    <Label text="Select top-up amount"
+      style="-fx-text-fill: #364153;"/>
+
+    <HBox spacing="15"
+      alignment="CENTER">
+
+      <Button text="100₴ +10"
+        styleClass="button-secondary"/>
+
+      <Button text="200₴ +30"
+        styleClass="button-primary"/>
+
+      <Button text="500₴ +100"
+        styleClass="button-secondary"/>
+    </HBox>
+
+    <!-- Manual input -->
+    <Label text="Top-up amount"
+      style="-fx-text-fill: #364153;"/>
+
+    <TextField text="200"
+      maxWidth="250"
+      alignment="CENTER"
+      styleClass="text-field-style"/>
+
+    <Label text="Minimum top-up amount 50₴"
+      style="-fx-text-fill: gray; -fx-font-size: 12px;"/>
+
+    <!-- Button -->
+    <Button text="Replenish 200₴"
+      prefWidth="250"
+      styleClass="button-primary"/>
+
+  </VBox>
+
+</StackPane>

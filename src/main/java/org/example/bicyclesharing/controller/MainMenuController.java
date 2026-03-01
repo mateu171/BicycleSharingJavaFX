@@ -1,7 +1,6 @@
 package org.example.bicyclesharing.controller;
 
 import java.io.IOException;
-import javafx.animation.FadeTransition;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -10,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -80,6 +78,10 @@ public class MainMenuController {
   public void onShowProfile()
   {
     load("/org/example/bicyclesharing/presentation/ProfileView.fxml");
+  }
+  public void onShowBallance()
+  {
+    load("/org/example/bicyclesharing/presentation/BalanceView.fxml");
   }
 
   private void load(String path) {

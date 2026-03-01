@@ -17,7 +17,7 @@ public class AuthService {
   public User authenticate(String login, String password) {
     User user = userRepository.findByLogin(login);
 
-    if (user == null || !PasswordHasher.verify(password, user.getPassword())) {
+    if (user == null || !PasswordHasher.verify(password, user.getHashedPassword())) {
       throw new AuthException("Невірний логін або пароль");
     }
 

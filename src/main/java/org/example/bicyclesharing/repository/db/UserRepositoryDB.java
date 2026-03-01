@@ -39,12 +39,12 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
   @Override
   protected Object[] getInsertValues(User entity) {
     if (entity == null) return new Object[]{"id","login","password","email","role"};
-    return new Object[]{entity.getId(), entity.getLogin(), entity.getPassword(), entity.getEmail(), entity.getRole().name()};
+    return new Object[]{entity.getId(), entity.getLogin(), entity.getHashedPassword(), entity.getEmail(), entity.getRole().name()};
   }
 
   @Override
   protected Object[] getUpdateValues(User entity) {
-    return new Object[]{entity.getLogin(), entity.getPassword(), entity.getEmail(), entity.getRole().name(), entity.getId()};
+    return new Object[]{entity.getLogin(), entity.getHashedPassword(), entity.getEmail(), entity.getRole().name(), entity.getId()};
   }
 
   @Override

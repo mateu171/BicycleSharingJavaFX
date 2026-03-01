@@ -40,7 +40,7 @@ public class RegisterViewModel {
     clearErrors();
 
     try {
-      tempUser = new User(
+      tempUser = User.create(
           login.get(),
           password.get(),
           email.get(),

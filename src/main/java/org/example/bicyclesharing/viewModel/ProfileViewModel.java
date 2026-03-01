@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
+import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 
@@ -20,30 +21,34 @@ public class ProfileViewModel {
   public StringProperty emailError = new SimpleStringProperty("");
 
   private User tempUser;
-  private User curentUser;
+  private User currentUser;
 
   public ProfileViewModel(UserService userService,User currentUser) {
     this.userService = userService;
-    this.curentUser = currentUser;
+    this.currentUser = currentUser;
 
     login.set(currentUser.getLogin());
-    password.set(currentUser.getPassword());
     email.set(currentUser.getEmail());
   }
 
-  public void update()
-  {
-      clearErrors();
+  public void update() {
+    clearErrors();
 
     try {
-      tempUser = new User(
-          login.get(),
-          password.get(),
-          email.get(),
-          Role.CLIENT
-      );
+      currentUser.setLogin(login.get());
+      currentUser.setEmail(email.get());
 
-      userService.update(tempUser);
+      String newPassword = password.get().trim();
+
+      if (!newPassword.isEmpty()) {
+        currentUser.changePassword(newPassword);
+      }
+
+      if (!currentUser.isValid()) {
+        throw new CustomEntityValidationExeption(currentUser.getErrors());
+      }
+
+      userService.update(currentUser);
 
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {

@@ -30,7 +30,6 @@ public class ProfileController {
         currentUser
     );
     bindFields();
-    fillFields();
   }
 
   public void setMainController(MainMenuController mainMenuController) {
@@ -63,12 +62,6 @@ public class ProfileController {
     loginErrorLabel.textProperty().bind(viewModel.loginError);
     passwordErrorLabel.textProperty().bind(viewModel.passwordError);
     emailErrorLabel.textProperty().bind(viewModel.emailError);
-  }
-
-  private void fillFields() {
-    loginField.setText(currentUser.getLogin());
-    passwordField.setText(currentUser.getPassword());
-    emailField.setText(currentUser.getEmail());
   }
 
 }

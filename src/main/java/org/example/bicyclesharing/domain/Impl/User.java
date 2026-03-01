@@ -15,16 +15,25 @@ public class User extends BaseEntity {
     super();
   }
 
-  public User(String login, String password, String email, Role role) {
-    setLogin(login);
-    validatePassword(password);
-    setEmail(email);
-    setRole(role);
-    if (!isValid()) {
-      throw new CustomEntityValidationExeption(getErrors());
+  public static User create(String login,
+      String plainPassword,
+      String email,
+      Role role) {
+
+    User user = new User();
+
+    user.setLogin(login);
+    user.validatePassword(plainPassword);
+    user.setEmail(email);
+    user.setRole(role);
+
+    if (!user.isValid()) {
+      throw new CustomEntityValidationExeption(user.getErrors());
     }
 
-    this.hashedPassword = PasswordHasher.hash(password);
+    user.hashedPassword = PasswordHasher.hash(plainPassword);
+
+    return user;
   }
 
   public static User fromDatabase(
@@ -58,7 +67,7 @@ public class User extends BaseEntity {
     this.login = login;
   }
 
-  public String getPassword() {
+  public String getHashedPassword() {
     return hashedPassword;
   }
 
@@ -69,6 +78,17 @@ public class User extends BaseEntity {
     } else if (password.length() < 8 || password.length() > 50) {
       addError("password", "Пароль повинен бути не менше 8 символів і небільше 50");
     }
+  }
+
+  public void changePassword(String plainPassword) {
+
+    validatePassword(plainPassword);
+
+    if (!isValid()) {
+      throw new CustomEntityValidationExeption(getErrors());
+    }
+
+    this.hashedPassword = PasswordHasher.hash(plainPassword);
   }
 
   public String getEmail() {

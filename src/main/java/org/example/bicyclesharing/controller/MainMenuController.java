@@ -79,8 +79,7 @@ public class MainMenuController {
   {
     load("/org/example/bicyclesharing/presentation/ProfileView.fxml");
   }
-  public void onShowBallance()
-  {
+  public void onShowBalance() {
     load("/org/example/bicyclesharing/presentation/BalanceView.fxml");
   }
 
@@ -91,8 +90,10 @@ public class MainMenuController {
 
       Object controller = loader.getController();
       if (controller instanceof ProfileController profileController) {
-        profileController.setMainController(this);
         profileController.setCurrentUser(currentUser);
+      }
+      if (controller instanceof BalanceController balanceController) {
+        balanceController.setCurrentUser(currentUser);
       }
 
       contentPane.getChildren().setAll(view);

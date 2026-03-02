@@ -10,6 +10,7 @@ public class User extends BaseEntity {
   private String hashedPassword;
   private String email;
   private Role role;
+  private double balance;
 
   private User() {
     super();
@@ -41,7 +42,8 @@ public class User extends BaseEntity {
       String login,
       String hashedPassword,
       String email,
-      Role role
+      Role role,
+      double balance  // новий параметр
   ) {
     User user = new User();
     user.setId(id);
@@ -49,9 +51,18 @@ public class User extends BaseEntity {
     user.hashedPassword = hashedPassword;
     user.email = email;
     user.role = role;
+    user.balance = balance;  // встановлюємо баланс
     return user;
   }
 
+  public double getBalance() {
+    return balance;
+  }
+
+  public void setBalance(double balance)
+  {
+    this.balance = balance;
+  }
   public String getLogin() {
     return login;
   }

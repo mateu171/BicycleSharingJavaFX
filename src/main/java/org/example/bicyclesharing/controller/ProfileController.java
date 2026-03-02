@@ -4,7 +4,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.viewModel.ProfileViewModel;
 
@@ -19,7 +18,6 @@ public class ProfileController {
   @FXML private Label emailErrorLabel;
 
   private ProfileViewModel viewModel;
-  private MainMenuController mainMenuController;
   private User currentUser;
 
   public void setCurrentUser(User currentUser) {
@@ -30,10 +28,6 @@ public class ProfileController {
         currentUser
     );
     bindFields();
-  }
-
-  public void setMainController(MainMenuController mainMenuController) {
-    this.mainMenuController = mainMenuController;
   }
 
   @FXML

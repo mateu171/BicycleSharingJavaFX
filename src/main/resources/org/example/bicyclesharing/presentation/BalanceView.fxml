@@ -3,7 +3,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 
-<StackPane xmlns="http://javafx.com/javafx/21"
+<StackPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.BalanceController"
   styleClass="stack-pane-root">
 
   <VBox spacing="25"
@@ -20,47 +22,43 @@
       styleClass="balance-circle">
 
       <VBox alignment="CENTER" spacing="5">
-        <Label text="Your balance"
+        <Label text="Ваш баланс"
           style="-fx-text-fill: #364153;"/>
 
-        <Label text="0.50₴"
+        <Label fx:id="balanceLabel"
+          text="0.00₴"
           style="-fx-font-size: 26px;
                               -fx-font-weight: bold;
                               -fx-text-fill: #364153;"/>
       </VBox>
     </StackPane>
 
-    <!-- Select amount -->
-    <Label text="Select top-up amount"
+    <Label text="Виберіть суму поповнення"
       style="-fx-text-fill: #364153;"/>
 
-    <HBox spacing="15"
-      alignment="CENTER">
+    <HBox fx:id="topUpButtons" spacing="15" alignment="CENTER">
 
-      <Button text="100₴ +10"
-        styleClass="button-secondary"/>
+      <Button fx:id="btn100" text="100₴"
+        styleClass="top-up-button"/>
 
-      <Button text="200₴ +30"
-        styleClass="button-primary"/>
+      <Button fx:id="btn200" text="200₴"
+        styleClass="top-up-button"/>
 
-      <Button text="500₴ +100"
-        styleClass="button-secondary"/>
+      <Button fx:id="btn500" text="500₴"
+        styleClass="top-up-button"/>
     </HBox>
 
-    <!-- Manual input -->
-    <Label text="Top-up amount"
+    <Label text="Сума поповнення"
       style="-fx-text-fill: #364153;"/>
 
-    <TextField text="200"
+    <TextField fx:id="topUpField"
+      text="200"
       maxWidth="250"
       alignment="CENTER"
       styleClass="text-field-style"/>
 
-    <Label text="Minimum top-up amount 50₴"
-      style="-fx-text-fill: gray; -fx-font-size: 12px;"/>
-
-    <!-- Button -->
-    <Button text="Replenish 200₴"
+    <Button fx:id="replenishButton"
+      text="Поповнити"
       prefWidth="250"
       styleClass="button-primary"/>
 

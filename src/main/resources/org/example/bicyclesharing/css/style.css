@@ -112,3 +112,22 @@
   -fx-background-color: #FFE600;
   -fx-background-radius: 200;
 }
+
+.top-up-button {
+  -fx-background-color: #FFE600;
+  -fx-background-radius: 15;
+  -fx-border-radius: 15;
+  -fx-text-fill: black;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-padding: 8 20 8 20;
+}
+
+.top-up-button:hover {
+  -fx-background-color: #FFD000;
+  -fx-cursor: hand;
+}
+
+.top-up-button:pressed {
+  -fx-background-color: #E6C800;
+}

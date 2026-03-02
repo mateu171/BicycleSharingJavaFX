@@ -46,7 +46,7 @@
               <Image url="@../art/icon/balance.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnBalance" text="Баланс" styleClass="menu-button" onAction="#onShowBallance"/>
+          <Button fx:id="btnBalance" text="Баланс" styleClass="menu-button" onAction="#onShowBalance"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">

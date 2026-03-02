@@ -32,24 +32,45 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         rs.getString("login"),
         rs.getString("password"),
         rs.getString("email"),
-        Role.valueOf(rs.getString("role"))
+        Role.valueOf(rs.getString("role")),
+        rs.getDouble("balance")
     );
   }
 
   @Override
   protected Object[] getInsertValues(User entity) {
-    if (entity == null) return new Object[]{"id","login","password","email","role"};
-    return new Object[]{entity.getId(), entity.getLogin(), entity.getHashedPassword(), entity.getEmail(), entity.getRole().name()};
+    if (entity == null) return new Object[]{"id","login","password","email","role","balance"};
+    return new Object[]{
+        entity.getId(),
+        entity.getLogin(),
+        entity.getHashedPassword(),
+        entity.getEmail(),
+        entity.getRole().name(),
+        entity.getBalance()
+    };
   }
 
   @Override
   protected Object[] getUpdateValues(User entity) {
-    return new Object[]{entity.getLogin(), entity.getHashedPassword(), entity.getEmail(), entity.getRole().name(), entity.getId()};
+    return new Object[]{
+        entity.getLogin(),
+        entity.getHashedPassword(),
+        entity.getEmail(),
+        entity.getRole().name(),
+        entity.getBalance(),
+        entity.getId()
+    };
   }
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[]{"login","password","email","role"};
+    return new String[]{
+        "login",
+        "password",
+        "email",
+        "role",
+        "balance"
+    };
   }
 
   @Override

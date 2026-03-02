@@ -20,7 +20,6 @@ public class ProfileViewModel {
   public StringProperty passwordError = new SimpleStringProperty("");
   public StringProperty emailError = new SimpleStringProperty("");
 
-  private User tempUser;
   private User currentUser;
 
   public ProfileViewModel(UserService userService,User currentUser) {

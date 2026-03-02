@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
-import org.example.bicyclesharing.domain.enums.RentalStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.repository.RentalRepository;
 import org.example.bicyclesharing.repository.Repository;
@@ -33,23 +32,9 @@ public class RentalService extends BaseService<Rental, UUID> {
     return repository.findByUserId(id);
   }
 
-  public List<Rental> getByStationId(UUID id) {
-    return repository.findByStationId(id);
-  }
-
-  public List<Rental> getByActiveRentals() {
-    return repository.findByRentalStatus(RentalStatus.ACTIVE);
-  }
-
-  public List<Rental> getByActiveAndUserId(UUID id) {
-    return repository.findByUserId(id).stream()
-        .filter(s -> s.getRentalStatus().equals(RentalStatus.ACTIVE)).toList();
-  }
-
   public Rental finishRental(Rental rental) {
     Bicycle bicycle = bicycleService.getById(rental.getBicycleId());
 
-    rental.setRentalStatus(RentalStatus.INACTIVE);
     rental.setEnd(LocalDateTime.now());
 
     calculateCost(rental, bicycle);

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="org.example.bicyclesharing.controller.RideHistoryController"
+  prefHeight="400" prefWidth="600"
+  styleClass="stack-pane-root">
+
+  <VBox spacing="15" prefWidth="500">
+
+    <Label text="Історія поїздок" styleClass="label-title"/>
+
+    <ListView fx:id="rentalList"
+      VBox.vgrow="ALWAYS"
+      style="-fx-background-color: transparent;"/>
+
+  </VBox>
+
+</StackPane>

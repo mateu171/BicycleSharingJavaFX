@@ -2,9 +2,14 @@ package org.example.bicyclesharing.util;
 
 
 import org.example.bicyclesharing.domain.security.PasswordHasher;
+import org.example.bicyclesharing.repository.BicycleRepository;
+import org.example.bicyclesharing.repository.db.BicycleRepositoryDB;
+import org.example.bicyclesharing.repository.db.RentalRepositoryDB;
 import org.example.bicyclesharing.repository.db.UserRepositoryDB;
 import org.example.bicyclesharing.services.AuthService;
+import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.EmailService;
+import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.services.VerificationService;
 
@@ -23,12 +28,13 @@ public class AppConfig {
         new PasswordHasher()
     );
   }
-//
-//  public static BicycleService bicycleService() {
-//    return new BicycleService(
-//        new JsonBicycleRepository("data/bicycles.json")
-//    );
-//  }
+
+  public static BicycleService bicycleService() {
+    return new BicycleService(
+        new BicycleRepositoryDB() {
+        }
+    );
+  }
 //
 //  public static EmployeeService employeeService() {
 //    return new EmployeeService(
@@ -36,12 +42,12 @@ public class AppConfig {
 //    );
 //  }
 //
-//  public static RentalService rentalService() {
-//    return new RentalService(
-//        new JsonRentalRepository("data/rentals.json"),
-//        bicycleService()
-//    );
-//  }
+  public static RentalService rentalService() {
+    return new RentalService(
+        new RentalRepositoryDB(),
+        bicycleService()
+    );
+  }
 //
 //  public static StationService stationService() {
 //    return new StationService(new JsonStationRepository("data/stations.json"));

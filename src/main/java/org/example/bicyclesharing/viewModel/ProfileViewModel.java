@@ -3,8 +3,6 @@ package org.example.bicyclesharing.viewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.domain.enums.Role;
-import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 

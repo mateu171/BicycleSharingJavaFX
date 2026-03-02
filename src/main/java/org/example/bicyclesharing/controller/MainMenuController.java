@@ -82,6 +82,10 @@ public class MainMenuController {
   public void onShowBalance() {
     load("/org/example/bicyclesharing/presentation/BalanceView.fxml");
   }
+  public void onShowRideHistory()
+  {
+    load("/org/example/bicyclesharing/presentation/RideHistoryView.fxml");
+  }
 
   private void load(String path) {
     try {
@@ -94,6 +98,9 @@ public class MainMenuController {
       }
       if (controller instanceof BalanceController balanceController) {
         balanceController.setCurrentUser(currentUser);
+      }
+      if (controller instanceof RideHistoryController rideHistoryController) {
+        rideHistoryController.setCurrentUser(currentUser);
       }
 
       contentPane.getChildren().setAll(view);

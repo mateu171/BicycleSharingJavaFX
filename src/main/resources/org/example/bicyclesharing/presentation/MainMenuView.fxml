@@ -55,7 +55,7 @@
               <Image url="@../art/icon/bicycle.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnHistory" text="Історія поїздок" styleClass="menu-button"/>
+          <Button fx:id="btnHistory" text="Історія поїздок" styleClass="menu-button" onAction="#onShowRideHistory"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">

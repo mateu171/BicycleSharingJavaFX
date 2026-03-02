@@ -1,11 +1,12 @@
 package org.example.bicyclesharing.domain.enums;
 
-public enum RentalStatus {
-  ACTIVE("активний"), INACTIVE("неактивний");
+public enum TransactionType {
+  TOP_UP("Поповнення балансу"),
+  RENTAL_FEE("Оплата оренди");
 
   private final String name;
 
-  RentalStatus(String name) {
+  TransactionType(String name) {
     this.name = name;
   }
 

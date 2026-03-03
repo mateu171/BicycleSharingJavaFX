@@ -19,6 +19,19 @@ public class Transaction extends BaseEntity {
     this.timestamp = LocalDateTime.now();
     this.description = description;
   }
+
+  public Transaction(UUID userId,
+      double amount,
+      TransactionType type,
+      LocalDateTime timestamp,
+      String description) {
+
+    this.userId = userId;
+    this.amount = amount;
+    this.type = type;
+    this.timestamp = timestamp;
+    this.description = description;
+  }
   public UUID getUserId() { return userId; }
   public double getAmount() { return amount; }
   public TransactionType getType() { return type; }

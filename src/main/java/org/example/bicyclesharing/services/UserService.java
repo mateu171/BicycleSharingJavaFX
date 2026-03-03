@@ -25,13 +25,5 @@ public class UserService extends BaseService<User, UUID> {
     return userRepository;
   }
 
-  @Override
-  public User add(User entity) {
-    return getRepository().save(entity);
-  }
-
-  public User getByLogin(String login) {
-    return userRepository.findByLogin(login);
-  }
 
 }

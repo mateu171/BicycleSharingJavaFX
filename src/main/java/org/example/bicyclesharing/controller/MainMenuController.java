@@ -86,6 +86,10 @@ public class MainMenuController {
   {
     load("/org/example/bicyclesharing/presentation/RideHistoryView.fxml");
   }
+  public void onShowTransactions()
+  {
+    load("/org/example/bicyclesharing/presentation/TransactionView.fxml");
+  }
 
   private void load(String path) {
     try {

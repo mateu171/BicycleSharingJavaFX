@@ -164,3 +164,38 @@
   -fx-font-weight: bold;
   -fx-font-size: 14px;
 }
+
+.page-title {
+  -fx-font-size: 22px;
+  -fx-font-weight: bold;
+}
+
+.transaction-list {
+  -fx-background-color: transparent;
+}
+
+.transaction-card {
+  -fx-background-color: white;
+  -fx-background-radius: 15;
+  -fx-padding: 15;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 4);
+}
+
+.transaction-title {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+}
+
+.amount-positive {
+  -fx-text-fill: #27ae60;
+  -fx-font-weight: bold;
+}
+
+.amount-negative {
+  -fx-text-fill: #e74c3c;
+  -fx-font-weight: bold;
+}
+.transaction-date {
+    -fx-text-fill: #888;
+    -fx-font-size: 12px;
+  }

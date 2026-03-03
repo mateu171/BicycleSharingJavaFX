@@ -61,6 +61,15 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
+              <Image url="@../art/icon/transaction.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnTransaction" text="Транзанкції" styleClass="menu-button"   onAction="#onShowTransactions"/>
+        </HBox>
+
+        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
               <Image url="@../art/icon/info.png" />
             </image>
           </ImageView>

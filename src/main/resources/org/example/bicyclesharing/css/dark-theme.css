@@ -1,5 +1,5 @@
 .stack-pane-root {
-  -fx-background-color: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);
+  -fx-background-color: linear-gradient(to bottom right, #1e1e1e, #2c2c2c);
   -fx-background-radius: 20;
   -fx-border-radius: 20;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0.2, 0, 5);
@@ -9,14 +9,15 @@
 .label-title {
   -fx-font-size: 20px;
   -fx-font-weight: bold;
-  -fx-text-fill: #364153;
+  -fx-text-fill: #ffffff;
 }
 
 .text-field-style {
   -fx-background-color: transparent;
-  -fx-border-color: #ccc;
+  -fx-border-color: #555;
   -fx-border-width: 0 0 1 0;
   -fx-padding: 5 5 5 25;
+  -fx-text-fill: #ffffff;
 }
 
 .text-field-style:focused {
@@ -28,6 +29,7 @@
   -fx-background-color: #FFE600;
   -fx-background-radius: 10;
   -fx-font-weight: bold;
+  -fx-text-fill: black;
 }
 
 .button-primary:hover {
@@ -41,33 +43,35 @@
 
 .button-secondary {
   -fx-background-color: transparent;
-  -fx-text-fill: #364153;
+  -fx-text-fill: #ffffff;
 }
+
 .button-secondary:hover {
-  -fx-text-fill: #000000;
+  -fx-text-fill: #FFE600;
   -fx-underline: true;
   -fx-cursor: hand;
 }
 
 .label-error {
   -fx-font-size: 12px;
-  -fx-text-fill: #d32f2f;
+  -fx-text-fill: #ff6b6b;
 }
 
 .title-button {
   -fx-background-color: transparent;
-  -fx-text-fill: black;
+  -fx-text-fill: #ffffff;
   -fx-font-size: 14;
   -fx-padding: 0;
   -fx-min-width: 25;
   -fx-min-height: 20;
 }
+
 .title-button:hover {
   -fx-background-color: #e74c3c;
 }
 
 .sidebar {
-  -fx-background-color: rgba(255,255,255,0.6);
+  -fx-background-color: rgba(50,50,50,0.8);
   -fx-background-radius: 0 20 20 0;
   -fx-pref-width: 60;
   -fx-spacing: 10;
@@ -76,20 +80,18 @@
 
 .menu-button {
   -fx-background-color: transparent;
-  -fx-text-fill: #364153;
+  -fx-text-fill: #ffffff;
   -fx-font-size: 14px;
   -fx-font-weight: bold;
 }
 
-.menu-container
-{
+.menu-container {
   -fx-background-radius: 10;
   -fx-alignment: CENTER_LEFT;
   -fx-padding: 5 10;
 }
 
-.menu-container:hover
-{
+.menu-container:hover {
   -fx-background-color: #FFE600;
 }
 
@@ -103,11 +105,6 @@
   -fx-text-fill: black;
 }
 
-
-.sidebar:hover .menu-button-text {
-  -fx-opacity: 1;
-}
-
 .balance-circle {
   -fx-background-color: #FFE600;
   -fx-background-radius: 200;
@@ -116,7 +113,6 @@
 .top-up-button {
   -fx-background-color: #FFE600;
   -fx-background-radius: 15;
-  -fx-border-radius: 15;
   -fx-text-fill: black;
   -fx-font-size: 14px;
   -fx-font-weight: bold;
@@ -142,7 +138,7 @@
 }
 
 .rental-card {
-  -fx-background-color: white;
+  -fx-background-color: #2b2b2b;
   -fx-background-radius: 15;
   -fx-padding: 15;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10,0,0,3);
@@ -156,7 +152,7 @@
 
 .rental-title {
   -fx-font-weight: bold;
-  -fx-text-fill: #364153;
+  -fx-text-fill: #ffffff;
 }
 
 .rental-cost {
@@ -168,6 +164,7 @@
 .page-title {
   -fx-font-size: 22px;
   -fx-font-weight: bold;
+  -fx-text-fill: #ffffff;
 }
 
 .transaction-list {
@@ -175,7 +172,7 @@
 }
 
 .transaction-card {
-  -fx-background-color: white;
+  -fx-background-color: #2b2b2b;
   -fx-background-radius: 15;
   -fx-padding: 15;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 4);
@@ -184,6 +181,7 @@
 .transaction-title {
   -fx-font-size: 14px;
   -fx-font-weight: bold;
+  -fx-text-fill: #ffffff;
 }
 
 .amount-positive {
@@ -195,19 +193,14 @@
   -fx-text-fill: #e74c3c;
   -fx-font-weight: bold;
 }
-.transaction-date {
-    -fx-text-fill: #888;
-    -fx-font-size: 12px;
-}
 
-.settings-title {
-  -fx-font-size: 24px;
-  -fx-font-weight: bold;
-  -fx-text-fill: #364153;
+.transaction-date {
+  -fx-text-fill: #aaa;
+  -fx-font-size: 12px;
 }
 
 .settings-card {
-  -fx-background-color: white;
+  -fx-background-color: #2b2b2b;
   -fx-background-radius: 15;
   -fx-padding: 20;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 12,0,0,4);
@@ -216,16 +209,17 @@
 .settings-section-title {
   -fx-font-size: 16px;
   -fx-font-weight: bold;
-  -fx-text-fill: #364153;
+  -fx-text-fill: #ffffff;
 }
 
 .settings-combo {
-  -fx-background-color: white;
+  -fx-background-color: #3a3a3a;
   -fx-background-radius: 12;
   -fx-border-radius: 12;
-  -fx-border-color: #dcdcdc;
+  -fx-border-color: #555;
   -fx-padding: 5 10 5 10;
   -fx-font-size: 14px;
+  -fx-text-fill: #ffffff;
 }
 
 .settings-combo:hover {
@@ -242,17 +236,19 @@
 }
 
 .settings-combo .arrow {
-  -fx-background-color: #364153;
+  -fx-background-color: #ffffff;
 }
 
 .settings-combo .list-view {
   -fx-background-radius: 12;
   -fx-border-radius: 12;
   -fx-border-color: #FFE600;
+  -fx-background-color: #3a3a3a;
 }
 
 .settings-combo .list-cell {
   -fx-padding: 8 12;
+  -fx-text-fill: #ffffff;
 }
 
 .settings-combo .list-cell:hover {
@@ -262,24 +258,25 @@
 
 .settings-radio {
   -fx-font-size: 14px;
-  -fx-text-fill: #364153;
+  -fx-text-fill: #ffffff;
   -fx-padding: 5 0 5 0;
 }
 
 .settings-radio .radio {
-  -fx-background-color: white;
-  -fx-border-color: #ccc;
+  -fx-background-color: #2b2b2b;
+  -fx-border-color: #555;
   -fx-border-radius: 15;
   -fx-background-radius: 15;
   -fx-padding: 4;
 }
+
 .settings-radio:hover .radio {
   -fx-border-color: #FFE600;
 }
 
 .settings-radio:selected .radio {
   -fx-border-color: #FFE600;
-  -fx-background-color: white;
+  -fx-background-color: #2b2b2b;
 }
 
 .settings-radio:selected .dot {

@@ -48,7 +48,8 @@
     <Button text="Save Changes"
       fx:id="saveButton"
       prefWidth="200"
-      styleClass="settings-save-button"/>
+      styleClass="settings-save-button"
+      onAction="#saveChange"/>
   </VBox>
 
 </StackPane>

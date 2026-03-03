@@ -114,6 +114,10 @@ public class MainMenuController {
       if (controller instanceof TransactionController transactionController) {
         transactionController.setCurrentUser(currentUser);
       }
+      if (controller instanceof SettingsController settingsController) {
+        settingsController.setRootPane((StackPane) closeButton.getScene().getRoot());
+      }
+
 
       contentPane.getChildren().setAll(view);
     } catch (IOException e) {

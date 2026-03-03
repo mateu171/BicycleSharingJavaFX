@@ -35,10 +35,6 @@
   -fx-cursor: hand;
 }
 
-.button-primary:pressed {
-  -fx-background-color: #E6C800;
-}
-
 .button-secondary {
   -fx-background-color: transparent;
   -fx-text-fill: #364153;
@@ -165,11 +161,6 @@
   -fx-font-size: 14px;
 }
 
-.page-title {
-  -fx-font-size: 22px;
-  -fx-font-weight: bold;
-}
-
 .transaction-list {
   -fx-background-color: transparent;
 }
@@ -198,4 +189,98 @@
 .transaction-date {
     -fx-text-fill: #888;
     -fx-font-size: 12px;
-  }
+}
+
+.settings-card {
+  -fx-background-color: white;
+  -fx-background-radius: 15;
+  -fx-padding: 20;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 12,0,0,4);
+}
+
+.settings-section-title {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #364153;
+}
+
+.settings-combo {
+  -fx-background-color: white;
+  -fx-background-radius: 12;
+  -fx-border-radius: 12;
+  -fx-border-color: #dcdcdc;
+  -fx-padding: 5 10 5 10;
+  -fx-font-size: 14px;
+}
+
+.settings-combo:hover {
+  -fx-border-color: #FFE600;
+}
+
+.settings-combo:focused {
+  -fx-border-color: #FFE600;
+  -fx-border-width: 2;
+}
+
+.settings-combo .arrow-button {
+  -fx-background-color: transparent;
+}
+
+.settings-combo .arrow {
+  -fx-background-color: #364153;
+}
+
+.settings-combo .list-view {
+  -fx-background-radius: 12;
+  -fx-border-radius: 12;
+  -fx-border-color: #FFE600;
+}
+
+.settings-combo .list-cell {
+  -fx-padding: 8 12;
+}
+
+.settings-combo .list-cell:hover {
+  -fx-background-color: #FFE600;
+  -fx-text-fill: black;
+}
+
+.settings-radio {
+  -fx-font-size: 14px;
+  -fx-text-fill: #364153;
+  -fx-padding: 5 0 5 0;
+}
+
+.settings-radio .radio {
+  -fx-background-color: white;
+  -fx-border-color: #ccc;
+  -fx-border-radius: 15;
+  -fx-background-radius: 15;
+  -fx-padding: 4;
+}
+
+.settings-radio:hover .radio {
+  -fx-border-color: #FFE600;
+}
+
+.settings-radio:selected .radio {
+  -fx-border-color: #FFE600;
+  -fx-background-color: white;
+}
+
+.settings-radio:selected .dot {
+  -fx-background-color: #FFE600;
+}
+
+.settings-save-button {
+  -fx-background-color: #FFE600;
+  -fx-background-radius: 15;
+  -fx-text-fill: black;
+  -fx-font-weight: bold;
+  -fx-padding: 10 25;
+}
+
+.settings-save-button:hover {
+  -fx-background-color: #FFD000;
+  -fx-cursor: hand;
+}

@@ -14,7 +14,7 @@
   <VBox spacing="15">
 
     <Label text="Transactions"
-      styleClass="page-title"/>
+      styleClass="label-title"/>
 
     <ListView fx:id="transactionListView"
       VBox.vgrow="ALWAYS"

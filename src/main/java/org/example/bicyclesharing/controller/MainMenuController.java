@@ -91,6 +91,11 @@ public class MainMenuController {
     load("/org/example/bicyclesharing/presentation/TransactionView.fxml");
   }
 
+  public void onShowSettings()
+  {
+    load("/org/example/bicyclesharing/presentation/SettingsView.fxml");
+  }
+
   private void load(String path) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource(path));

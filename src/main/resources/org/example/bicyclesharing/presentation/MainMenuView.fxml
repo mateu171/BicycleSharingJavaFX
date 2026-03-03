@@ -82,7 +82,7 @@
               <Image url="@../art/icon/settings.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnSettings" text="Налаштування" styleClass="menu-button"/>
+          <Button fx:id="btnSettings" text="Налаштування" styleClass="menu-button" onAction="#onShowSettings"/>
         </HBox>
 
       </VBox>

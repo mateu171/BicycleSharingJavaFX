@@ -82,6 +82,9 @@ public class TransactionRepositoryDB
 
   @Override
   protected Object[] getInsertValues(Transaction entity) {
+    if (entity == null) {
+      return new Object[]{"ID","USER_ID","AMOUNT","TYPE","TIMESTAMP","DESCRIPTION"};
+    }
     return new Object[]{
         entity.getId(),
         entity.getUserId(),

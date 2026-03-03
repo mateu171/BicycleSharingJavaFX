@@ -29,7 +29,7 @@ public class BalanceController {
 
   public void setCurrentUser(User user) {
     this.currentUser = user;
-    this.viewModel = new BalanceViewModel(AppConfig.userService(), currentUser);
+    this.viewModel = new BalanceViewModel(AppConfig.userService(),AppConfig.transactionService(), currentUser);
     balanceLabel.textProperty().bind(viewModel.balanceProperty().asString("%.2f₴"));
   }
 

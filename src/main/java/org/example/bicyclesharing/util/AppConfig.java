@@ -5,11 +5,13 @@ import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.repository.BicycleRepository;
 import org.example.bicyclesharing.repository.db.BicycleRepositoryDB;
 import org.example.bicyclesharing.repository.db.RentalRepositoryDB;
+import org.example.bicyclesharing.repository.db.TransactionRepositoryDB;
 import org.example.bicyclesharing.repository.db.UserRepositoryDB;
 import org.example.bicyclesharing.services.AuthService;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.EmailService;
 import org.example.bicyclesharing.services.RentalService;
+import org.example.bicyclesharing.services.TransactionService;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.services.VerificationService;
 
@@ -48,11 +50,12 @@ public class AppConfig {
         bicycleService()
     );
   }
-//
-//  public static StationService stationService() {
-//    return new StationService(new JsonStationRepository("data/stations.json"));
-//  }
-//
+
+  public static TransactionService transactionService()
+  {
+    return new TransactionService(new TransactionRepositoryDB());
+  }
+
   public static AuthService authService() {
     return new AuthService(new UserRepositoryDB());
   }

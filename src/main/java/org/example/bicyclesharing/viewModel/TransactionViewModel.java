@@ -1,35 +1,35 @@
 package org.example.bicyclesharing.viewModel;
 
+import java.util.UUID;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Transaction;
 
-import java.util.UUID;
+import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.TransactionType;
+import org.example.bicyclesharing.services.TransactionService;
 
 public class TransactionViewModel {
 
   private final ObservableList<Transaction> transactions =
       FXCollections.observableArrayList();
+  private final TransactionService transactionService;
+  private final User currentUser;
 
-  public TransactionViewModel() {
+  public TransactionViewModel(TransactionService transactionService, User currentUser) {
+    this.transactionService = transactionService;
+    this.currentUser = currentUser;
 
-    transactions.add(new Transaction(
-        UUID.randomUUID(),
-        -19.99,
-        TransactionType.TOP_UP,
-        "Ride: 2641200"
-    ));
+    load();
 
-    transactions.add(new Transaction(
-        UUID.randomUUID(),
-        12.41,
-        TransactionType.RENTAL_FEE,
-        "Promocode bonus"
-    ));
   }
 
   public ObservableList<Transaction> getTransactions() {
     return transactions;
+  }
+
+  private void load()
+  {
+    transactions.setAll(transactionService.getByUserId(currentUser.getId()));
   }
 }

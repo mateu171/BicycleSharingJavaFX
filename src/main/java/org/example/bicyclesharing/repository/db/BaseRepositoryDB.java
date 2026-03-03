@@ -49,7 +49,7 @@ public abstract class BaseRepositoryDB<T, ID> implements Repository<T, ID> {
   }
 
   private String getInsertSQL() {
-    Object[] values = getInsertValues(null); // беремо кількість полів
+    Object[] values = getInsertValues(null);
     String placeholders = String.join(",", java.util.Collections.nCopies(values.length, "?"));
     return "INSERT INTO " + getTableName() + " VALUES(" + placeholders + ")";
   }

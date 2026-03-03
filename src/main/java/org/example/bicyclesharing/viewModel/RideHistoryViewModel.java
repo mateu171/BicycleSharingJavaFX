@@ -1,6 +1,5 @@
 package org.example.bicyclesharing.viewModel;
 
-import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Rental;
@@ -13,18 +12,18 @@ public class RideHistoryViewModel {
       FXCollections.observableArrayList();
 
   private final RentalService rentalService;
-  private final User currenyUser;
+  private final User currentUser;
 
-  public RideHistoryViewModel(RentalService rentalService, User currenyUser) {
+  public RideHistoryViewModel(RentalService rentalService, User currentUser) {
     this.rentalService = rentalService;
-    this.currenyUser = currenyUser;
+    this.currentUser = currentUser;
 
     load();
   }
 
   private void load()
   {
-    rentals.setAll(rentalService.getByUserId(currenyUser.getId()));
+    rentals.setAll(rentalService.getByUserId(currentUser.getId()));
   }
 
   public ObservableList<Rental> getRentals() {

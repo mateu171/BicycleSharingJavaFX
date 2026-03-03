@@ -8,7 +8,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.control.Label;
 import javafx.geometry.Pos;
 import org.example.bicyclesharing.domain.Impl.Transaction;
+import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.TransactionType;
+import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.viewModel.RideHistoryViewModel;
 import org.example.bicyclesharing.viewModel.TransactionViewModel;
 
 import java.time.format.DateTimeFormatter;
@@ -18,11 +21,17 @@ public class TransactionController {
   @FXML
   private ListView<Transaction> transactionListView;
 
-  private final TransactionViewModel viewModel = new TransactionViewModel();
+  private TransactionViewModel viewModel;
+  private User currentUser;
 
-  @FXML
-  public void initialize() {
+  public void setCurrentUser(User currentUser) {
+    this.currentUser = currentUser;
+    this.viewModel = new TransactionViewModel(AppConfig.transactionService(),currentUser);
+    transactionListView.setItems(viewModel.getTransactions());
+    setupCellFactory();
+  }
 
+  private void setupCellFactory() {
     transactionListView.setItems(viewModel.getTransactions());
     transactionListView.getStyleClass().add("rental-list");
     transactionListView.setSelectionModel(null);
@@ -70,4 +79,5 @@ public class TransactionController {
       }
     });
   }
+
 }

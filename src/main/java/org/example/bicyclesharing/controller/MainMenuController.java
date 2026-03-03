@@ -106,6 +106,9 @@ public class MainMenuController {
       if (controller instanceof RideHistoryController rideHistoryController) {
         rideHistoryController.setCurrentUser(currentUser);
       }
+      if (controller instanceof TransactionController transactionController) {
+        transactionController.setCurrentUser(currentUser);
+      }
 
       contentPane.getChildren().setAll(view);
     } catch (IOException e) {

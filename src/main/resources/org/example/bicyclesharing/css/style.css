@@ -12,6 +12,11 @@
   -fx-text-fill: #364153;
 }
 
+.label-success {
+  -fx-text-fill: green;
+  -fx-font-weight: bold;
+}
+
 .text-field-style {
   -fx-background-color: transparent;
   -fx-border-color: #ccc;

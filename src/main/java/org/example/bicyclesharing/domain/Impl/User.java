@@ -128,9 +128,4 @@ public class User extends BaseEntity {
 
     this.role = role;
   }
-
-  @Override
-  public String toString() {
-    return String.format("Логін: %s | Email: %s | Роль: %s", login, email, role);
-  }
 }

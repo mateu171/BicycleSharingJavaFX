@@ -49,6 +49,7 @@
           </ImageView>
         </StackPane>
         <Label fx:id="emailErrorLabel" maxWidth="250" styleClass="label-error" wrapText="true"/>
+        <Label fx:id="successLabel" maxWidth="250" styleClass="label-success" wrapText="true"/>
       </VBox>
 
       <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0" onAction="#onUpdate"

@@ -16,6 +16,7 @@ public class ProfileController {
   @FXML private Label loginErrorLabel;
   @FXML private Label passwordErrorLabel;
   @FXML private Label emailErrorLabel;
+  @FXML private Label successLabel;
 
   private ProfileViewModel viewModel;
   private User currentUser;
@@ -56,6 +57,7 @@ public class ProfileController {
     loginErrorLabel.textProperty().bind(viewModel.loginError);
     passwordErrorLabel.textProperty().bind(viewModel.passwordError);
     emailErrorLabel.textProperty().bind(viewModel.emailError);
+    successLabel.textProperty().bind(viewModel.successMessage);
   }
 
 }

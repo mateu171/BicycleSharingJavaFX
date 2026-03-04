@@ -17,8 +17,10 @@ public class ProfileViewModel {
   public StringProperty loginError = new SimpleStringProperty("");
   public StringProperty passwordError = new SimpleStringProperty("");
   public StringProperty emailError = new SimpleStringProperty("");
+  public StringProperty successMessage = new SimpleStringProperty("");
 
   private User currentUser;
+  private String oldLogin;
 
   public ProfileViewModel(UserService userService,User currentUser) {
     this.userService = userService;
@@ -26,10 +28,12 @@ public class ProfileViewModel {
 
     login.set(currentUser.getLogin());
     email.set(currentUser.getEmail());
+    oldLogin = currentUser.getLogin();
   }
 
   public void update() {
     clearErrors();
+    successMessage.set("");
 
     try {
       currentUser.setLogin(login.get());
@@ -45,7 +49,13 @@ public class ProfileViewModel {
         throw new CustomEntityValidationExeption(currentUser.getErrors());
       }
 
+      if(userService.existsByLoginExcept(login.get(), currentUser.getId())) {
+        loginError.set("Користувач з таким логіном вже існує");
+        return;
+      }
+
       userService.update(currentUser);
+      successMessage.set("Профіль успішно оновлено!");
 
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {

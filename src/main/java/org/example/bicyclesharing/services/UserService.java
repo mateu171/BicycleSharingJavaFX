@@ -20,6 +20,11 @@ public class UserService extends BaseService<User, UUID> {
     return userRepository.findByLogin(login) != null;
   }
 
+  public boolean existsByLoginExcept(String login, UUID currentUserId) {
+    User user = userRepository.findByLogin(login);
+    return user != null && !user.getId().equals(currentUserId);
+  }
+
   @Override
   protected Repository<User, UUID> getRepository() {
     return userRepository;

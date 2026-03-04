@@ -64,6 +64,11 @@ public class RegisterController {
         .bind(viewModel.confirmationVisible);
     registrationPane.visibleProperty()
         .bind(viewModel.registrationVisible);
+
+    viewModel.onRegistrationSuccess = () -> {
+
+      startController.showLogin();
+    };
   }
 
   @FXML

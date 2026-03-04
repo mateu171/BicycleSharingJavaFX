@@ -29,6 +29,7 @@ public class RegisterViewModel {
 
   private int sentCode;
   private User tempUser;
+  public Runnable onRegistrationSuccess;
 
   public RegisterViewModel(UserService userService,
       VerificationService verificationService) {
@@ -46,6 +47,12 @@ public class RegisterViewModel {
           email.get(),
           Role.CLIENT
       );
+
+      if(userService.existsByLogin(tempUser.getLogin()))
+      {
+        loginError.set("Користувач з таким логіном вже існує");
+        return;
+      }
 
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {
@@ -75,6 +82,12 @@ public class RegisterViewModel {
     }
 
     userService.add(tempUser);
+
+    registrationVisible.set(false);
+    confirmationVisible.set(false);
+
+    if(onRegistrationSuccess != null)
+    onRegistrationSuccess.run();
   }
 
   private void clearErrors() {

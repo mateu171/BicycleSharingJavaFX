@@ -96,6 +96,10 @@ public class MainMenuController {
     load("/org/example/bicyclesharing/presentation/SettingsView.fxml");
   }
 
+  public void onShowMap(){
+    load("/org/example/bicyclesharing/presentation/MapView.fxml");
+  }
+
   private void load(String path) {
     try {
       FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
@@ -124,6 +128,4 @@ public class MainMenuController {
       e.printStackTrace();
     }
   }
-
-
 }

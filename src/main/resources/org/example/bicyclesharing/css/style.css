@@ -1,5 +1,5 @@
 .stack-pane-root {
-  -fx-background-color: linear-gradient(to bottom right, #f5f7fa, #c3cfe2);
+  -fx-background-color: linear-gradient(to bottom right, rgb(245, 247, 250), #c3cfe2);
   -fx-background-radius: 20;
   -fx-border-radius: 20;
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 20, 0.2, 0, 5);

@@ -34,6 +34,15 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
+              <Image url="@../art/icon/map.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnMap" text="Карта" styleClass="menu-button" onAction="#onShowMap"/>
+        </HBox>
+
+        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
               <Image url="@../art/icon/anotheruser.png" />
             </image>
           </ImageView>

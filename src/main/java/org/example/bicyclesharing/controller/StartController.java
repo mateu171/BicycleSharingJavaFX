@@ -17,8 +17,6 @@ public class StartController {
   private Button closeButton;
   @FXML
   private Button minimizeButton;
-  @FXML
-  private HBox titleBar;
 
   public void showLogin() {
     load("/org/example/bicyclesharing/presentation/LoginView.fxml");

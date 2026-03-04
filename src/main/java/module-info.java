@@ -10,6 +10,8 @@ module org.example.bicyclesharing {
   requires jakarta.mail;
   requires java.sql;
   requires java.desktop;
+  requires javafx.web;
+  requires com.dlsc.gmapsfx;
 
   opens org.example.bicyclesharing to javafx.fxml;
   exports org.example.bicyclesharing;

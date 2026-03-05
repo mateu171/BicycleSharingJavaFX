@@ -303,3 +303,17 @@
   -fx-background-color: #FFD000;
   -fx-cursor: hand;
 }
+
+.language-button {
+  -fx-background-radius: 50;
+  -fx-min-width: 40;
+  -fx-min-height: 40;
+  -fx-max-width: 40;
+  -fx-max-height: 40;
+
+  -fx-background-color: rgba(255,255,255,0.9);
+}
+
+.language-button:hover {
+  -fx-background-color: #dddddd;
+}

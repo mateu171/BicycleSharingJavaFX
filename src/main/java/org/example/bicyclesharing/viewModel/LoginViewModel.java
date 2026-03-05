@@ -32,7 +32,7 @@ public class LoginViewModel {
     String passwordValue = password.get() == null ? "" : password.get().trim();
 
     try {
-       currentUser = authService.authenticate(loginValue, passwordValue);
+      currentUser = authService.authenticate(loginValue, passwordValue);
       errorMessage.set("");
       loginSuccess.set(true);
     } catch (AuthException e) {

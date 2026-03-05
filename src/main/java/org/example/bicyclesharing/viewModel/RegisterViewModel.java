@@ -1,5 +1,7 @@
 package org.example.bicyclesharing.viewModel;
 
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -9,6 +11,8 @@ import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.services.VerificationService;
+import org.example.bicyclesharing.util.LocalizationManager;
+
 public class RegisterViewModel {
 
   private final UserService userService;
@@ -50,13 +54,16 @@ public class RegisterViewModel {
 
       if(userService.existsByLogin(tempUser.getLogin()))
       {
-        loginError.set("Користувач з таким логіном вже існує");
+        loginError.set(LocalizationManager.getStringByKey("error.login.exists"));
         return;
       }
 
     } catch (CustomEntityValidationExeption e) {
+      ResourceBundle bundle = LocalizationManager.getBundle();
       e.getErrors().forEach((field, messages) -> {
-        String msg = String.join("\n", messages);
+        String msg = messages.stream()
+            .map(bundle::getString)
+            .collect(Collectors.joining("\n"));
         switch (field) {
           case "login" -> loginError.set(msg);
           case "password" -> passwordError.set(msg);
@@ -71,13 +78,13 @@ public class RegisterViewModel {
       registrationVisible.set(false);
       confirmationVisible.set(true);
     } catch (Exception ex) {
-      emailError.set("Не вдалося відправити код!");
+      emailError.set(LocalizationManager.getStringByKey("error.email.send_failed"));
     }
   }
 
   public void confirmCode() {
     if (!String.valueOf(sentCode).equals(emailCode.get())) {
-      emailCodeError.set("Невірний код!");
+      emailCodeError.set(LocalizationManager.getStringByKey("error.email.code_invalid"));
       return;
     }
 

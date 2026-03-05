@@ -69,10 +69,12 @@ public class User extends BaseEntity {
 
   public void setLogin(String login) {
     cleanErrors("login");
+
     if (login == null || login.trim().isEmpty()) {
-      addError("login", "Логін неповинен бути пустим!");
-    } else if (login.length() < 2 || login.length() > 50) {
-      addError("login", "Логін повинен бути не менше 2 символів і небільше 50");
+      addError("login", "error.login.empty");
+    }
+    else if (login.length() < 2 || login.length() > 50) {
+      addError("login", "error.login.length");
     }
 
     this.login = login;
@@ -85,9 +87,10 @@ public class User extends BaseEntity {
   private void validatePassword(String password) {
     cleanErrors("password");
     if (password == null || password.trim().isEmpty()) {
-      addError("password", "Пароль неповинен бути пустим!");
-    } else if (password.length() < 8 || password.length() > 50) {
-      addError("password", "Пароль повинен бути не менше 8 символів і небільше 50");
+      addError("password", "error.password.empty");
+    }
+    else if (password.length() < 8 || password.length() > 50) {
+      addError("password", "error.password.length");
     }
   }
 
@@ -109,11 +112,11 @@ public class User extends BaseEntity {
   public void setEmail(String email) {
     cleanErrors("email");
     if (email == null || email.trim().isEmpty()) {
-      addError("email", "Емайл не повинен бути пустим!");
-    } else if (!email.matches("^[a-zA-Z0-9]+@gmail\\.com$")) {
-      addError("email", "Невірний формат емайлу! Дозволено лише літери та цифри перед @gmail.com");
+      addError("email", "error.email.empty");
     }
-    this.email = email;
+    else if (!email.matches("^[a-zA-Z0-9]+@gmail\\.com$")) {
+      addError("email", "error.email.invalid");
+    }
   }
 
   public Role getRole() {
@@ -121,11 +124,6 @@ public class User extends BaseEntity {
   }
 
   public void setRole(Role role) {
-    cleanErrors("role");
-    if (role == null) {
-      addError("role", "Роль не повинна бути пустим!");
-    }
-
     this.role = role;
   }
 }

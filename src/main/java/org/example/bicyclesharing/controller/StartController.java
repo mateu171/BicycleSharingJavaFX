@@ -1,13 +1,15 @@
 package org.example.bicyclesharing.controller;
 
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.example.bicyclesharing.util.LocalizationManager;
 
 public class StartController {
 
@@ -17,6 +19,8 @@ public class StartController {
   private Button closeButton;
   @FXML
   private Button minimizeButton;
+
+  private String currentView;
 
   public void showLogin() {
     load("/org/example/bicyclesharing/presentation/LoginView.fxml");
@@ -28,8 +32,10 @@ public class StartController {
 
 
   private void load(String path) {
+    currentView = path;
     try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+      ResourceBundle bundle = LocalizationManager.getBundle();
+      FXMLLoader loader = new FXMLLoader(getClass().getResource(path),bundle);
       Parent view = loader.load();
 
       Object controller = loader.getController();
@@ -58,4 +64,15 @@ public class StartController {
     stage.setIconified(true);
   }
 
+  public void switchLanguage() {
+
+    Locale current = LocalizationManager.getBundle().getLocale();
+
+    if (current.getLanguage().equals("ua")) {
+      LocalizationManager.setLocale("en");
+    } else {
+      LocalizationManager.setLocale("ua");
+    }
+      load(currentView);
   }
+}

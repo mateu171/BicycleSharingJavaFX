@@ -11,7 +11,7 @@
 
   <VBox spacing="15" prefWidth="500">
 
-    <Label text="Історія поїздок" styleClass="label-title"/>
+    <Label text="%history.title" styleClass="label-title"/>
 
     <ListView fx:id="rentalList"
       VBox.vgrow="ALWAYS"

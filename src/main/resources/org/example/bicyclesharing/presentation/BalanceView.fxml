@@ -12,7 +12,7 @@
     alignment="CENTER"
     prefWidth="500">
 
-    <Label text="Баланс"
+    <Label text="%balance.title"
       styleClass="label-title"/>
 
     <StackPane prefWidth="200"
@@ -22,7 +22,7 @@
       styleClass="balance-circle">
 
       <VBox alignment="CENTER" spacing="5">
-        <Label text="Ваш баланс"
+        <Label text="%balance.yourBalance"
           style="-fx-text-fill: #364153;"/>
 
         <Label fx:id="balanceLabel"
@@ -33,7 +33,7 @@
       </VBox>
     </StackPane>
 
-    <Label text="Виберіть суму поповнення"
+    <Label text="%balance.chooseAmount"
       style="-fx-text-fill: #364153;"/>
 
     <HBox fx:id="topUpButtons" spacing="15" alignment="CENTER">
@@ -48,7 +48,7 @@
         styleClass="top-up-button"/>
     </HBox>
 
-    <Label text="Сума поповнення"
+    <Label text="%balance.topUpAmount"
       style="-fx-text-fill: #364153;"/>
 
     <TextField fx:id="topUpField"
@@ -58,7 +58,7 @@
       styleClass="text-field-style"/>
 
     <Button fx:id="replenishButton"
-      text="Поповнити"
+      text="%balance.topUp"
       prefWidth="250"
       styleClass="button-primary"/>
 

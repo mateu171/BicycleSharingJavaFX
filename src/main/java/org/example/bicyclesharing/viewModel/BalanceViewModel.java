@@ -7,6 +7,7 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.services.TransactionService;
 import org.example.bicyclesharing.services.UserService;
+import org.example.bicyclesharing.util.LocalizationManager;
 
 public class BalanceViewModel {
 
@@ -29,7 +30,8 @@ public class BalanceViewModel {
   public void addBalance(double amount) {
     balance.set(balance.get() + amount);
     currentUser.setBalance(balance.get());
-    Transaction tr = new Transaction(currentUser.getId(),amount, TransactionType.TOP_UP,"Баланс поповнено");
+    Transaction tr = new Transaction(currentUser.getId(),amount, TransactionType.TOP_UP,
+        LocalizationManager.getStringByKey("balance.recharged"));
     transactionService.add(tr);
     userService.update(currentUser);
   }

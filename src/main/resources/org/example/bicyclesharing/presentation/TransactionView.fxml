@@ -13,7 +13,7 @@
 
   <VBox spacing="15">
 
-    <Label text="Transactions"
+    <Label text="%transactions.title"
       styleClass="label-title"/>
 
     <ListView fx:id="transactionListView"

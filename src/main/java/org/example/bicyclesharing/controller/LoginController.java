@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.controller;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.LoginViewModel;
 
 public class LoginController {
@@ -63,8 +65,10 @@ public class LoginController {
   private  void openMainMenu()
   {
     try {
+      ResourceBundle bundle = LocalizationManager.getBundle();
       FXMLLoader loader = new FXMLLoader(
-          getClass().getResource("/org/example/bicyclesharing/presentation/MainMenuView.fxml")
+          getClass().getResource("/org/example/bicyclesharing/presentation/MainMenuView.fxml"),
+          bundle
       );
 
       Parent root = loader.load();

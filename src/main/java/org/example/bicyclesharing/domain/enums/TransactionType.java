@@ -1,16 +1,16 @@
 package org.example.bicyclesharing.domain.enums;
 
+import org.example.bicyclesharing.util.LocalizationManager;
+
 public enum TransactionType {
-  TOP_UP("Поповнення балансу"),
-  RENTAL_FEE("Оплата оренди");
+  TOP_UP,
+  RENTAL_FEE;
 
-  private final String name;
-
-  TransactionType(String name) {
-    this.name = name;
-  }
-
-  public String getName() {
-    return name;
+  public String getLocalizedName() {
+    switch (this) {
+      case TOP_UP -> { return LocalizationManager.getStringByKey("transaction.top_up"); }
+      case RENTAL_FEE -> { return LocalizationManager.getStringByKey("transaction.rental_fee"); }
+      default -> throw new IllegalArgumentException();
+    }
   }
 }

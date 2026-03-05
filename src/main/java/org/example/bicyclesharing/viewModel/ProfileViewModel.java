@@ -1,10 +1,12 @@
 package org.example.bicyclesharing.viewModel;
 
+import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
+import org.example.bicyclesharing.util.LocalizationManager;
 
 public class ProfileViewModel {
 
@@ -50,16 +52,18 @@ public class ProfileViewModel {
       }
 
       if(userService.existsByLoginExcept(login.get(), currentUser.getId())) {
-        loginError.set("Користувач з таким логіном вже існує");
+        loginError.set(LocalizationManager.getStringByKey("error.login.exists"));
         return;
       }
 
       userService.update(currentUser);
-      successMessage.set("Профіль успішно оновлено!");
+      successMessage.set(LocalizationManager.getStringByKey("profile.success"));
 
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {
-        String msg = String.join("\n", messages);
+        String msg = messages.stream()
+            .map(LocalizationManager.getBundle()::getString)
+            .collect(Collectors.joining("\n"));
         switch (field) {
           case "login" -> loginError.set(msg);
           case "password" -> passwordError.set(msg);

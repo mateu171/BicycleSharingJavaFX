@@ -16,11 +16,11 @@
 
   <children>
     <VBox alignment="CENTER" fillWidth="false" spacing="5">
-      <Label styleClass="label-title" text="Профіль" />
+      <Label styleClass="label-title" text="%profile.title" />
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="loginField" prefWidth="250" promptText="Login" styleClass="text-field-style"/>
+          <TextField fx:id="loginField" prefWidth="250" promptText="%profile.login" styleClass="text-field-style"/>
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/user.png"/></image>
@@ -31,7 +31,7 @@
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="passwordField" prefWidth="250" promptText="Password" styleClass="text-field-style" />
+          <TextField fx:id="passwordField" prefWidth="250" promptText="%profile.password" styleClass="text-field-style" />
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/key.png"/></image>
@@ -42,7 +42,7 @@
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="emailField" prefWidth="250" promptText="Email Address" styleClass="text-field-style" />
+          <TextField fx:id="emailField" prefWidth="250" promptText="%profile.email" styleClass="text-field-style" />
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/mail.png"/></image>
@@ -53,7 +53,7 @@
       </VBox>
 
       <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0" onAction="#onUpdate"
-        styleClass="button-primary" text="Змінити"/>
+        styleClass="button-primary" text="%profile.update"/>
     </VBox>
   </children>
 </StackPane>

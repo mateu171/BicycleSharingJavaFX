@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.RideHistoryViewModel;
 
 import java.time.format.DateTimeFormatter;
@@ -50,18 +51,18 @@ public class RideHistoryController {
         DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-        Label bikeLabel = new Label("🚲 Велосипед: " + rental.getBicycleId());
+        Label bikeLabel = new Label(LocalizationManager.getStringByKey("history.bike") + rental.getBicycleId());
         bikeLabel.getStyleClass().add("rental-title");
 
-        Label startLabel = new Label("Початок: " + rental.getStart().format(formatter));
+        Label startLabel = new Label(LocalizationManager.getStringByKey("history.start") + rental.getStart().format(formatter));
 
         Label endLabel = new Label(
             rental.getEnd() != null
-                ? "Кінець: " + rental.getEnd().format(formatter)
-                : "Кінець: Активна оренда"
+                ? LocalizationManager.getStringByKey("history.end") + rental.getEnd().format(formatter)
+                : LocalizationManager.getStringByKey("history.active")
         );
 
-        Label costLabel = new Label("Сума: " + rental.getTotalCost() + " грн");
+        Label costLabel = new Label(LocalizationManager.getStringByKey("history.total") + rental.getTotalCost() + " грн");
         costLabel.getStyleClass().add("rental-cost");
 
         card.getChildren().addAll(bikeLabel, startLabel, endLabel, costLabel);

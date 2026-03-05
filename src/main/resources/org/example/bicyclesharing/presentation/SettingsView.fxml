@@ -16,11 +16,11 @@
 
   <VBox spacing="25" >
 
-    <Label text="Налаштування"
+    <Label text="%settings.title"
       styleClass="label-title"/>
 
     <VBox spacing="10" styleClass="settings-card">
-      <Label text="Language"
+      <Label text="%settings.language"
         styleClass="settings-section-title"/>
 
       <ComboBox fx:id="languageComboBox"
@@ -29,23 +29,23 @@
     </VBox>
 
     <VBox spacing="10" styleClass="settings-card">
-      <Label text="Theme"
+      <Label text="%settings.theme"
         styleClass="settings-section-title"/>
 
       <HBox spacing="20">
         <RadioButton fx:id="lightThemeRadio"
-          text="Light"
+          text="%settings.light"
           toggleGroup="$themeToggleGroup"
           styleClass="settings-radio"/>
 
         <RadioButton fx:id="darkThemeRadio"
-          text="Dark"
+          text="%settings.dark"
           toggleGroup="$themeToggleGroup"
           styleClass="settings-radio"/>
       </HBox>
     </VBox>
 
-    <Button text="Save Changes"
+    <Button text="%settings.save"
       fx:id="saveButton"
       prefWidth="200"
       styleClass="settings-save-button"

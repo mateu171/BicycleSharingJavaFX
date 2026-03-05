@@ -38,7 +38,7 @@
               <Image url="@../art/icon/map.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnMap" text="Карта" styleClass="menu-button" onAction="#onShowMap"/>
+          <Button fx:id="btnMap" styleClass="menu-button" text="%menu.map" onAction="#onShowMap"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
@@ -47,7 +47,7 @@
               <Image url="@../art/icon/anotheruser.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnProfile" text="Профіль" styleClass="menu-button" onAction="#onShowProfile"/>
+          <Button fx:id="btnProfile" text="%menu.profile" styleClass="menu-button" onAction="#onShowProfile"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
@@ -56,7 +56,7 @@
               <Image url="@../art/icon/balance.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnBalance" text="Баланс" styleClass="menu-button" onAction="#onShowBalance"/>
+          <Button fx:id="btnBalance" text="%menu.balance" styleClass="menu-button" onAction="#onShowBalance"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
@@ -65,7 +65,7 @@
               <Image url="@../art/icon/bicycle.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnHistory" text="Історія поїздок" styleClass="menu-button" onAction="#onShowRideHistory"/>
+          <Button fx:id="btnHistory" text="%menu.history" styleClass="menu-button" onAction="#onShowRideHistory"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
@@ -74,7 +74,7 @@
               <Image url="@../art/icon/transaction.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnTransaction" text="Транзанкції" styleClass="menu-button"   onAction="#onShowTransactions"/>
+          <Button fx:id="btnTransaction" text="%menu.transactions" styleClass="menu-button"   onAction="#onShowTransactions"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
@@ -83,7 +83,7 @@
               <Image url="@../art/icon/info.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnGuide" text="Інструкція" styleClass="menu-button"/>
+          <Button fx:id="btnGuide" text="%menu.guide" styleClass="menu-button"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
@@ -92,7 +92,7 @@
               <Image url="@../art/icon/settings.png" />
             </image>
           </ImageView>
-          <Button fx:id="btnSettings" text="Налаштування" styleClass="menu-button" onAction="#onShowSettings"/>
+          <Button fx:id="btnSettings" text="%menu.settings" styleClass="menu-button" onAction="#onShowSettings"/>
         </HBox>
 
       </VBox>

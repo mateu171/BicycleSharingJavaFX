@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.controller;
 
 import java.io.IOException;
+import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
@@ -15,6 +16,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.util.LocalizationManager;
 
 public class MainMenuController {
 
@@ -108,7 +110,8 @@ public class MainMenuController {
 
   private void load(String path) {
     try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+      ResourceBundle bundle = LocalizationManager.getBundle();
+      FXMLLoader loader = new FXMLLoader(getClass().getResource(path),bundle);
       Parent view = loader.load();
 
       Object controller = loader.getController();

@@ -49,7 +49,7 @@ public class TransactionController {
         VBox card = new VBox(6);
         card.getStyleClass().add("transaction-card");
 
-        Label title = new Label(item.getType().getName());
+        Label title = new Label(item.getType().getLocalizedName());
         title.getStyleClass().add("transaction-title");
 
         Label description = new Label(item.getDescription());

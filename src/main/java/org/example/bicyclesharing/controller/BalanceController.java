@@ -59,15 +59,10 @@ public class BalanceController {
     }));
 
     replenishButton.setOnAction(event -> {
-      try {
         double amount = Double.parseDouble(topUpField.getText());
         if (amount < 1) return;
 
         viewModel.addBalance(amount);
-
-      } catch (NumberFormatException e) {
-
-      }
     });
   }
 

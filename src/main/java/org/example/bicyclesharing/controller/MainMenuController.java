@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.controller;
 
 import java.io.IOException;
+import java.util.prefs.Preferences;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -27,16 +28,26 @@ public class MainMenuController {
   private VBox sidebar;
   @FXML
   private StackPane contentPane;
-
   private User currentUser;
 
+  private final Preferences prefs = Preferences.userNodeForPackage(SettingsController.class);
+  private static final String THEME_KEY = "theme";
+
   public void setCurrentUser(User currentUser) {
+
     this.currentUser = currentUser;
+    onShowProfile();
+    applyTheme();
   }
 
   @FXML
   public void initialize()
   {
+    sidebar.sceneProperty().addListener((obs, oldScene, newScene) -> {
+      if (newScene != null) {
+        applyTheme();
+      }
+    });
     double expandedWidth = 180;
     double collapsedWidth = 60;
 
@@ -82,20 +93,15 @@ public class MainMenuController {
   public void onShowBalance() {
     load("/org/example/bicyclesharing/presentation/BalanceView.fxml");
   }
-  public void onShowRideHistory()
-  {
+  public void onShowRideHistory() {
     load("/org/example/bicyclesharing/presentation/RideHistoryView.fxml");
   }
-  public void onShowTransactions()
-  {
+  public void onShowTransactions() {
     load("/org/example/bicyclesharing/presentation/TransactionView.fxml");
   }
-
-  public void onShowSettings()
-  {
+  public void onShowSettings() {
     load("/org/example/bicyclesharing/presentation/SettingsView.fxml");
   }
-
   public void onShowMap(){
     load("/org/example/bicyclesharing/presentation/MapView.fxml");
   }
@@ -126,6 +132,20 @@ public class MainMenuController {
       contentPane.getChildren().setAll(view);
     } catch (IOException e) {
       e.printStackTrace();
+    }
+  }
+
+  private void applyTheme() {
+    closeButton.getScene().getRoot().getStylesheets().clear();
+    String savedTheme = prefs.get(THEME_KEY, "light");
+    if ("dark".equals(savedTheme)) {
+      contentPane.getScene().getRoot().getStylesheets().add(
+          getClass().getResource("/org/example/bicyclesharing/css/dark-theme.css").toExternalForm()
+      );
+    } else {
+      contentPane.getScene().getRoot().getStylesheets().add(
+          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
+      );
     }
   }
 }

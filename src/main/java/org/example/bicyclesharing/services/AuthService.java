@@ -5,7 +5,6 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.exception.AuthException;
 import org.example.bicyclesharing.repository.UserRepository;
-import org.example.bicyclesharing.util.LocalizationManager;
 
 public class AuthService {
 
@@ -19,7 +18,7 @@ public class AuthService {
     User user = userRepository.findByLogin(login);
 
     if (user == null || !PasswordHasher.verify(password, user.getHashedPassword())) {
-      throw new AuthException(LocalizationManager.getStringByKey("error.auth.invalid"));
+      throw new AuthException("error.auth.invalid");
     }
 
     return user;

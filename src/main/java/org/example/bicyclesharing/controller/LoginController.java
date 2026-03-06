@@ -1,32 +1,35 @@
 package org.example.bicyclesharing.controller;
 
-import java.io.IOException;
-import java.util.ResourceBundle;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.services.NavigationService;
 import org.example.bicyclesharing.viewModel.LoginViewModel;
 
-public class LoginController {
+public class LoginController implements Navigatable{
 
   @FXML private TextField loginField;
   @FXML private TextField passwordField;
   @FXML private Label errorMessage;
+  @FXML private Label title;
+  @FXML private Button registerButton;
+  @FXML private Button loginButton;
+
   private LoginViewModel viewModel;
-  private StartController startController;
+  private NavigationService navigation;
 
   @FXML
   private void initialize() {
     viewModel = new LoginViewModel();
 
     loginField.textProperty().bindBidirectional(viewModel.login);
+    title.textProperty().bind(viewModel.titleText);
+    loginField.promptTextProperty().bind(viewModel.loginPromptText);
+    passwordField.promptTextProperty().bind(viewModel.passwordPromptText);
+    registerButton.textProperty().bind(viewModel.registerButtonText);
+    loginButton.textProperty().bind(viewModel.signInButtonText);
+
     passwordField.textProperty().bindBidirectional(viewModel.password);
     errorMessage.textProperty().bind(viewModel.errorMessage);
 
@@ -55,35 +58,17 @@ public class LoginController {
     viewModel.login();
   }
 
-  public void setMainController(StartController startController) {
-    this.startController = startController;
-  }
   @FXML
   private void openRegisterWindow() {
-    startController.showRegister();
+    navigation.load("/org/example/bicyclesharing/presentation/RegisterView.fxml");
   }
   private  void openMainMenu()
   {
-    try {
-      ResourceBundle bundle = LocalizationManager.getBundle();
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getResource("/org/example/bicyclesharing/presentation/MainMenuView.fxml"),
-          bundle
-      );
-
-      Parent root = loader.load();
-      Stage stage = new Stage();
-      stage.initStyle(StageStyle.TRANSPARENT);
-      stage.setScene(new Scene(root));
-      stage.show();
-
-      MainMenuController controller = loader.getController();
-      controller.setCurrentUser(viewModel.getCurrentUser());
-      ((Stage) loginField.getScene().getWindow()).close();
-
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    navigation.load("/org/example/bicyclesharing/presentation/MainMenuView.fxml");
   }
 
+  @Override
+  public void setNavigation(NavigationService navigation) {
+    this.navigation = navigation;
+  }
 }

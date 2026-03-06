@@ -18,11 +18,11 @@
   <children>
     <VBox alignment="CENTER" fillWidth="false" spacing="5">
 
-      <Label styleClass="label-title" text="%login.title" />
+      <Label styleClass="label-title" fx:id="title" />
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="loginField" prefWidth="250" promptText="%login.login" styleClass="text-field-style" />
+          <TextField fx:id="loginField" prefWidth="250" styleClass="text-field-style" />
           <ImageView fitHeight="15" fitWidth="15" preserveRatio="true" style="-fx-translate-x: -115;">
             <image>
               <Image url="@../art/icon/user.png" />
@@ -33,7 +33,7 @@
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="passwordField" prefWidth="250" promptText="%login.password" styleClass="text-field-style" />
+          <TextField fx:id="passwordField" prefWidth="250" styleClass="text-field-style" />
           <ImageView fitHeight="15" fitWidth="15" preserveRatio="true" style="-fx-translate-x: -115;">
             <image>
               <Image url="@../art/icon/key.png" />
@@ -44,10 +44,10 @@
       </VBox>
 
       <VBox alignment="CENTER">
-        <Button fx:id="registerButton" onAction="#openRegisterWindow" prefHeight="25.0" prefWidth="150.0" styleClass="button-secondary" text="%login.noAccount" />
+        <Button fx:id="registerButton" onAction="#openRegisterWindow" prefHeight="25.0" prefWidth="150.0" styleClass="button-secondary" />
       </VBox>
 
-      <Button fx:id="loginButton" onAction="#onLogin" prefHeight="25.0" prefWidth="100.0" styleClass="button-primary" text="%login.signIn" />
+      <Button fx:id="loginButton" onAction="#onLogin" prefHeight="25.0" prefWidth="100.0" styleClass="button-primary"/>
 
     </VBox>
   </children>

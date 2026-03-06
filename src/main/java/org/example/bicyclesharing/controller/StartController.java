@@ -1,14 +1,11 @@
 package org.example.bicyclesharing.controller;
 
-import java.io.IOException;
 import java.util.Locale;
-import java.util.ResourceBundle;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.example.bicyclesharing.services.NavigationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class StartController {
@@ -20,35 +17,20 @@ public class StartController {
   @FXML
   private Button minimizeButton;
 
-  private String currentView;
+  private NavigationService navigation;
 
   public void showLogin() {
-    load("/org/example/bicyclesharing/presentation/LoginView.fxml");
+    navigation.load("/org/example/bicyclesharing/presentation/LoginView.fxml");
   }
 
   public void showRegister() {
-    load("/org/example/bicyclesharing/presentation/RegisterView.fxml");
+    navigation.load("/org/example/bicyclesharing/presentation/RegisterView.fxml");
   }
 
-
-  private void load(String path) {
-    currentView = path;
-    try {
-      FXMLLoader loader = new FXMLLoader(getClass().getResource(path),LocalizationManager.getBundle());
-      Parent view = loader.load();
-
-      Object controller = loader.getController();
-      if (controller instanceof LoginController loginController) {
-        loginController.setMainController(this);
-      }
-      if (controller instanceof RegisterController registerController) {
-        registerController.setMainController(this);
-      }
-
-      contentPane.getChildren().setAll(view);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  @FXML
+  private void initialize() {
+    navigation = new NavigationService(contentPane);
+    showLogin();
   }
 
   public void closeWindow()
@@ -65,13 +47,12 @@ public class StartController {
 
   public void switchLanguage() {
 
-    Locale current = LocalizationManager.getBundle().getLocale();
+    Locale current = LocalizationManager.getLocale();
 
     if (current.getLanguage().equals("uk")) {
       LocalizationManager.setLocale("en");
     } else {
       LocalizationManager.setLocale("uk");
     }
-      load(currentView);
   }
 }

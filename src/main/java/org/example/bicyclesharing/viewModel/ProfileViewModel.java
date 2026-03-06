@@ -61,13 +61,19 @@ public class ProfileViewModel {
 
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {
-        String msg = messages.stream()
-            .map(LocalizationManager.getBundle()::getString)
-            .collect(Collectors.joining("\n"));
+        StringProperty targetProperty;
         switch (field) {
-          case "login" -> loginError.set(msg);
-          case "password" -> passwordError.set(msg);
-          case "email" -> emailError.set(msg);
+          case "login" -> targetProperty = loginError;
+          case "password" -> targetProperty = passwordError;
+          case "email" -> targetProperty = emailError;
+          default -> targetProperty = null;
+        }
+
+        if (targetProperty != null) {
+          String fullMessage = messages.stream()
+              .map(LocalizationManager::getStringByKey)
+              .collect(Collectors.joining("\n"));
+          targetProperty.set(fullMessage);
         }
       });
     }

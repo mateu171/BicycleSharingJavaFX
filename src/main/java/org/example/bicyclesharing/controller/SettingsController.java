@@ -1,11 +1,11 @@
 package org.example.bicyclesharing.controller;
 
-import java.util.prefs.Preferences;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.StackPane;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.ThemeManager;
 
 public class SettingsController {
 
@@ -19,9 +19,6 @@ public class SettingsController {
   private StackPane rootPane;
   private MainMenuController mainMenuController;
 
-  private final Preferences prefs = Preferences.userNodeForPackage(SettingsController.class);
-  private static final String THEME_KEY = "theme";
-
   public void setRootPane(StackPane rootPane,MainMenuController mainMenuController) {
 
     this.rootPane = rootPane;
@@ -34,10 +31,10 @@ public class SettingsController {
  public void saveChange() {
    if(darkThemeRadio.isSelected())
    {
-     prefs.put(THEME_KEY,"dark");
+     ThemeManager.saveTheme("dark");
    }else if(lightThemeRadio.isSelected())
    {
-     prefs.put(THEME_KEY,"light");
+     ThemeManager.saveTheme("light");
    }
    int selectionIndex = languageComboBox.getSelectionModel().getSelectedIndex();
 
@@ -55,7 +52,7 @@ public class SettingsController {
 
  private void loadTheme()
  {
-   String savedTheme = prefs.get(THEME_KEY,"light");
+   String savedTheme = ThemeManager.getCurrentTheme();
    if(savedTheme.equals("dark"))
    {
      darkThemeRadio.setSelected(true);
@@ -67,20 +64,8 @@ public class SettingsController {
  }
 
   private void applyTheme() {
-    if (rootPane == null)
-      return;
-
-    rootPane.getStylesheets().clear();
-
-    if (darkThemeRadio.isSelected()) {
-      rootPane.getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/dark-theme.css").toExternalForm()
-      );
-    } else {
-      rootPane.getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
-      );
-    }
+     rootPane.getStylesheets().clear();
+      rootPane.getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
   }
   private void applyLang()
   {

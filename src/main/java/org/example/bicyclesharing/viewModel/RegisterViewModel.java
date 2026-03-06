@@ -1,6 +1,5 @@
 package org.example.bicyclesharing.viewModel;
 
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,6 +30,16 @@ public class RegisterViewModel {
   public BooleanProperty confirmationVisible = new SimpleBooleanProperty(false);
   public BooleanProperty registrationVisible = new SimpleBooleanProperty(true);
 
+  public final StringProperty loginPromptText = LocalizationManager.getStringProperty("register.login");
+  public final StringProperty registerTitleText = LocalizationManager.getStringProperty("register.title");
+  public final StringProperty passwordPromptText = LocalizationManager.getStringProperty("register.password");
+  public final StringProperty registerButtonText = LocalizationManager.getStringProperty("register.signUp");
+  public final StringProperty alreadyAccountText = LocalizationManager.getStringProperty("register.alreadyAccount");
+  public final StringProperty emailPromptText = LocalizationManager.getStringProperty("register.email");
+  public final StringProperty confirmEmailText = LocalizationManager.getStringProperty("register.confirmEmail");
+  public final StringProperty codePromptText = LocalizationManager.getStringProperty("register.code");
+  public final StringProperty confirmButtonText = LocalizationManager.getStringProperty("register.confirmButton");
+
   private int sentCode;
   private User tempUser;
   public Runnable onRegistrationSuccess;
@@ -59,18 +68,22 @@ public class RegisterViewModel {
       }
 
     } catch (CustomEntityValidationExeption e) {
-      ResourceBundle bundle = LocalizationManager.getBundle();
       e.getErrors().forEach((field, messages) -> {
-        String msg = messages.stream()
-            .map(bundle::getString)
-            .collect(Collectors.joining("\n"));
+        StringProperty targetProperty;
         switch (field) {
-          case "login" -> loginError.set(msg);
-          case "password" -> passwordError.set(msg);
-          case "email" -> emailError.set(msg);
+          case "login" -> targetProperty = loginError;
+          case "password" -> targetProperty = passwordError;
+          case "email" -> targetProperty = emailError;
+          default -> targetProperty = null;
+        }
+
+        if (targetProperty != null) {
+          String fullMessage = messages.stream()
+              .map(LocalizationManager::getStringByKey)
+              .collect(Collectors.joining("\n"));
+          targetProperty.set(fullMessage);
         }
       });
-      return;
     }
 
     try {

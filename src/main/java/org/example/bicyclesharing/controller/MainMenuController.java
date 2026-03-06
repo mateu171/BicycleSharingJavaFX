@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.ThemeManager;
 
 public class MainMenuController {
 
@@ -61,11 +62,11 @@ public class MainMenuController {
   @FXML
   public void initialize()
   {
-    sidebar.sceneProperty().addListener((obs, oldScene, newScene) -> {
-      if (newScene != null) {
-        applyTheme();
-      }
-    });
+//    sidebar.sceneProperty().addListener((obs, oldScene, newScene) -> {
+//      if (newScene != null) {
+//        applyTheme();
+//      }
+//    });
     double expandedWidth = 180;
     double collapsedWidth = 60;
 
@@ -127,7 +128,7 @@ public class MainMenuController {
   private void load(String path) {
     try {
       currentView = path;
-      FXMLLoader loader = new FXMLLoader(getClass().getResource(path),LocalizationManager.getBundle());
+      FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
       Parent view = loader.load();
 
       Object controller = loader.getController();
@@ -156,16 +157,7 @@ public class MainMenuController {
 
   private void applyTheme() {
     closeButton.getScene().getRoot().getStylesheets().clear();
-    String savedTheme = prefs.get(THEME_KEY, "light");
-    if ("dark".equals(savedTheme)) {
-      contentPane.getScene().getRoot().getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/dark-theme.css").toExternalForm()
-      );
-    } else {
-      contentPane.getScene().getRoot().getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
-      );
-    }
+    closeButton.getScene().getRoot().getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
   }
   public void applyLang() {
     btnMap.setText(LocalizationManager.getStringByKey("menu.map"));

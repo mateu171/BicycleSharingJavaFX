@@ -251,18 +251,45 @@
 }
 
 .settings-combo .list-view {
+  -fx-background-color: white;
   -fx-background-radius: 12;
   -fx-border-radius: 12;
   -fx-border-color: #FFE600;
+  -fx-padding: 5;
 }
 
 .settings-combo .list-cell {
   -fx-padding: 8 12;
+  -fx-background-color: transparent;
+  -fx-text-fill: #364153;
+  -fx-font-size: 14px;
 }
 
 .settings-combo .list-cell:hover {
   -fx-background-color: #FFE600;
   -fx-text-fill: black;
+  -fx-background-radius: 8;
+}
+
+.settings-combo .list-cell:selected {
+  -fx-background-color: transparent;
+  -fx-text-fill: black;
+  -fx-font-weight: bold;
+  -fx-background-radius: 8;
+}
+
+.settings-combo .list-cell:filled:selected:focused {
+  -fx-background-color: transparent;
+  -fx-text-fill: black;
+}
+
+.settings-combo .scroll-bar:vertical {
+  -fx-pref-width: 6;
+}
+
+.settings-combo .scroll-bar .thumb {
+  -fx-background-color: #FFE600;
+  -fx-background-radius: 10;
 }
 
 .settings-radio {

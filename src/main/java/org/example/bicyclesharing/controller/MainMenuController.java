@@ -30,7 +30,23 @@ public class MainMenuController {
   private VBox sidebar;
   @FXML
   private StackPane contentPane;
+  @FXML
+  private Button btnMap;
+  @FXML
+  private Button btnProfile;
+  @FXML
+  private Button btnBalance;
+  @FXML
+  private Button btnHistory;
+  @FXML
+  private Button btnTransaction;
+  @FXML
+  private Button btnGuide;
+  @FXML
+  private Button btnSettings;
+
   private User currentUser;
+  private String currentView;
 
   private final Preferences prefs = Preferences.userNodeForPackage(SettingsController.class);
   private static final String THEME_KEY = "theme";
@@ -110,8 +126,8 @@ public class MainMenuController {
 
   private void load(String path) {
     try {
-      ResourceBundle bundle = LocalizationManager.getBundle();
-      FXMLLoader loader = new FXMLLoader(getClass().getResource(path),bundle);
+      currentView = path;
+      FXMLLoader loader = new FXMLLoader(getClass().getResource(path),LocalizationManager.getBundle());
       Parent view = loader.load();
 
       Object controller = loader.getController();
@@ -128,7 +144,7 @@ public class MainMenuController {
         transactionController.setCurrentUser(currentUser);
       }
       if (controller instanceof SettingsController settingsController) {
-        settingsController.setRootPane((StackPane) closeButton.getScene().getRoot());
+        settingsController.setRootPane((StackPane) closeButton.getScene().getRoot(),this);
       }
 
 
@@ -151,4 +167,22 @@ public class MainMenuController {
       );
     }
   }
+  public void applyLang() {
+    btnMap.setText(LocalizationManager.getStringByKey("menu.map"));
+    btnProfile.setText(LocalizationManager.getStringByKey("menu.profile"));
+    btnBalance.setText(LocalizationManager.getStringByKey("menu.balance"));
+    btnHistory.setText(LocalizationManager.getStringByKey("menu.history"));
+    btnTransaction.setText(LocalizationManager.getStringByKey("menu.transactions"));
+    btnGuide.setText(LocalizationManager.getStringByKey("menu.guide"));
+    btnSettings.setText(LocalizationManager.getStringByKey("menu.settings"));
+
+    // Також перезавантажуємо поточний contentPane
+    reloadCurrentView();
+  }
+
+  private void reloadCurrentView()
+  {
+    load(currentView);
+  }
+
 }

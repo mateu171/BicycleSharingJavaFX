@@ -46,7 +46,6 @@
     </VBox>
 
     <Button text="%settings.save"
-      fx:id="saveButton"
       prefWidth="200"
       styleClass="settings-save-button"
       onAction="#saveChange"/>

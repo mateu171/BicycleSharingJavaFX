@@ -34,8 +34,7 @@ public class StartController {
   private void load(String path) {
     currentView = path;
     try {
-      ResourceBundle bundle = LocalizationManager.getBundle();
-      FXMLLoader loader = new FXMLLoader(getClass().getResource(path),bundle);
+      FXMLLoader loader = new FXMLLoader(getClass().getResource(path),LocalizationManager.getBundle());
       Parent view = loader.load();
 
       Object controller = loader.getController();
@@ -68,10 +67,10 @@ public class StartController {
 
     Locale current = LocalizationManager.getBundle().getLocale();
 
-    if (current.getLanguage().equals("ua")) {
+    if (current.getLanguage().equals("uk")) {
       LocalizationManager.setLocale("en");
     } else {
-      LocalizationManager.setLocale("ua");
+      LocalizationManager.setLocale("uk");
     }
       load(currentView);
   }

@@ -30,8 +30,7 @@ public class BalanceViewModel {
   public void addBalance(double amount) {
     balance.set(balance.get() + amount);
     currentUser.setBalance(balance.get());
-    Transaction tr = new Transaction(currentUser.getId(),amount, TransactionType.TOP_UP,
-        LocalizationManager.getStringByKey("balance.recharged"));
+    Transaction tr = new Transaction(currentUser.getId(),amount, TransactionType.TOP_UP, "balance.recharged");
     transactionService.add(tr);
     userService.update(currentUser);
   }

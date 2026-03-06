@@ -11,6 +11,7 @@ import org.example.bicyclesharing.domain.Impl.Transaction;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.RideHistoryViewModel;
 import org.example.bicyclesharing.viewModel.TransactionViewModel;
 
@@ -52,11 +53,11 @@ public class TransactionController {
         Label title = new Label(item.getType().getLocalizedName());
         title.getStyleClass().add("transaction-title");
 
-        Label description = new Label(item.getDescription());
+        Label description = new Label(LocalizationManager.getStringByKey(item.getDescription()));
 
         Label date = new Label(
             item.getTimestamp()
-                .format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+                .format(DateTimeFormatter.ofPattern("dd MMM yyyy").withLocale(LocalizationManager.getLocale()))
         );
         date.getStyleClass().add("transaction-date");
 

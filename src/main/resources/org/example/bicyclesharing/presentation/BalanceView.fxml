@@ -12,8 +12,7 @@
     alignment="CENTER"
     prefWidth="500">
 
-    <Label text="%balance.title"
-      styleClass="label-title"/>
+    <Label fx:id="title" styleClass="label-title"/>
 
     <StackPane prefWidth="200"
       prefHeight="200"
@@ -22,8 +21,7 @@
       styleClass="balance-circle">
 
       <VBox alignment="CENTER" spacing="5">
-        <Label text="%balance.yourBalance"
-          style="-fx-text-fill: #364153;"/>
+        <Label fx:id="yourBalance" style="-fx-text-fill: #364153;"/>
 
         <Label fx:id="balanceLabel"
           text="0.00₴"
@@ -33,8 +31,7 @@
       </VBox>
     </StackPane>
 
-    <Label text="%balance.chooseAmount"
-      style="-fx-text-fill: #364153;"/>
+    <Label fx:id="selectTopUp" style="-fx-text-fill: #364153;"/>
 
     <HBox fx:id="topUpButtons" spacing="15" alignment="CENTER">
 
@@ -48,8 +45,7 @@
         styleClass="top-up-button"/>
     </HBox>
 
-    <Label text="%balance.topUpAmount"
-      style="-fx-text-fill: #364153;"/>
+    <Label fx:id="topUp" style="-fx-text-fill: #364153;"/>
 
     <TextField fx:id="topUpField"
       text="200"
@@ -58,7 +54,6 @@
       styleClass="text-field-style"/>
 
     <Button fx:id="replenishButton"
-      text="%balance.topUp"
       prefWidth="250"
       styleClass="button-primary"/>
 

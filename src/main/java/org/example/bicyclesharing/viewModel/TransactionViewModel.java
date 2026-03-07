@@ -1,18 +1,18 @@
 package org.example.bicyclesharing.viewModel;
 
-import java.util.UUID;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Transaction;
-
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.services.TransactionService;
+import org.example.bicyclesharing.util.LocalizationManager;
 
 public class TransactionViewModel {
 
-  private final ObservableList<Transaction> transactions =
-      FXCollections.observableArrayList();
+  public final StringProperty titleText = LocalizationManager.getStringProperty("transactions.title");
+
+  private final ObservableList<Transaction> transactions = FXCollections.observableArrayList();
   private final TransactionService transactionService;
   private final User currentUser;
 

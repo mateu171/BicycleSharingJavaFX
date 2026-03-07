@@ -12,17 +12,14 @@ import org.example.bicyclesharing.viewModel.BalanceViewModel;
 
 public class BalanceController {
 
-  @FXML
-  private Label balanceLabel;
-
-  @FXML
-  private TextField topUpField;
-
-  @FXML
-  private HBox topUpButtons;
-
-  @FXML
-  private Button replenishButton;
+  @FXML private Label title;
+  @FXML private Label balanceLabel;
+  @FXML private Label yourBalance;
+  @FXML private Label selectTopUp;
+  @FXML private Label topUp;
+  @FXML private TextField topUpField;
+  @FXML private HBox topUpButtons;
+  @FXML private Button replenishButton;
 
   private User currentUser;
   private BalanceViewModel viewModel;
@@ -31,6 +28,12 @@ public class BalanceController {
     this.currentUser = user;
     this.viewModel = new BalanceViewModel(AppConfig.userService(),AppConfig.transactionService(), currentUser);
     balanceLabel.textProperty().bind(viewModel.balanceProperty().asString("%.2f₴"));
+    title.textProperty().bind(viewModel.titleText);
+    yourBalance.textProperty().bind(viewModel.yourBalanceText);
+    replenishButton.textProperty().bind(viewModel.topUpButtonText);
+    selectTopUp.textProperty().bind(viewModel.chooseAmountText);
+    topUp.textProperty().bind(viewModel.topUpAmountText);
+
   }
 
   @FXML

@@ -14,7 +14,6 @@ public class LoginViewModel {
 
   public StringProperty login = new SimpleStringProperty("");
   public StringProperty password = new SimpleStringProperty("");
-  public StringProperty errorMessage = new SimpleStringProperty("");
   public StringProperty errorKey = new SimpleStringProperty("");
   public BooleanProperty loginSuccess = new SimpleBooleanProperty(false);
 
@@ -29,9 +28,6 @@ public class LoginViewModel {
 
   public LoginViewModel() {
     this.authService = AppConfig.authService();
-    errorKey.addListener((obs, oldKey, newKey) -> {
-        errorMessage.set(LocalizationManager.getStringByKey(newKey));
-    });
   }
 
   public User getCurrentUser() {

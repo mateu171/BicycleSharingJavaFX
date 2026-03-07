@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
@@ -13,8 +10,7 @@
 
   <VBox spacing="15">
 
-    <Label text="%transactions.title"
-      styleClass="label-title"/>
+    <Label fx:id="title" styleClass="label-title"/>
 
     <ListView fx:id="transactionListView"
       VBox.vgrow="ALWAYS"

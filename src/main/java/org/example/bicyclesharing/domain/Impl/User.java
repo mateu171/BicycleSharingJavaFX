@@ -117,6 +117,7 @@ public class User extends BaseEntity {
     else if (!email.matches("^[a-zA-Z0-9]+@gmail\\.com$")) {
       addError("email", "error.email.invalid");
     }
+    this.email = email;
   }
 
   public Role getRole() {

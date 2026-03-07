@@ -40,6 +40,7 @@ public class LocalizationManager {
   }
 
   public static String getStringByKey(String key) {
+    if (key == null || key.isEmpty()) return "";
     return bundle.getString(key);
   }
 

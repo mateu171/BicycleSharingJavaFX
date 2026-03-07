@@ -21,8 +21,13 @@ public class ProfileViewModel {
   public StringProperty emailError = new SimpleStringProperty("");
   public StringProperty successMessage = new SimpleStringProperty("");
 
+  public final StringProperty titleText = LocalizationManager.getStringProperty("profile.title");
+  public final StringProperty updateButtonText = LocalizationManager.getStringProperty("profile.update");
+  public final StringProperty loginPrompt = LocalizationManager.getStringProperty("profile.login");
+  public final StringProperty passwordPrompt = LocalizationManager.getStringProperty("profile.password");
+  public final StringProperty emailPrompt = LocalizationManager.getStringProperty("profile.email");
+
   private User currentUser;
-  private String oldLogin;
 
   public ProfileViewModel(UserService userService,User currentUser) {
     this.userService = userService;
@@ -30,7 +35,6 @@ public class ProfileViewModel {
 
     login.set(currentUser.getLogin());
     email.set(currentUser.getEmail());
-    oldLogin = currentUser.getLogin();
   }
 
   public void update() {

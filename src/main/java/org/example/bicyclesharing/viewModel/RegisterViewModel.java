@@ -84,6 +84,7 @@ public class RegisterViewModel {
           targetProperty.set(fullMessage);
         }
       });
+      return;
     }
 
     try {

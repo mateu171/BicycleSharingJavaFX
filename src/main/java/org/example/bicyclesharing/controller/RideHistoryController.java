@@ -17,20 +17,19 @@ public class RideHistoryController {
 
   @FXML
   private ListView<Rental> rentalList;
+  @FXML
+  private Label title;
 
   private RideHistoryViewModel viewModel;
 
-  private User currentUser;
-
   public void setCurrentUser(User currentUser) {
-    this.currentUser = currentUser;
     this.viewModel = new RideHistoryViewModel(AppConfig.rentalService(),currentUser);
     rentalList.setItems(viewModel.getRentals());
     setupCellFactory();
   }
 
   private void setupCellFactory() {
-
+    title.textProperty().bind(viewModel.titleText);
     rentalList.getStyleClass().add("rental-list");
     rentalList.setSelectionModel(null);
 

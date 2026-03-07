@@ -12,7 +12,6 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
-import org.example.bicyclesharing.viewModel.RideHistoryViewModel;
 import org.example.bicyclesharing.viewModel.TransactionViewModel;
 
 import java.time.format.DateTimeFormatter;
@@ -21,18 +20,19 @@ public class TransactionController {
 
   @FXML
   private ListView<Transaction> transactionListView;
+  @FXML
+  private Label title;
 
   private TransactionViewModel viewModel;
-  private User currentUser;
 
   public void setCurrentUser(User currentUser) {
-    this.currentUser = currentUser;
     this.viewModel = new TransactionViewModel(AppConfig.transactionService(),currentUser);
     transactionListView.setItems(viewModel.getTransactions());
     setupCellFactory();
   }
 
   private void setupCellFactory() {
+    title.textProperty().bind(viewModel.titleText);
     transactionListView.setItems(viewModel.getTransactions());
     transactionListView.getStyleClass().add("rental-list");
     transactionListView.setSelectionModel(null);

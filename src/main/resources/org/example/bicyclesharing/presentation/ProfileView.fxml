@@ -16,12 +16,13 @@
 
   <children>
     <VBox alignment="CENTER" fillWidth="false" spacing="5">
-      <Label styleClass="label-title" text="%profile.title" />
+
+      <Label fx:id="titleLabel" styleClass="label-title"/>
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="loginField" prefWidth="250" promptText="%profile.login" styleClass="text-field-style"/>
-          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
+          <TextField fx:id="loginField" prefWidth="250" styleClass="text-field-style"/>
+          <ImageView fitHeight="15" fitWidth="15" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/user.png"/></image>
           </ImageView>
@@ -31,8 +32,8 @@
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="passwordField" prefWidth="250" promptText="%profile.password" styleClass="text-field-style" />
-          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
+          <TextField fx:id="passwordField" prefWidth="250" styleClass="text-field-style"/>
+          <ImageView fitHeight="15" fitWidth="15" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/key.png"/></image>
           </ImageView>
@@ -42,8 +43,8 @@
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="emailField" prefWidth="250" promptText="%profile.email" styleClass="text-field-style" />
-          <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
+          <TextField fx:id="emailField" prefWidth="250" styleClass="text-field-style"/>
+          <ImageView fitHeight="15" fitWidth="15" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../art/icon/mail.png"/></image>
           </ImageView>
@@ -52,8 +53,12 @@
         <Label fx:id="successLabel" maxWidth="250" styleClass="label-success" wrapText="true"/>
       </VBox>
 
-      <Button fx:id="registerButton" prefHeight="25.0" prefWidth="100.0" onAction="#onUpdate"
-        styleClass="button-primary" text="%profile.update"/>
+      <Button fx:id="updateButton"
+        prefHeight="25"
+        prefWidth="100"
+        onAction="#onUpdate"
+        styleClass="button-primary"/>
+
     </VBox>
   </children>
 </StackPane>

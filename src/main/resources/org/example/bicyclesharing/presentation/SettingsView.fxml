@@ -3,7 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane xmlns="http://javafx.com/javafx"
+<StackPane
+  xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
   fx:controller="org.example.bicyclesharing.controller.SettingsController"
   prefHeight="500.0"
@@ -14,41 +15,56 @@
     <ToggleGroup fx:id="themeToggleGroup"/>
   </fx:define>
 
-  <VBox spacing="25" >
+  <VBox spacing="25">
 
-    <Label text="%settings.title"
+    <Label
+      fx:id="titleLabel"
       styleClass="label-title"/>
 
-    <VBox spacing="10" styleClass="settings-card">
-      <Label text="%settings.language"
+    <VBox
+      spacing="10"
+      styleClass="settings-card">
+
+      <Label
+        fx:id="languageLabel"
         styleClass="settings-section-title"/>
 
-      <ComboBox fx:id="languageComboBox"
+      <ComboBox
+        fx:id="languageComboBox"
         prefWidth="250"
         styleClass="settings-combo"/>
     </VBox>
 
-    <VBox spacing="10" styleClass="settings-card">
-      <Label text="%settings.theme"
+    <VBox
+      spacing="10"
+      styleClass="settings-card">
+
+      <Label
+        fx:id="themeLabel"
         styleClass="settings-section-title"/>
 
-      <HBox spacing="20">
-        <RadioButton fx:id="lightThemeRadio"
-          text="%settings.light"
+      <HBox
+        spacing="20">
+
+        <RadioButton
+          fx:id="lightThemeRadio"
           toggleGroup="$themeToggleGroup"
           styleClass="settings-radio"/>
 
-        <RadioButton fx:id="darkThemeRadio"
-          text="%settings.dark"
+        <RadioButton
+          fx:id="darkThemeRadio"
           toggleGroup="$themeToggleGroup"
           styleClass="settings-radio"/>
+
       </HBox>
     </VBox>
 
-    <Button text="%settings.save"
+    <Button
+      fx:id="saveButton"
       prefWidth="200"
       styleClass="settings-save-button"
       onAction="#saveChange"/>
+
   </VBox>
 
 </StackPane>

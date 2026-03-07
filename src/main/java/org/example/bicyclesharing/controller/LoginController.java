@@ -1,10 +1,13 @@
 package org.example.bicyclesharing.controller;
 
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.example.bicyclesharing.services.NavigationService;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.LoginViewModel;
 
 public class LoginController implements Navigatable{
@@ -31,16 +34,21 @@ public class LoginController implements Navigatable{
     loginButton.textProperty().bind(viewModel.signInButtonText);
 
     passwordField.textProperty().bindBidirectional(viewModel.password);
-    errorMessage.textProperty().bind(viewModel.errorMessage);
+    errorMessage.textProperty().bind(
+        Bindings.createStringBinding(
+            () -> LocalizationManager.getStringByKey(viewModel.errorKey.get()),
+            viewModel.errorKey
+        )
+    );
 
-    loginField.textProperty().addListener((obs, oldText, newText) -> viewModel.errorMessage.set(""));
-    passwordField.textProperty().addListener((obs, oldText, newText) -> viewModel.errorMessage.set(""));
+    loginField.textProperty().addListener((obs, oldText, newText) -> viewModel.errorKey.set(""));
+    passwordField.textProperty().addListener((obs, oldText, newText) -> viewModel.errorKey.set(""));
 
     loginField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (isNowFocused) viewModel.errorMessage.set("");
+      if (isNowFocused) viewModel.errorKey.set("");
     });
     passwordField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (isNowFocused) viewModel.errorMessage.set("");
+      if (isNowFocused) viewModel.errorKey.set("");
     });
 
     viewModel.loginSuccess.addListener((obs,odlVal,newVal) ->
@@ -64,7 +72,9 @@ public class LoginController implements Navigatable{
   }
   private  void openMainMenu()
   {
-    navigation.load("/org/example/bicyclesharing/presentation/MainMenuView.fxml");
+    navigation.openWindow("/org/example/bicyclesharing/presentation/MainMenuView.fxml",viewModel.getCurrentUser());
+    Stage stage = (Stage) loginButton.getScene().getWindow();
+    stage.close();
   }
 
   @Override

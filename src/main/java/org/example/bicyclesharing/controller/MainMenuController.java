@@ -1,8 +1,6 @@
 package org.example.bicyclesharing.controller;
 
 import java.io.IOException;
-import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -17,7 +15,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.SidebarAnimation;
 import org.example.bicyclesharing.util.ThemeManager;
+import org.example.bicyclesharing.viewModel.MainMenuViewModel;
 
 public class MainMenuController {
 
@@ -47,45 +47,32 @@ public class MainMenuController {
   private Button btnSettings;
 
   private User currentUser;
-  private String currentView;
-
-  private final Preferences prefs = Preferences.userNodeForPackage(SettingsController.class);
-  private static final String THEME_KEY = "theme";
+  private MainMenuViewModel viewModel;
 
   public void setCurrentUser(User currentUser) {
 
     this.currentUser = currentUser;
     onShowProfile();
-    applyTheme();
   }
 
   @FXML
   public void initialize()
   {
-//    sidebar.sceneProperty().addListener((obs, oldScene, newScene) -> {
-//      if (newScene != null) {
-//        applyTheme();
-//      }
-//    });
-    double expandedWidth = 180;
-    double collapsedWidth = 60;
+    sidebar.sceneProperty().addListener((obs, oldScene, newScene) -> {
+      if (newScene != null) {
+        applyTheme();
+      }
+    });
+    SidebarAnimation.applyHoverAnimation(sidebar, 180, 60);
 
-    sidebar.setOnMouseEntered(e -> {
-      Timeline expand = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(sidebar.prefWidthProperty(), expandedWidth, Interpolator.EASE_BOTH)
-          )
-      );
-      expand.play();
-    });
-    sidebar.setOnMouseExited(e -> {
-      Timeline collapse = new Timeline(
-          new KeyFrame(Duration.millis(300),
-              new KeyValue(sidebar.prefWidthProperty(), collapsedWidth, Interpolator.EASE_BOTH)
-          )
-      );
-      collapse.play();
-    });
+    viewModel = new MainMenuViewModel();
+    btnProfile.textProperty().bind(viewModel.profileButtonText);
+    btnBalance.textProperty().bind(viewModel.balanceButtonText);
+    btnGuide.textProperty().bind(viewModel.guideButtonText);
+    btnHistory.textProperty().bind(viewModel.historyButtonText);
+    btnMap.textProperty().bind(viewModel.mapButtonText);
+    btnSettings.textProperty().bind(viewModel.settingsButtonText);
+    btnTransaction.textProperty().bind(viewModel.transactionButtonText);
   }
   public void closeWindow()
   {
@@ -105,29 +92,38 @@ public class MainMenuController {
     stage.setMaximized(!stage.isMaximized());
   }
 
-  public void onShowProfile()
-  {
-    load("/org/example/bicyclesharing/presentation/ProfileView.fxml");
-  }
-  public void onShowBalance() {
-    load("/org/example/bicyclesharing/presentation/BalanceView.fxml");
-  }
-  public void onShowRideHistory() {
-    load("/org/example/bicyclesharing/presentation/RideHistoryView.fxml");
-  }
-  public void onShowTransactions() {
-    load("/org/example/bicyclesharing/presentation/TransactionView.fxml");
-  }
-  public void onShowSettings() {
-    load("/org/example/bicyclesharing/presentation/SettingsView.fxml");
-  }
-  public void onShowMap(){
-    load("/org/example/bicyclesharing/presentation/MapView.fxml");
+  @FXML
+  public void onShowProfile() {
+    loadView("/org/example/bicyclesharing/presentation/ProfileView.fxml");
   }
 
-  private void load(String path) {
+  @FXML
+  public void onShowBalance() {
+    loadView("/org/example/bicyclesharing/presentation/BalanceView.fxml");
+  }
+
+  @FXML
+  public void onShowRideHistory() {
+    loadView("/org/example/bicyclesharing/presentation/RideHistoryView.fxml");
+  }
+
+  @FXML
+  public void onShowTransactions() {
+    loadView("/org/example/bicyclesharing/presentation/TransactionView.fxml");
+  }
+
+  @FXML
+  public void onShowSettings() {
+    loadView("/org/example/bicyclesharing/presentation/SettingsView.fxml");
+  }
+
+  @FXML
+  public void onShowMap() {
+    loadView("/org/example/bicyclesharing/presentation/MapView.fxml");
+  }
+
+  private void loadView(String path) {
     try {
-      currentView = path;
       FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
       Parent view = loader.load();
 
@@ -145,7 +141,7 @@ public class MainMenuController {
         transactionController.setCurrentUser(currentUser);
       }
       if (controller instanceof SettingsController settingsController) {
-        settingsController.setRootPane((StackPane) closeButton.getScene().getRoot(),this);
+        settingsController.setRootPane((StackPane) closeButton.getScene().getRoot());
       }
 
 
@@ -159,22 +155,4 @@ public class MainMenuController {
     closeButton.getScene().getRoot().getStylesheets().clear();
     closeButton.getScene().getRoot().getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
   }
-  public void applyLang() {
-    btnMap.setText(LocalizationManager.getStringByKey("menu.map"));
-    btnProfile.setText(LocalizationManager.getStringByKey("menu.profile"));
-    btnBalance.setText(LocalizationManager.getStringByKey("menu.balance"));
-    btnHistory.setText(LocalizationManager.getStringByKey("menu.history"));
-    btnTransaction.setText(LocalizationManager.getStringByKey("menu.transactions"));
-    btnGuide.setText(LocalizationManager.getStringByKey("menu.guide"));
-    btnSettings.setText(LocalizationManager.getStringByKey("menu.settings"));
-
-    // Також перезавантажуємо поточний contentPane
-    reloadCurrentView();
-  }
-
-  private void reloadCurrentView()
-  {
-    load(currentView);
-  }
-
 }

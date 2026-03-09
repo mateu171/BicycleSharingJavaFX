@@ -37,7 +37,8 @@ public class LoginController implements Navigatable{
     errorMessage.textProperty().bind(
         Bindings.createStringBinding(
             () -> LocalizationManager.getStringByKey(viewModel.errorKey.get()),
-            viewModel.errorKey
+            viewModel.errorKey,
+            LocalizationManager.localeProperty()
         )
     );
 

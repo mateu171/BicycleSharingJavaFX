@@ -45,7 +45,18 @@ public class SettingsController {
   {
     viewModel = new SettingsViewModel();
 
-    languageComboBox.getItems().addAll(viewModel.comboItemUK.getValue(), viewModel.comboItemEN.getValue());
+    updateCombo();
+
+    if (LocalizationManager.getLocale().getLanguage().equals("uk")) {
+      languageComboBox.getSelectionModel().select(0);
+    } else {
+      languageComboBox.getSelectionModel().select(1);
+    }
+
+    LocalizationManager.localeProperty().addListener((obs, oldVal, newVal) -> {
+      updateCombo();
+    });
+
     lightThemeRadio.textProperty().bind(viewModel.themeRadioTextLight);
     darkThemeRadio.textProperty().bind(viewModel.themeRadioTextDark);
     titleLabel.textProperty().bind(viewModel.titleText);
@@ -92,5 +103,18 @@ public class SettingsController {
   private void applyTheme() {
      rootPane.getStylesheets().clear();
       rootPane.getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
+  }
+
+  private void updateCombo() {
+    int selectedIndex = languageComboBox.getSelectionModel().getSelectedIndex();
+
+    languageComboBox.getItems().setAll(
+        viewModel.comboItemUK.get(),
+        viewModel.comboItemEN.get()
+    );
+
+    if (selectedIndex >= 0) {
+      languageComboBox.getSelectionModel().select(selectedIndex);
+    }
   }
 }

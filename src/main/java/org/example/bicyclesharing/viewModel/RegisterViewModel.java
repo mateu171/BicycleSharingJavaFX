@@ -1,6 +1,5 @@
 package org.example.bicyclesharing.viewModel;
 
-import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -22,10 +21,10 @@ public class RegisterViewModel {
   public StringProperty email = new SimpleStringProperty("");
   public StringProperty emailCode = new SimpleStringProperty("");
 
-  public StringProperty loginError = new SimpleStringProperty("");
-  public StringProperty passwordError = new SimpleStringProperty("");
-  public StringProperty emailError = new SimpleStringProperty("");
-  public StringProperty emailCodeError = new SimpleStringProperty("");
+  public StringProperty loginErrorKey = new SimpleStringProperty("");
+  public StringProperty passwordErrorKey = new SimpleStringProperty("");
+  public StringProperty emailErrorKey = new SimpleStringProperty("");
+  public StringProperty emailCodeErrorKey = new SimpleStringProperty("");
 
   public BooleanProperty confirmationVisible = new SimpleBooleanProperty(false);
   public BooleanProperty registrationVisible = new SimpleBooleanProperty(true);
@@ -63,25 +62,22 @@ public class RegisterViewModel {
 
       if(userService.existsByLogin(tempUser.getLogin()))
       {
-        loginError.set(LocalizationManager.getStringByKey("error.login.exists"));
+        loginErrorKey.set("error.login.exists");
         return;
       }
 
     } catch (CustomEntityValidationExeption e) {
-      e.getErrors().forEach((field, messages) -> {
+      e.getErrors().forEach((field, keys) -> {
         StringProperty targetProperty;
         switch (field) {
-          case "login" -> targetProperty = loginError;
-          case "password" -> targetProperty = passwordError;
-          case "email" -> targetProperty = emailError;
+          case "login" -> targetProperty = loginErrorKey;
+          case "password" -> targetProperty = passwordErrorKey;
+          case "email" -> targetProperty = emailErrorKey;
           default -> targetProperty = null;
         }
 
-        if (targetProperty != null) {
-          String fullMessage = messages.stream()
-              .map(LocalizationManager::getStringByKey)
-              .collect(Collectors.joining("\n"));
-          targetProperty.set(fullMessage);
+        if (targetProperty != null && !keys.isEmpty()) {
+          targetProperty.set(keys.get(0));
         }
       });
       return;
@@ -92,13 +88,13 @@ public class RegisterViewModel {
       registrationVisible.set(false);
       confirmationVisible.set(true);
     } catch (Exception ex) {
-      emailError.set(LocalizationManager.getStringByKey("error.email.send_failed"));
+      emailErrorKey.set("error.email.send_failed");
     }
   }
 
   public void confirmCode() {
     if (!String.valueOf(sentCode).equals(emailCode.get())) {
-      emailCodeError.set(LocalizationManager.getStringByKey("error.email.code_invalid"));
+      emailCodeErrorKey.set("error.email.code_invalid");
       return;
     }
 
@@ -112,9 +108,9 @@ public class RegisterViewModel {
   }
 
   private void clearErrors() {
-    loginError.set("");
-    passwordError.set("");
-    emailError.set("");
-    emailCodeError.set("");
+    loginErrorKey.set("");
+    passwordErrorKey.set("");
+    emailErrorKey.set("");
+    emailCodeErrorKey.set("");
   }
 }

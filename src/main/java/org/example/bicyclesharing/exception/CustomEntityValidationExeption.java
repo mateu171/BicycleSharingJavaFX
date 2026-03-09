@@ -8,7 +8,7 @@ public class CustomEntityValidationExeption extends RuntimeException {
   private final Map<String, List<String>> errors;
 
   public CustomEntityValidationExeption(Map<String, List<String>> errors) {
-    super("Помилка валідації. Перевірте 'помилки' для деталей");
+    super("");
     this.errors = errors;
   }
 

@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.controller;
 
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -46,10 +47,37 @@ public class RegisterController implements Navigatable {
     emailField.textProperty().bindBidirectional(viewModel.email);
     emailCodeField.textProperty().bindBidirectional(viewModel.emailCode);
 
-    loginErrorLabel.textProperty().bind(viewModel.loginError);
-    passwordErrorLabel.textProperty().bind(viewModel.passwordError);
-    emailErrorLabel.textProperty().bind(viewModel.emailError);
-    emailCodeErrorLabel.textProperty().bind(viewModel.emailCodeError);
+    loginErrorLabel.textProperty().bind(
+        Bindings.createStringBinding(
+            () -> LocalizationManager.getStringByKey(viewModel.loginErrorKey.get()),
+            viewModel.loginErrorKey,
+            LocalizationManager.localeProperty()
+        )
+    );
+
+    passwordErrorLabel.textProperty().bind(
+        Bindings.createStringBinding(
+            () -> LocalizationManager.getStringByKey(viewModel.passwordErrorKey.get()),
+            viewModel.passwordErrorKey,
+            LocalizationManager.localeProperty()
+        )
+    );
+
+    emailErrorLabel.textProperty().bind(
+        Bindings.createStringBinding(
+            () -> LocalizationManager.getStringByKey(viewModel.emailErrorKey.get()),
+            viewModel.emailErrorKey,
+            LocalizationManager.localeProperty()
+        )
+    );
+
+    emailCodeErrorLabel.textProperty().bind(
+        Bindings.createStringBinding(
+            () -> LocalizationManager.getStringByKey(viewModel.emailCodeErrorKey.get()),
+            viewModel.emailCodeErrorKey,
+            LocalizationManager.localeProperty()
+        )
+    );
 
     loginField.promptTextProperty().bind(viewModel.loginPromptText);
     registerTitle.textProperty().bind(viewModel.registerTitleText);
@@ -61,22 +89,22 @@ public class RegisterController implements Navigatable {
     confirmCodeButton.textProperty().bind(viewModel.confirmButtonText);
     confirmEmailTitle.textProperty().bind(viewModel.confirmEmailText);
 
-    loginField.textProperty().addListener((obs, oldText, newText) -> viewModel.loginError.set(""));
-    passwordField.textProperty().addListener((obs, oldText, newText) -> viewModel.passwordError.set(""));
-    emailField.textProperty().addListener((obs, oldText, newText) -> viewModel.emailError.set(""));
-    emailCodeField.textProperty().addListener((obs, oldText, newText) -> viewModel.emailCodeError.set(""));
+    loginField.textProperty().addListener((obs, oldText, newText) -> viewModel.loginErrorKey.set(""));
+    passwordField.textProperty().addListener((obs, oldText, newText) -> viewModel.passwordErrorKey.set(""));
+    emailField.textProperty().addListener((obs, oldText, newText) -> viewModel.emailErrorKey.set(""));
+    emailCodeField.textProperty().addListener((obs, oldText, newText) -> viewModel.emailCodeErrorKey.set(""));
 
     loginField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (isNowFocused) viewModel.loginError.set("");
+      if (isNowFocused) viewModel.loginErrorKey.set("");
     });
     passwordField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (isNowFocused) viewModel.passwordError.set("");
+      if (isNowFocused) viewModel.passwordErrorKey.set("");
     });
     emailField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (isNowFocused) viewModel.emailError.set("");
+      if (isNowFocused) viewModel.emailErrorKey.set("");
     });
     emailCodeField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
-      if (isNowFocused) viewModel.emailCodeError.set("");
+      if (isNowFocused) viewModel.emailCodeErrorKey.set("");
     });
 
     confirmationPane.visibleProperty()

@@ -2,20 +2,21 @@
 <html>
 <head>
   <meta charset="utf-8"/>
-
+  <script>
+    window.L_DISABLE_3D = true;
+  </script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <style>
     html, body, #map {
       width: 100%;
       height: 100%;
       margin: 0;
       padding: 0;
+      overflow: hidden;
     }
   </style>
 </head>
-
 <body>
 <div id="map"></div>
 
@@ -23,18 +24,15 @@
   var map = L.map('map').setView([48.6208, 22.2879], 13);
 
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    crossOrigin: true
+    maxZoom: 19
   }).addTo(map);
 
   L.marker([48.6208, 22.2879]).addTo(map)
-  .bindPopup("Велосипед 🚲");
+    .bindPopup("Велосипед 🚲");
 
   setTimeout(function() {
     map.invalidateSize();
   }, 300);
-
 </script>
-
 </body>
 </html>

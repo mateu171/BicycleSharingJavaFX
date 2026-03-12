@@ -2,7 +2,6 @@ package org.example.bicyclesharing.util;
 
 
 import org.example.bicyclesharing.domain.security.PasswordHasher;
-import org.example.bicyclesharing.repository.BicycleRepository;
 import org.example.bicyclesharing.repository.db.BicycleRepositoryDB;
 import org.example.bicyclesharing.repository.db.RentalRepositoryDB;
 import org.example.bicyclesharing.repository.db.TransactionRepositoryDB;

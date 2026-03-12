@@ -12,6 +12,7 @@ module org.example.bicyclesharing {
   requires java.desktop;
   requires javafx.web;
   requires java.prefs;
+  requires jdk.jsobject;
 
   opens org.example.bicyclesharing to javafx.fxml;
   exports org.example.bicyclesharing;

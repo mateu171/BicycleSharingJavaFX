@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
-import org.example.bicyclesharing.domain.enums.TypeBicycle;
 import org.example.bicyclesharing.repository.BicycleRepository;
 import org.example.bicyclesharing.repository.Repository;
 
@@ -22,15 +21,15 @@ public class BicycleService extends BaseService<Bicycle, UUID> {
   }
 
   public Bicycle getById(UUID id) {
-    return  new Bicycle("dfd",TypeBicycle.HIGHWAY,"23");//repository.findById(id).orElse(null);
+    return repository.findAll()
+        .stream()
+        .filter(i -> i.getId().equals(id))
+        .findFirst()
+        .orElse(null);
   }
 
   public List<Bicycle> getByState(StateBicycle stateBicycle) {
     return repository.findByState(stateBicycle);
-  }
-
-  public List<Bicycle> getByType(TypeBicycle typeBicycle) {
-    return repository.findByType(typeBicycle);
   }
 }
 

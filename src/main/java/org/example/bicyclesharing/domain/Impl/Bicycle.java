@@ -1,6 +1,5 @@
 package org.example.bicyclesharing.domain.Impl;
 
-
 import java.util.UUID;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
@@ -13,17 +12,23 @@ public class Bicycle extends BaseEntity {
   private StateBicycle state;
   private double pricePerHour;
   private UUID rentalId;
+  private double latitude;
+  private double longitude;
 
   private Bicycle() {
     super();
   }
 
-  public Bicycle(String model, TypeBicycle typeBicycle, String pricePerHour) {
+  public Bicycle(String model, String pricePerHour,
+      double latitude, double longitude) {
     this();
     setModel(model);
-    setTypeBicycle(typeBicycle);
+    this.typeBicycle = TypeBicycle.URBAN;
     this.state = StateBicycle.AVAILABLE;
     setPricePerHour(pricePerHour);
+
+    setLatitude(latitude);
+    setLongitude(longitude);
 
     if (!isValid()) {
       throw new CustomEntityValidationExeption(getErrors());
@@ -60,14 +65,6 @@ public class Bicycle extends BaseEntity {
     return typeBicycle;
   }
 
-  public void setTypeBicycle(TypeBicycle typeBicycle) {
-    cleanErrors("typeBicycle");
-    if (typeBicycle == null) {
-      addError("typeBicycle", "Тип велосипеду не повинен бути пустим");
-    }
-    this.typeBicycle = typeBicycle;
-  }
-
   public StateBicycle getState() {
     return state;
   }
@@ -99,17 +96,32 @@ public class Bicycle extends BaseEntity {
       addError("pricePerHour", "Ціна за годину повинна бути числом!");
     }
   }
+  public double getLatitude() {
+    return latitude;
+  }
 
-  @Override
-  public String toString() {
-    return String.format(
-        "Велосипед | ID: %s | Модель: %s | Тип: %s | Стан: %s | Ціна/год: %.2f",
-        getId(),
-        model,
-        typeBicycle.getName(),
-        state.getName(),
-        pricePerHour
-    );
+  public void setLatitude(double latitude) {
+    cleanErrors("latitude");
+
+    if (latitude < -90 || latitude > 90) {
+      addError("latitude", "Широта повинна бути від -90 до 90");
+    }
+
+    this.latitude = latitude;
+  }
+
+  public double getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(double longitude) {
+    cleanErrors("longitude");
+
+    if (longitude < -180 || longitude > 180) {
+      addError("longitude", "Довгота повинна бути від -180 до 180");
+    }
+
+    this.longitude = longitude;
   }
 
 

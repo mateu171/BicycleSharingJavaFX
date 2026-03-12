@@ -3,7 +3,6 @@ package org.example.bicyclesharing.repository.db;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.repository.UserRepository;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;

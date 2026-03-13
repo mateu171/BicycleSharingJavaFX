@@ -2,10 +2,7 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
-
 <StackPane xmlns:fx="http://javafx.com/fxml"
   fx:controller="org.example.bicyclesharing.controller.MapController">
-
     <WebView fx:id="webView" />
-
 </StackPane>

@@ -2,7 +2,6 @@
 <html>
 <head>
   <meta charset="utf-8"/>
-
   <script>
     window.L_DISABLE_3D = true;
   </script>
@@ -11,68 +10,103 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    html, body, #map{
-      width:100%;
-      height:100%;
-      margin:0;
-      padding:0;
-      overflow:hidden;
+    html, body, #map { width:100%; height:100%; margin:0; padding:0; overflow:hidden; }
+    .bike-div-icon {
+      pointer-events: auto !important;
+      cursor: pointer;
+    }
+    .bike-div-icon div {
+      pointer-events: auto !important;
     }
   </style>
 
 </head>
-
 <body>
-
 <div id="map"></div>
 
 <script>
+  var map = L.map('map', {
+    tap: false,
+    preferCanvas: true // Додаємо для кращої обробки подій
+  }).setView([48.6208, 22.2879], 13);
 
-  var map = L.map('map').setView([48.6208, 22.2879], 13);
-
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19,
-    crossOrigin:true
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    crossOrigin: true
   }).addTo(map);
 
-
-  var bikeIcon = L.icon({
-    iconUrl:"https://cdn-icons-png.flaticon.com/512/2972/2972185.png",
-    iconSize:[40,40],
-    iconAnchor:[20,40],
-    popupAnchor:[0,-40]
-  });
-
-
-  function addBike(lat, lng, model, price){
-
-    var marker = L.marker([lat,lng],{icon:bikeIcon}).addTo(map);
-
-    marker.bindPopup(
-        "<b>"+model+"</b><br>"+
-        "Ціна: "+price+" грн/год<br><br>"+
-        "<button onclick='rentBike(\""+model+"\")'>Орендувати</button>"
-    );
-
-  }
-
-
-  function rentBike(id){
-
-    if(window.javaApp){
-      javaApp.rentBike(id);
-    }else{
-      alert("Орендовано велосипед " + id);
+  // Функція викликається з Java коду
+  function onBikeClick(uuid, model) {
+    console.log("Клік на велосипед: " + model);
+    if (window.javaApp) {
+      window.javaApp.showBikeModal(uuid);
+    } else {
+      alert("Модель: " + model + "\nUUID: " + uuid);
     }
-
   }
 
+  function addBike(lat, lng, model, price, uuid) {
+    // Створюємо маркер з використанням Leaflet подій замість onmousedown
+    var bikeIcon = L.divIcon({
+      html: '<div class="bike-marker" data-uuid="' + uuid + '" data-model="' + model + '">' +
+          '<img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" style="width:40px;height:40px;">' +
+          '</div>',
+      className: 'bike-div-icon',
+      iconSize: [40, 40],
+      iconAnchor: [20, 40]
+    });
 
-  setTimeout(function(){
+    var marker = L.marker([lat, lng], {
+      icon: bikeIcon,
+      // Важливо: дозволяємо взаємодію з маркером
+      interactive: true
+    }).addTo(map);
+
+    // Додаємо обробник події кліку через Leaflet API
+    marker.on('click', function(e) {
+      console.log("Marker clicked via Leaflet");
+      // Отримуємо дані з HTML елемента
+      var markerElement = e.target._icon;
+      if (markerElement) {
+        var bikeDiv = markerElement.querySelector('.bike-marker');
+        if (bikeDiv) {
+          var uuid = bikeDiv.getAttribute('data-uuid');
+          var model = bikeDiv.getAttribute('data-model');
+          onBikeClick(uuid, model);
+        }
+      }
+    });
+
+    // Альтернативний спосіб: обробник на самому HTML елементі
+    marker.on('add', function() {
+      var icon = this._icon;
+      if (icon) {
+        icon.style.cursor = 'pointer';
+        icon.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var bikeDiv = this.querySelector('.bike-marker');
+          if (bikeDiv) {
+            var uuid = bikeDiv.getAttribute('data-uuid');
+            var model = bikeDiv.getAttribute('data-model');
+            onBikeClick(uuid, model);
+          }
+        });
+      }
+    });
+  }
+
+  // Функція для очищення маркерів (опціонально)
+  function clearMarkers() {
+    map.eachLayer(function(layer) {
+      if (layer instanceof L.Marker) {
+        map.removeLayer(layer);
+      }
+    });
+  }
+
+  setTimeout(function() {
     map.invalidateSize();
-  },300);
-
+  }, 500);
 </script>
-
 </body>
 </html>

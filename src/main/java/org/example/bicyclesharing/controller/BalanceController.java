@@ -10,7 +10,7 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.viewModel.BalanceViewModel;
 
-public class BalanceController {
+public class BalanceController extends BaseController{
 
   @FXML private Label title;
   @FXML private Label balanceLabel;
@@ -24,6 +24,7 @@ public class BalanceController {
   private User currentUser;
   private BalanceViewModel viewModel;
 
+  @Override
   public void setCurrentUser(User user) {
     this.currentUser = user;
     this.viewModel = new BalanceViewModel(AppConfig.userService(),AppConfig.transactionService(), currentUser);
@@ -33,7 +34,7 @@ public class BalanceController {
     replenishButton.textProperty().bind(viewModel.topUpButtonText);
     selectTopUp.textProperty().bind(viewModel.chooseAmountText);
     topUp.textProperty().bind(viewModel.topUpAmountText);
-
+    topUpField.textProperty().bindBidirectional(viewModel.amount);
   }
 
   @FXML
@@ -62,10 +63,7 @@ public class BalanceController {
     }));
 
     replenishButton.setOnAction(event -> {
-        double amount = Double.parseDouble(topUpField.getText());
-        if (amount < 1) return;
-
-        viewModel.addBalance(amount);
+        viewModel.addBalance();
     });
   }
 

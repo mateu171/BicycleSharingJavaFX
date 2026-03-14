@@ -8,7 +8,7 @@ import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.util.LocalizationManager;
 
-public class ProfileViewModel {
+public class ProfileViewModel extends BaseViewModel {
 
   private final UserService userService;
 
@@ -27,11 +27,9 @@ public class ProfileViewModel {
   public final StringProperty passwordPrompt = LocalizationManager.getStringProperty("profile.password");
   public final StringProperty emailPrompt = LocalizationManager.getStringProperty("profile.email");
 
-  private User currentUser;
-
   public ProfileViewModel(UserService userService,User currentUser) {
+    super(currentUser);
     this.userService = userService;
-    this.currentUser = currentUser;
 
     login.set(currentUser.getLogin());
     email.set(currentUser.getEmail());

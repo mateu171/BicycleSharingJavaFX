@@ -16,7 +16,7 @@ import org.example.bicyclesharing.viewModel.TransactionViewModel;
 
 import java.time.format.DateTimeFormatter;
 
-public class TransactionController {
+public class TransactionController extends BaseController {
 
   @FXML
   private ListView<Transaction> transactionListView;
@@ -25,6 +25,7 @@ public class TransactionController {
 
   private TransactionViewModel viewModel;
 
+  @Override
   public void setCurrentUser(User currentUser) {
     this.viewModel = new TransactionViewModel(AppConfig.transactionService(),currentUser);
     transactionListView.setItems(viewModel.getTransactions());

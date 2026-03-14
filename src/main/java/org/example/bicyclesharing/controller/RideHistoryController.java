@@ -13,7 +13,7 @@ import org.example.bicyclesharing.viewModel.RideHistoryViewModel;
 
 import java.time.format.DateTimeFormatter;
 
-public class RideHistoryController {
+public class RideHistoryController extends BaseController {
 
   @FXML
   private ListView<Rental> rentalList;
@@ -22,6 +22,7 @@ public class RideHistoryController {
 
   private RideHistoryViewModel viewModel;
 
+  @Override
   public void setCurrentUser(User currentUser) {
     this.viewModel = new RideHistoryViewModel(AppConfig.rentalService(),currentUser);
     rentalList.setItems(viewModel.getRentals());

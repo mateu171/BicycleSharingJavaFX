@@ -1,11 +1,11 @@
 package org.example.bicyclesharing.repository.db;
 
+import java.util.List;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.repository.UserRepository;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.UUID;
+import org.springframework.jdbc.core.RowMapper;
 
 public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements UserRepository {
 
@@ -25,8 +25,8 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
   }
 
   @Override
-  protected User mapRow(ResultSet rs) throws SQLException {
-    return User.fromDatabase(
+  protected RowMapper<User> rowMapper() {
+    return (rs, rowNum) -> User.fromDatabase(
         UUID.fromString(rs.getString("id")),
         rs.getString("login"),
         rs.getString("password"),
@@ -74,8 +74,8 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
 
   @Override
   public User findByLogin(String login) {
-    return findAll().stream()
-        .filter(u -> u.getLogin().equals(login))
-        .findFirst().orElse(null);
+    String sql = "SELECT * FROM USERS WHERE login = ?";
+    List<User> users = jdbcTemplate.query(sql, rowMapper(), login);
+    return users.isEmpty() ? null : users.get(0);
   }
 }

@@ -13,6 +13,7 @@ module org.example.bicyclesharing {
   requires javafx.web;
   requires java.prefs;
   requires jdk.jsobject;
+  requires spring.jdbc;
 
   opens org.example.bicyclesharing to javafx.fxml;
   exports org.example.bicyclesharing;

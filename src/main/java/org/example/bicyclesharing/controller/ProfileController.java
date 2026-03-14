@@ -8,7 +8,7 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.viewModel.ProfileViewModel;
 
-public class ProfileController {
+public class ProfileController extends BaseController{
 
   @FXML private TextField loginField;
   @FXML private TextField passwordField;
@@ -23,6 +23,7 @@ public class ProfileController {
 
   private ProfileViewModel viewModel;
 
+  @Override
   public void setCurrentUser(User currentUser) {
     viewModel = new ProfileViewModel(
         AppConfig.userService(),

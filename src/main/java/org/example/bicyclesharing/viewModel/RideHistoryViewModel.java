@@ -8,16 +8,15 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.LocalizationManager;
 
-public class RideHistoryViewModel {
+public class RideHistoryViewModel extends BaseViewModel {
   public final StringProperty titleText = LocalizationManager.getStringProperty("history.title");
   private final ObservableList<Rental> rentals = FXCollections.observableArrayList();
 
   private final RentalService rentalService;
-  private final User currentUser;
 
   public RideHistoryViewModel(RentalService rentalService, User currentUser) {
+    super(currentUser);
     this.rentalService = rentalService;
-    this.currentUser = currentUser;
 
     load();
   }

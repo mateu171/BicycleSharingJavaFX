@@ -128,17 +128,8 @@ public class MainMenuController {
       Parent view = loader.load();
 
       Object controller = loader.getController();
-      if (controller instanceof ProfileController profileController) {
-        profileController.setCurrentUser(currentUser);
-      }
-      if (controller instanceof BalanceController balanceController) {
-        balanceController.setCurrentUser(currentUser);
-      }
-      if (controller instanceof RideHistoryController rideHistoryController) {
-        rideHistoryController.setCurrentUser(currentUser);
-      }
-      if (controller instanceof TransactionController transactionController) {
-        transactionController.setCurrentUser(currentUser);
+      if (controller instanceof BaseController baseController) {
+        baseController.setCurrentUser(currentUser);
       }
       if (controller instanceof SettingsController settingsController) {
         settingsController.setRootPane((StackPane) closeButton.getScene().getRoot());

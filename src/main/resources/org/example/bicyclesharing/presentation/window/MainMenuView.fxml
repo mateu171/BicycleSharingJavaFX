@@ -8,11 +8,11 @@
 <?import javafx.geometry.Insets?>
 <StackPane prefHeight="600" prefWidth="900"
   styleClass="stack-pane-root"
-  stylesheets="@../css/style.css"
+  stylesheets="@../../css/style.css"
   style="-fx-border-radius: 0; -fx-background-radius: 0;"
   xmlns="http://javafx.com/javafx/25"
   xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="org.example.bicyclesharing.controller.MainMenuController">
+  fx:controller="org.example.bicyclesharing.controller.window.MainMenuController">
 
   <AnchorPane>
 
@@ -20,9 +20,9 @@
       spacing="5"
       AnchorPane.topAnchor="0"
       AnchorPane.rightAnchor="10">
-      <Button fx:id="minimizeButton" onAction="#minimizeWindow" styleClass="title-button" text="—"/>
-      <Button fx:id="fullSizeButton" onAction="#fullSize" styleClass="title-button" text="□"/>
-      <Button fx:id="closeButton" onAction="#closeWindow" styleClass="title-button" text="✕"/>
+      <Button onAction="#minimizeWindow" styleClass="title-button" text="—"/>
+      <Button onAction="#fullSize" styleClass="title-button" text="□"/>
+      <Button onAction="#closeWindow" styleClass="title-button" text="✕"/>
     </HBox>
 
     <HBox AnchorPane.topAnchor="40"
@@ -35,7 +35,7 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../art/icon/map.png" />
+              <Image url="@../../art/icon/map.png" />
             </image>
           </ImageView>
           <Button fx:id="btnMap" styleClass="menu-button" onAction="#onShowMap"/>
@@ -44,7 +44,7 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../art/icon/anotheruser.png" />
+              <Image url="@../../art/icon/anotheruser.png" />
             </image>
           </ImageView>
           <Button fx:id="btnProfile" styleClass="menu-button" onAction="#onShowProfile"/>
@@ -53,7 +53,7 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../art/icon/balance.png" />
+              <Image url="@../../art/icon/balance.png" />
             </image>
           </ImageView>
           <Button fx:id="btnBalance" styleClass="menu-button" onAction="#onShowBalance"/>
@@ -62,7 +62,7 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../art/icon/bicycle.png" />
+              <Image url="@../../art/icon/bicycle.png" />
             </image>
           </ImageView>
           <Button fx:id="btnHistory" styleClass="menu-button" onAction="#onShowRideHistory"/>
@@ -71,7 +71,7 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../art/icon/transaction.png" />
+              <Image url="@../../art/icon/transaction.png" />
             </image>
           </ImageView>
           <Button fx:id="btnTransaction" styleClass="menu-button"   onAction="#onShowTransactions"/>
@@ -80,7 +80,7 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../art/icon/info.png" />
+              <Image url="@../../art/icon/info.png" />
             </image>
           </ImageView>
           <Button fx:id="btnGuide" styleClass="menu-button"/>
@@ -89,7 +89,7 @@
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../art/icon/settings.png" />
+              <Image url="@../../art/icon/settings.png" />
             </image>
           </ImageView>
           <Button fx:id="btnSettings" styleClass="menu-button" onAction="#onShowSettings"/>

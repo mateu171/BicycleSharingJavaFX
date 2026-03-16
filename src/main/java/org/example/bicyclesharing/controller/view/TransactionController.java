@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.controller;
+package org.example.bicyclesharing.controller.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;

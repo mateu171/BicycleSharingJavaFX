@@ -7,17 +7,15 @@
   </script>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
   <style>
     html, body, #map { width:100%; height:100%; margin:0; padding:0; overflow:hidden; }
-    .bike-div-icon {
-      pointer-events: auto !important;
-      cursor: pointer;
-    }
-    .bike-div-icon div {
-      pointer-events: auto !important;
-    }
   </style>
 
 </head>
@@ -25,79 +23,72 @@
 <div id="map"></div>
 
 <script>
-  var map = L.map('map', {
-    tap: false,
-    preferCanvas: true
-  }).setView([48.6208, 22.2879], 13);
+  window.onerror = function(msg, url, line) {
+    if(window.javaApp) {
+      console.log("JS Error: " + msg + " at " + line);
+    }
+    return false;
+  };
+
+  var map = L.map('map', { tap: false }).setView([48.6208, 22.2879], 13);
 
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    crossOrigin: true
+    maxZoom: 19
   }).addTo(map);
 
-  function onBikeClick(uuid, model) {
-    console.log("Клік на велосипед: " + model);
-    if (window.javaApp) {
-      window.javaApp.showBikeModal(uuid);
+  var bikeIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/2972/2972185.png',
+    iconSize: [32,32],
+    iconAnchor: [16,32],
+    popupAnchor: [0,-30]
+  });
+
+  var bikeCluster = L.markerClusterGroup();
+  map.addLayer(bikeCluster);
+
+  function addBike(lat, lng, model, price, id){
+
+    var marker = L.marker([lat,lng], {icon: bikeIcon});
+
+    // 1. Create a unique ID for this specific button
+    var btnId = "rent-btn-" + id;
+
+    // 2. Insert the generated ID into the HTML.
+    // We removed the inline onclick since we bind it dynamically below.
+    var html =
+        "<b>" + model + "</b><br>" +
+        "Ціна: " + price + " грн/год<br><br>" +
+        "<button id='" + btnId + "'>Орендувати</button>";
+
+    marker.bindPopup(html);
+
+    marker.on('popupopen', function() {
+      // 3. Fetch the button using the ID we just created
+      var btn = document.getElementById(btnId);
+
+      // 4. Check if the button exists to prevent null reference errors
+      if (btn) {
+        L.DomEvent.disableClickPropagation(btn);
+
+        // Attach the click event properly
+        btn.onclick = function() {
+          rentBike(id);
+        };
+      }
+    });
+
+    bikeCluster.addLayer(marker);
+  }
+
+  function rentBike(id){
+    alert("Bike clicked: " + id);
+
+    if(window.javaApp){
+      window.javaApp.rentBike(id);
     } else {
-      alert("Модель: " + model + "\nUUID: " + uuid);
+      alert("Java bridge not found");
     }
   }
-
-  function addBike(lat, lng, model, price, uuid) {
-    var bikeIcon = L.divIcon({
-      html: '<div class="bike-marker" data-uuid="' + uuid + '" data-model="' + model + '">' +
-          '<img src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png" style="width:40px;height:40px;">' +
-          '</div>',
-      className: 'bike-div-icon',
-      iconSize: [40, 40],
-      iconAnchor: [20, 40]
-    });
-
-    var marker = L.marker([lat, lng], {
-      icon: bikeIcon,
-      interactive: true
-    }).addTo(map);
-
-    marker.on('click', function(e) {
-      console.log("Marker clicked via Leaflet");
-      // Отримуємо дані з HTML елемента
-      var markerElement = e.target._icon;
-      if (markerElement) {
-        var bikeDiv = markerElement.querySelector('.bike-marker');
-        if (bikeDiv) {
-          var uuid = bikeDiv.getAttribute('data-uuid');
-          var model = bikeDiv.getAttribute('data-model');
-          onBikeClick(uuid, model);
-        }
-      }
-    });
-
-    marker.on('add', function() {
-      var icon = this._icon;
-      if (icon) {
-        icon.style.cursor = 'pointer';
-        icon.addEventListener('click', function(e) {
-          e.stopPropagation();
-          var bikeDiv = this.querySelector('.bike-marker');
-          if (bikeDiv) {
-            var uuid = bikeDiv.getAttribute('data-uuid');
-            var model = bikeDiv.getAttribute('data-model');
-            onBikeClick(uuid, model);
-          }
-        });
-      }
-    });
-  }
-
-  function clearMarkers() {
-    map.eachLayer(function(layer) {
-      if (layer instanceof L.Marker) {
-        map.removeLayer(layer);
-      }
-    });
-  }
-
   setTimeout(function() {
     map.invalidateSize();
   }, 500);

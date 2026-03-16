@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.controller;
+package org.example.bicyclesharing.controller.view;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -69,11 +69,11 @@ public class LoginController implements Navigatable{
 
   @FXML
   private void openRegisterWindow() {
-    navigation.load("/org/example/bicyclesharing/presentation/RegisterView.fxml");
+    navigation.load("/org/example/bicyclesharing/presentation/view/RegisterView.fxml");
   }
   private  void openMainMenu()
   {
-    navigation.openWindow("/org/example/bicyclesharing/presentation/MainMenuView.fxml",viewModel.getCurrentUser());
+    navigation.openWindow("/org/example/bicyclesharing/presentation/window/MainMenuView.fxml",viewModel.getCurrentUser());
     Stage stage = (Stage) loginButton.getScene().getWindow();
     stage.close();
   }

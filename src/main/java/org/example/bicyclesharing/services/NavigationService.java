@@ -8,13 +8,16 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.example.bicyclesharing.controller.MainMenuController;
-import org.example.bicyclesharing.controller.Navigatable;
+import org.example.bicyclesharing.controller.view.BaseController;
+import org.example.bicyclesharing.controller.window.MainMenuController;
+import org.example.bicyclesharing.controller.view.Navigatable;
+import org.example.bicyclesharing.controller.view.SettingsController;
 import org.example.bicyclesharing.domain.Impl.User;
 
 public class NavigationService {
 
   private final StackPane contentPane;
+  private User currentUser;
 
   public NavigationService(StackPane contentPane) {
     this.contentPane = contentPane;
@@ -33,6 +36,12 @@ public class NavigationService {
 
       if (controller instanceof Navigatable navigatable) {
         navigatable.setNavigation(this);
+      }
+      if (controller instanceof BaseController baseController) {
+        baseController.setCurrentUser(currentUser);
+      }
+      if (controller instanceof SettingsController settingsController) {
+        settingsController.setRootPane((StackPane) contentPane.getScene().getRoot());
       }
 
       contentPane.getChildren().setAll(view);
@@ -65,5 +74,8 @@ public class NavigationService {
     } catch (IOException e) {
       e.printStackTrace();
     }
+  }
+  public void setCurrentUser(User user) {
+    this.currentUser = user;
   }
 }

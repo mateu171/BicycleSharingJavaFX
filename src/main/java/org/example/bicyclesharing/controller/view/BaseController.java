@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.controller;
+package org.example.bicyclesharing.controller.view;
 
 import org.example.bicyclesharing.domain.Impl.User;
 

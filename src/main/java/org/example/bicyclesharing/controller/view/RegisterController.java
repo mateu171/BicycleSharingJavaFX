@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.controller;
+package org.example.bicyclesharing.controller.view;
 
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -130,7 +130,7 @@ public class RegisterController implements Navigatable {
 
   @FXML
   private void openLoginWindow() {
-    navigation.load("/org/example/bicyclesharing/presentation/LoginView.fxml");
+    navigation.load("/org/example/bicyclesharing/presentation/view/LoginView.fxml");
   }
 
   @Override

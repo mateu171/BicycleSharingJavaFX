@@ -62,7 +62,7 @@ public class BicycleRepositoryDB
         entity.getModel(),
         entity.getTypeBicycle().name(),
         entity.getState().name(),
-        entity.getPricePerHour(),
+        entity.getPricePerMinute(),
         entity.getRentalId(),
         entity.getLatitude(),
         entity.getLongitude()
@@ -76,7 +76,7 @@ public class BicycleRepositoryDB
         entity.getModel(),
         entity.getTypeBicycle().name(),
         entity.getState().name(),
-        entity.getPricePerHour(),
+        entity.getPricePerMinute(),
         entity.getRentalId(),
         entity.getLatitude(),
         entity.getLongitude(),
@@ -101,5 +101,19 @@ public class BicycleRepositoryDB
         "latitude",
         "longitude"
     };
+  }
+
+  @Override
+  protected String getCreateTableSQL() {
+    return "CREATE TABLE IF NOT EXISTS BICYCLES (" +
+        "id VARCHAR(36) PRIMARY KEY," +
+        "model VARCHAR(255) NOT NULL," +
+        "type_bicycle VARCHAR(50) NOT NULL," +
+        "state VARCHAR(50) NOT NULL," +
+        "price_per_hour DOUBLE NOT NULL," +
+        "rental_id VARCHAR(36)," +
+        "latitude DOUBLE," +
+        "longitude DOUBLE" +
+        ")";
   }
 }

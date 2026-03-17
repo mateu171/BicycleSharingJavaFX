@@ -25,6 +25,15 @@ public class UserService extends BaseService<User, UUID> {
     return user != null && !user.getId().equals(currentUserId);
   }
 
+  public User getById(UUID id) {
+    return userRepository.findAll()
+        .stream()
+        .filter(user -> user.getId().equals(id))
+        .findFirst()
+        .orElse(null);
+  }
+
+
   @Override
   protected Repository<User, UUID> getRepository() {
     return userRepository;

@@ -46,7 +46,9 @@ public class AppConfig {
   public static RentalService rentalService() {
     return new RentalService(
         new RentalRepositoryDB(),
-        bicycleService()
+        bicycleService(),
+        userService(),
+        transactionService()
     );
   }
 

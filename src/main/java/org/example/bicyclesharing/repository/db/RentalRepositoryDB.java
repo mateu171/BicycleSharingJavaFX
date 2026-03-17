@@ -12,8 +12,6 @@ public class RentalRepositoryDB
     extends BaseRepositoryDB<Rental, UUID>
     implements RentalRepository {
 
-  public RentalRepositoryDB() {
-  }
 
   @Override
   public List<Rental> findByUserId(UUID id) {
@@ -107,5 +105,17 @@ public class RentalRepositoryDB
         "endTime",
         "totalCost"
     };
+  }
+
+  @Override
+  protected String getCreateTableSQL() {
+    return "CREATE TABLE IF NOT EXISTS RENTALS (" +
+        "id VARCHAR(36) PRIMARY KEY," +
+        "userId VARCHAR(36) NOT NULL," +
+        "bicycleId VARCHAR(36) NOT NULL," +
+        "start TIMESTAMP NOT NULL," +
+        "endTime TIMESTAMP," +
+        "totalCost DOUBLE" +
+        ")";
   }
 }

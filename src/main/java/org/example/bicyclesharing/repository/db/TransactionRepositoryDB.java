@@ -97,4 +97,16 @@ public class TransactionRepositoryDB
         entity.getId()
     };
   }
+
+  @Override
+  protected String getCreateTableSQL() {
+    return "CREATE TABLE IF NOT EXISTS TRANSACTIONS (" +
+        "ID VARCHAR(36) PRIMARY KEY," +
+        "USER_ID VARCHAR(36) NOT NULL," +
+        "AMOUNT DOUBLE NOT NULL," +
+        "TYPE VARCHAR(50) NOT NULL," +
+        "TIMESTAMP TIMESTAMP NOT NULL," +
+        "DESCRIPTION VARCHAR(255)" +
+        ")";
+  }
 }

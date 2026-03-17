@@ -13,12 +13,21 @@ public abstract class BaseRepositoryDB<T, ID> implements Repository<T, ID> {
   protected final JdbcTemplate jdbcTemplate;
 
   public BaseRepositoryDB() {
-     this.jdbcTemplate = new JdbcTemplate(new DriverManagerDataSource(
-         "jdbc:h2:~/test",
-         "sa",
-         ""
-     ));
+    this.jdbcTemplate = new JdbcTemplate(new DriverManagerDataSource(
+        "jdbc:h2:file:C:/Users/Asus/bicyclesharing",
+        "sa",
+        ""
+    ));
+    initTable();
   }
+
+  // Метод для створення таблиці, якщо її немає
+  private void initTable() {
+    String sql = getCreateTableSQL();
+    jdbcTemplate.execute(sql);
+  }
+
+  protected abstract String getCreateTableSQL();
 
   protected abstract String getTableName();
 

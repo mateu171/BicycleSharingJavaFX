@@ -78,4 +78,16 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
     List<User> users = jdbcTemplate.query(sql, rowMapper(), login);
     return users.isEmpty() ? null : users.get(0);
   }
+
+  @Override
+  protected String getCreateTableSQL() {
+    return "CREATE TABLE IF NOT EXISTS USERS (" +
+        "id VARCHAR(36) PRIMARY KEY," +
+        "login VARCHAR(255) NOT NULL UNIQUE," +
+        "password VARCHAR(255) NOT NULL," +
+        "email VARCHAR(255) NOT NULL," +
+        "role VARCHAR(50) NOT NULL," +
+        "balance DOUBLE DEFAULT 0" +
+        ")";
+  }
 }

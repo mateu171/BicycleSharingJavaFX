@@ -2,7 +2,20 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
-<StackPane xmlns:fx="http://javafx.com/fxml"
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<SplitPane xmlns:fx="http://javafx.com/fxml"
+  styleClass="stack-pane-root"
   fx:controller="org.example.bicyclesharing.controller.view.MapController">
-    <WebView fx:id="webView" />
-</StackPane>
+    <StackPane>
+        <WebView fx:id="webView" />
+    </StackPane>
+    <VBox spacing="10" style="-fx-padding: 10;">
+        <Label fx:id="title" styleClass="page-title"/>
+
+        <ListView fx:id="bikeList"
+          VBox.vgrow="ALWAYS"
+          styleClass="rental-list"/>
+    </VBox>
+</SplitPane>

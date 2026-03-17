@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
+import org.example.bicyclesharing.domain.Impl.Transaction;
+import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.repository.RentalRepository;
 import org.example.bicyclesharing.repository.Repository;
 
@@ -14,13 +17,17 @@ public class RentalService extends BaseService<Rental, UUID> {
 
   private final RentalRepository repository;
   private final BicycleService bicycleService;
+  private final UserService userService;
+  private final TransactionService transactionService;
 
   public RentalService(
       RentalRepository repository,
-      BicycleService bicycleService
+      BicycleService bicycleService, UserService userService, TransactionService transactionService
   ) {
     this.repository = repository;
     this.bicycleService = bicycleService;
+    this.userService = userService;
+    this.transactionService = transactionService;
   }
 
   @Override
@@ -32,7 +39,7 @@ public class RentalService extends BaseService<Rental, UUID> {
     return repository.findByUserId(id);
   }
 
-  public Rental finishRental(Rental rental) {
+  public void finishRental(Rental rental) {
     Bicycle bicycle = bicycleService.getById(rental.getBicycleId());
 
     rental.setEnd(LocalDateTime.now());
@@ -40,21 +47,31 @@ public class RentalService extends BaseService<Rental, UUID> {
     calculateCost(rental, bicycle);
 
     bicycle.setState(StateBicycle.AVAILABLE);
-
     bicycleService.update(bicycle);
+
+    User user = userService.getById(rental.getUserId());
+    user.setBalance(user.getBalance() - rental.getTotalCost());
+    userService.update(user);
+
+    Transaction transaction = new Transaction(
+        user.getId(),
+        rental.getTotalCost(),
+        TransactionType.RENTAL_FEE,
+        "transaction.rental_fee"
+    );
+    transactionService.add(transaction);
+
     repository.update(rental);
 
-    return rental;
   }
 
   private void calculateCost(Rental rental, Bicycle bicycle) {
-    Duration duration = Duration.between(
-        rental.getStart(),
-        rental.getEnd()
-    );
+    Duration duration = Duration.between(rental.getStart(), rental.getEnd());
+    double seconds = duration.toSeconds();
 
-    double hours = Math.ceil(duration.toMinutes() / 60.0);
-    rental.setTotalCost(hours * bicycle.getPricePerHour());
+    double totalCost = (seconds / 60) * bicycle.getPricePerMinute();
+
+    rental.setTotalCost(totalCost);
   }
 
 }

@@ -69,7 +69,7 @@ public class RentalService extends BaseService<Rental, UUID> {
     Duration duration = Duration.between(rental.getStart(), rental.getEnd());
     double seconds = duration.toSeconds();
 
-    double totalCost = (seconds / 60) * bicycle.getPricePerMinute();
+    double totalCost = Math.round((seconds / 60.0) * bicycle.getPricePerMinute() * 100.0) / 100.0;
 
     rental.setTotalCost(totalCost);
   }

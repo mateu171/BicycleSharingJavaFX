@@ -8,6 +8,8 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Button?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.PasswordField?>
 <StackPane prefHeight="500" prefWidth="400"
   styleClass="stack-pane-root"
   xmlns="http://javafx.com/javafx/25"
@@ -32,7 +34,7 @@
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="passwordField" prefWidth="250" styleClass="text-field-style"/>
+          <PasswordField fx:id="passwordField" prefWidth="250" styleClass="text-field-style"/>
           <ImageView fitHeight="15" fitWidth="15" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../../art/icon/key.png"/></image>
@@ -61,4 +63,21 @@
 
     </VBox>
   </children>
+
+  <Button
+    onAction="#deleteAccount"
+    styleClass="settings-logout-button"
+    StackPane.alignment="BOTTOM_RIGHT">
+
+    <graphic>
+      <ImageView fitWidth="20" fitHeight="20" pickOnBounds="true" preserveRatio="true">
+        <image>
+          <Image url="@../../art/icon/trash.png"/>
+        </image>
+      </ImageView>
+    </graphic>
+    <StackPane.margin>
+      <Insets top="10" right="10" bottom="10" left="10"/>
+    </StackPane.margin>
+  </Button>
 </StackPane>

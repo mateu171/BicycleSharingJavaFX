@@ -3,15 +3,18 @@ package org.example.bicyclesharing.controller.view;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.services.NavigationService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.viewModel.ProfileViewModel;
 
 public class ProfileController extends BaseController{
 
   @FXML private TextField loginField;
-  @FXML private TextField passwordField;
+  @FXML private PasswordField passwordField;
   @FXML private TextField emailField;
 
   @FXML private Label loginErrorLabel;
@@ -66,4 +69,11 @@ public class ProfileController extends BaseController{
     updateButton.textProperty().bind(viewModel.updateButtonText);
   }
 
+  public void deleteAccount()
+  {
+    new NavigationService().openStartWindow();
+    Stage stage = (Stage) updateButton.getScene().getWindow();
+    stage.close();
+    viewModel.deleteAccount();
+  }
 }

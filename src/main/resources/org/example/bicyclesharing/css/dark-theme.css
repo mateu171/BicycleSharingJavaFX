@@ -324,3 +324,23 @@
   -fx-background-color: #FFD000;
   -fx-cursor: hand;
 }
+
+.settings-logout-button {
+  -fx-background-color: #e74c3c;
+  -fx-background-radius: 15;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-padding: 8 18;
+  -fx-font-size: 13px;
+
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 8, 0.2, 0, 2);
+}
+
+.settings-logout-button:hover {
+  -fx-background-color: #c0392b;
+  -fx-cursor: hand;
+}
+
+.settings-logout-button:pressed {
+  -fx-background-color: #a93226;
+}

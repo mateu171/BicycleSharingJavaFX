@@ -9,6 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.PasswordField?>
 <StackPane prefHeight="500" prefWidth="400"
   styleClass="stack-pane-root"
   xmlns="http://javafx.com/javafx/25"
@@ -33,7 +34,7 @@
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
-          <TextField fx:id="passwordField" prefWidth="250" styleClass="text-field-style" />
+          <PasswordField fx:id="passwordField" prefWidth="250" styleClass="text-field-style" />
           <ImageView fitHeight="15" fitWidth="15" pickOnBounds="true" preserveRatio="true"
             style="-fx-translate-x: -115;">
             <image><Image url="@../../art/icon/key.png"/></image>

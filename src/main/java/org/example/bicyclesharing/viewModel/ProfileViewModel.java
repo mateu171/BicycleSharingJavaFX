@@ -80,6 +80,11 @@ public class ProfileViewModel extends BaseViewModel {
       });
     }
   }
+
+  public void deleteAccount()
+  {
+    userService.deleteById(currentUser.getId());
+  }
   private void clearErrors() {
     loginError.set("");
     passwordError.set("");

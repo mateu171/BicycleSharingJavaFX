@@ -4,6 +4,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import org.example.bicyclesharing.services.NavigationService;
@@ -11,10 +12,10 @@ import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.RegisterViewModel;
 
-public class RegisterController implements Navigatable {
+public class RegisterController implements Navigable {
 
   @FXML private TextField loginField;
-  @FXML private TextField passwordField;
+  @FXML private PasswordField passwordField;
   @FXML private TextField emailField;
   @FXML private TextField emailCodeField;
 

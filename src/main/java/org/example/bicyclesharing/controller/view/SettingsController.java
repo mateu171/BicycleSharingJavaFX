@@ -6,6 +6,8 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
+import org.example.bicyclesharing.services.NavigationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.util.ThemeManager;
 import org.example.bicyclesharing.viewModel.SettingsViewModel;
@@ -116,5 +118,12 @@ public class SettingsController {
     if (selectedIndex >= 0) {
       languageComboBox.getSelectionModel().select(selectedIndex);
     }
+  }
+
+  public void logout()
+  {
+    new NavigationService().openStartWindow();
+    Stage stage = (Stage) rootPane.getScene().getWindow();
+    stage.close();
   }
 }

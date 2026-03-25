@@ -3,6 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <StackPane
   xmlns="http://javafx.com/javafx"
   xmlns:fx="http://javafx.com/fxml"
@@ -66,5 +69,23 @@
       onAction="#saveChange"/>
 
   </VBox>
+
+  <Button
+    fx:id="logoutButton"
+    onAction="#logout"
+    styleClass="settings-logout-button"
+    StackPane.alignment="BOTTOM_RIGHT">
+
+    <graphic>
+      <ImageView fitWidth="20" fitHeight="20" pickOnBounds="true" preserveRatio="true">
+        <image>
+          <Image url="@../../art/icon/exit.png"/>
+        </image>
+      </ImageView>
+    </graphic>
+    <StackPane.margin>
+      <Insets top="10" right="10" bottom="10" left="10"/>
+    </StackPane.margin>
+  </Button>
 
 </StackPane>

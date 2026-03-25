@@ -16,14 +16,22 @@
 
   <AnchorPane>
 
-    <HBox
-      spacing="5"
-      AnchorPane.topAnchor="0"
-      AnchorPane.rightAnchor="10">
-      <Button onAction="#minimizeWindow" styleClass="title-button" text="—"/>
-      <Button onAction="#fullSize" styleClass="title-button" text="□"/>
-      <Button onAction="#closeWindow" styleClass="title-button" text="✕"/>
-    </HBox>
+    <HBox fx:id="titleBar"
+    prefHeight="40"
+    styleClass="title-bar"
+    AnchorPane.topAnchor="0"
+    AnchorPane.leftAnchor="0"
+    AnchorPane.rightAnchor="0"
+    onMousePressed="#handleMousePressed"
+    onMouseDragged="#handleMouseDragged">
+
+    <Pane HBox.hgrow="ALWAYS"/>
+
+    <Button onAction="#minimizeWindow" styleClass="title-button" text="—"/>
+    <Button onAction="#fullSize" styleClass="title-button" text="□"/>
+    <Button onAction="#closeWindow" styleClass="title-button" text="✕"/>
+
+  </HBox>
 
     <HBox AnchorPane.topAnchor="40"
       AnchorPane.bottomAnchor="0"
@@ -75,15 +83,6 @@
             </image>
           </ImageView>
           <Button fx:id="btnTransaction" styleClass="menu-button"   onAction="#onShowTransactions"/>
-        </HBox>
-
-        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
-          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
-            <image>
-              <Image url="@../../art/icon/info.png" />
-            </image>
-          </ImageView>
-          <Button fx:id="btnGuide" styleClass="menu-button"/>
         </HBox>
 
         <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">

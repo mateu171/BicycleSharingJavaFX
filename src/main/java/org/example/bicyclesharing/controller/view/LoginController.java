@@ -4,16 +4,17 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.services.NavigationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.LoginViewModel;
 
-public class LoginController implements Navigatable{
+public class LoginController implements Navigable {
 
   @FXML private TextField loginField;
-  @FXML private TextField passwordField;
+  @FXML private PasswordField passwordField;
   @FXML private Label errorMessage;
   @FXML private Label title;
   @FXML private Button registerButton;

@@ -1,7 +1,9 @@
 package org.example.bicyclesharing.controller.window;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -25,9 +27,9 @@ public class MainMenuController extends BaseWindowController{
   @FXML
   private Button btnTransaction;
   @FXML
-  private Button btnGuide;
-  @FXML
   private Button btnSettings;
+  private double xOffset = 0;
+  private double yOffset = 0;
 
   private MainMenuViewModel viewModel;
 
@@ -45,7 +47,6 @@ public class MainMenuController extends BaseWindowController{
     viewModel = new MainMenuViewModel();
     btnProfile.textProperty().bind(viewModel.profileButtonText);
     btnBalance.textProperty().bind(viewModel.balanceButtonText);
-    btnGuide.textProperty().bind(viewModel.guideButtonText);
     btnHistory.textProperty().bind(viewModel.historyButtonText);
     btnMap.textProperty().bind(viewModel.mapButtonText);
     btnSettings.textProperty().bind(viewModel.settingsButtonText);
@@ -113,5 +114,18 @@ public class MainMenuController extends BaseWindowController{
   private void applyTheme() {
     contentPane.getScene().getRoot().getStylesheets().clear();
     contentPane.getScene().getRoot().getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
+  }
+
+  @FXML
+  private void handleMousePressed(MouseEvent event) {
+    xOffset = event.getScreenX() - ((Stage)((Node)event.getSource()).getScene().getWindow()).getX();
+    yOffset = event.getScreenY() - ((Stage)((Node)event.getSource()).getScene().getWindow()).getY();
+  }
+
+  @FXML
+  private void handleMouseDragged(MouseEvent event) {
+    Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+    stage.setX(event.getScreenX() - xOffset);
+    stage.setY(event.getScreenY() - yOffset);
   }
 }

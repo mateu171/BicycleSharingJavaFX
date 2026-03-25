@@ -110,8 +110,8 @@ public class MapController extends BaseController {
   }
 
   private void loadBicycles() {
-    bikeList.setItems(viewModel.bicycles);
-    webView.getEngine().executeScript(MapJSBuilder.buildAddBikesScript(viewModel.bicycles));
+    bikeList.setItems(viewModel.getBicycles());
+    webView.getEngine().executeScript(MapJSBuilder.buildAddBikesScript(viewModel.getBicycles()));
   }
 
   public void selectBike(String bikeId) {

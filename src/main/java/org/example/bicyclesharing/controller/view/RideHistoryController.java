@@ -5,8 +5,10 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
+import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.RideHistoryViewModel;
@@ -20,6 +22,7 @@ public class RideHistoryController extends BaseController {
   @FXML
   private Label title;
 
+  private final BicycleService bicycleService = AppConfig.bicycleService();
   private RideHistoryViewModel viewModel;
 
   @Override
@@ -51,7 +54,12 @@ public class RideHistoryController extends BaseController {
         DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-        Label bikeLabel = new Label(LocalizationManager.getStringByKey("history.bike") + rental.getBicycleId());
+        Bicycle bicycle = bicycleService.getById(rental.getBicycleId());
+        String bicycleName = bicycle != null ? bicycle.getModel() : "Невідомий велосипед";
+
+        Label bikeLabel = new Label(
+            LocalizationManager.getStringByKey("history.bike") + bicycleName
+        );
         bikeLabel.getStyleClass().add("rental-title");
 
         Label startLabel = new Label(LocalizationManager.getStringByKey("history.start") + rental.getStart().format(formatter));
@@ -62,7 +70,9 @@ public class RideHistoryController extends BaseController {
                 : LocalizationManager.getStringByKey("history.active")
         );
 
-        Label costLabel = new Label(LocalizationManager.getStringByKey("history.total") + rental.getTotalCost() + " грн");
+        Label costLabel = new Label(
+            LocalizationManager.getStringByKey("history.total") + String.format("%.2f грн", rental.getTotalCost())
+        );
         costLabel.getStyleClass().add("rental-cost");
 
         card.getChildren().addAll(bikeLabel, startLabel, endLabel, costLabel);

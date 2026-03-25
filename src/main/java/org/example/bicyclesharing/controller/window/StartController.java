@@ -1,11 +1,20 @@
 package org.example.bicyclesharing.controller.window;
 
 import java.util.Locale;
+import javafx.fxml.FXML;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class StartController extends BaseWindowController{
-  public void showRegister() {
+  private void showRegister() {
     navigationService.load("/org/example/bicyclesharing/presentation/view/RegisterView.fxml");
+  }
+
+  @Override
+  @FXML
+  protected void initialize()
+  {
+    super.initialize();
+    showRegister();
   }
 
   public void closeWindow()

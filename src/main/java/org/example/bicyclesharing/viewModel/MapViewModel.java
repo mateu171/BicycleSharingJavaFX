@@ -25,7 +25,7 @@ public class MapViewModel extends BaseViewModel{
   public final StringProperty finishButtonText = LocalizationManager.getStringProperty("button.finish");
   public final StringProperty labelPrice = LocalizationManager.getStringProperty("label.price");
 
-  public final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
+  private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
   private final BicycleService bicycleService = AppConfig.bicycleService();
   private final RentalService rentalService = AppConfig.rentalService();
   private final Map<Bicycle, StringProperty> rentalTimeProps = new HashMap<>();
@@ -114,5 +114,9 @@ public Bicycle getBicycleById(String id)
     long secs = seconds % 60;
 
     getRentalDurationProperty(bike).set(String.format("%02d:%02d", mins, secs));
+  }
+
+  public ObservableList<Bicycle> getBicycles() {
+    return bicycles;
   }
 }

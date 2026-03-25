@@ -22,4 +22,7 @@ module org.example.bicyclesharing {
   opens org.example.bicyclesharing.viewModel to javafx.fxml;
   opens org.example.bicyclesharing.controller.window to javafx.fxml;
   opens org.example.bicyclesharing.controller.view to javafx.fxml;
+  opens org.example.bicyclesharing.controller.view.user to javafx.fxml;
+  opens org.example.bicyclesharing.viewModel.user to javafx.fxml;
+  opens org.example.bicyclesharing.controller.view.admin to javafx.fxml;
 }

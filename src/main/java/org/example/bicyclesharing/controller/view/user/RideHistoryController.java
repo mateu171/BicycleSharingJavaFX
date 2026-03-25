@@ -1,17 +1,18 @@
-package org.example.bicyclesharing.controller.view;
+package org.example.bicyclesharing.controller.view.user;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.*;
 import javafx.scene.control.Label;
+import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
-import org.example.bicyclesharing.viewModel.RideHistoryViewModel;
+import org.example.bicyclesharing.viewModel.user.RideHistoryViewModel;
 
 import java.time.format.DateTimeFormatter;
 

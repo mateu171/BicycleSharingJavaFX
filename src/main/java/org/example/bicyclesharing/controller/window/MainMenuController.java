@@ -4,10 +4,12 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.util.SidebarAnimation;
 import org.example.bicyclesharing.util.ThemeManager;
 import org.example.bicyclesharing.util.WindowUtil;
@@ -28,6 +30,21 @@ public class MainMenuController extends BaseWindowController{
   private Button btnTransaction;
   @FXML
   private Button btnSettings;
+
+  @FXML private Button btnUsers;
+  @FXML private Button btnEmployees;
+  @FXML private Button btnBicycles;
+
+  @FXML private HBox adminUsersContainer;
+  @FXML private HBox adminEmployeesContainer;
+  @FXML private HBox adminBicyclesContainer;
+  @FXML private HBox mapContainer;
+  @FXML private HBox profileContainer;
+  @FXML private HBox balanceContainer;
+  @FXML private HBox historyContainer;
+  @FXML private HBox transactionContainer;
+  @FXML private HBox settingsContainer;
+
   private double xOffset = 0;
   private double yOffset = 0;
 
@@ -35,7 +52,14 @@ public class MainMenuController extends BaseWindowController{
 
   public void setCurrentUser(User currentUser) {
     navigationService.setCurrentUser(currentUser);
-    onShowProfile();
+    configureMenuByRole(currentUser);
+
+    if (currentUser.getRole() == Role.ADMIN) {
+      onShowUsers();
+    } else {
+      onShowProfile();
+    }
+
   }
 
   @Override
@@ -51,6 +75,9 @@ public class MainMenuController extends BaseWindowController{
     btnMap.textProperty().bind(viewModel.mapButtonText);
     btnSettings.textProperty().bind(viewModel.settingsButtonText);
     btnTransaction.textProperty().bind(viewModel.transactionButtonText);
+    btnUsers.textProperty().bind(viewModel.usersButtonText);
+    btnEmployees.textProperty().bind(viewModel.employeesButtonText);
+    btnBicycles.textProperty().bind(viewModel.bicyclesButtonText);
   }
 
   @Override
@@ -83,22 +110,24 @@ public class MainMenuController extends BaseWindowController{
 
   @FXML
   public void onShowProfile() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/ProfileView.fxml");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/user/ProfileView.fxml");
   }
 
   @FXML
   public void onShowBalance() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/BalanceView.fxml");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/user/BalanceView.fxml");
   }
 
   @FXML
   public void onShowRideHistory() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/RideHistoryView.fxml");
+    navigationService.load(
+        "/org/example/bicyclesharing/presentation/view/user/RideHistoryView.fxml");
   }
 
   @FXML
   public void onShowTransactions() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/TransactionView.fxml");
+    navigationService.load(
+        "/org/example/bicyclesharing/presentation/view/user/TransactionView.fxml");
   }
 
   @FXML
@@ -108,7 +137,7 @@ public class MainMenuController extends BaseWindowController{
 
   @FXML
   public void onShowMap() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/MapView.fxml");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/user/MapView.fxml");
   }
 
   private void applyTheme() {
@@ -127,5 +156,51 @@ public class MainMenuController extends BaseWindowController{
     Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
     stage.setX(event.getScreenX() - xOffset);
     stage.setY(event.getScreenY() - yOffset);
+  }
+
+  private void configureMenuByRole(User currentUser) {
+    boolean isAdmin = currentUser != null && currentUser.getRole() == Role.ADMIN;
+
+    adminUsersContainer.setVisible(isAdmin);
+    adminUsersContainer.setManaged(isAdmin);
+
+    adminEmployeesContainer.setVisible(isAdmin);
+    adminEmployeesContainer.setManaged(isAdmin);
+
+    adminBicyclesContainer.setVisible(isAdmin);
+    adminBicyclesContainer.setManaged(isAdmin);
+
+    mapContainer.setVisible(!isAdmin);
+    mapContainer.setManaged(!isAdmin);
+
+    balanceContainer.setVisible(!isAdmin);
+    balanceContainer.setManaged(!isAdmin);
+
+    historyContainer.setVisible(!isAdmin);
+    historyContainer.setManaged(!isAdmin);
+
+    transactionContainer.setVisible(!isAdmin);
+    transactionContainer.setManaged(!isAdmin);
+
+    profileContainer.setVisible(!isAdmin);
+    profileContainer.setManaged(!isAdmin);
+
+    settingsContainer.setVisible(true);
+    settingsContainer.setManaged(true);
+  }
+
+  @FXML
+  public void onShowUsers() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/admin/UsersManagementView.fxml");
+  }
+
+  @FXML
+  public void onShowEmployees() {
+    System.out.println("Відкрити екран працівників");
+  }
+
+  @FXML
+  public void onShowBicycles() {
+    System.out.println("Відкрити екран велосипедів");
   }
 }

@@ -7,7 +7,7 @@
 <?import javafx.scene.control.ListView?>
 <SplitPane xmlns:fx="http://javafx.com/fxml"
   styleClass="stack-pane-root"
-  fx:controller="org.example.bicyclesharing.controller.view.MapController">
+  fx:controller="org.example.bicyclesharing.controller.view.user.MapController">
     <StackPane>
         <WebView fx:id="webView" />
     </StackPane>

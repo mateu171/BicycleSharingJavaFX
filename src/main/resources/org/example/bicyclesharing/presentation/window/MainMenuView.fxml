@@ -40,7 +40,7 @@
 
       <VBox fx:id="sidebar" styleClass="sidebar">
 
-        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+        <HBox fx:id="mapContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
               <Image url="@../../art/icon/map.png" />
@@ -49,7 +49,7 @@
           <Button fx:id="btnMap" styleClass="menu-button" onAction="#onShowMap"/>
         </HBox>
 
-        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+        <HBox fx:id="profileContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
               <Image url="@../../art/icon/anotheruser.png" />
@@ -58,7 +58,7 @@
           <Button fx:id="btnProfile" styleClass="menu-button" onAction="#onShowProfile"/>
         </HBox>
 
-        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+        <HBox fx:id="balanceContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
               <Image url="@../../art/icon/balance.png" />
@@ -67,7 +67,7 @@
           <Button fx:id="btnBalance" styleClass="menu-button" onAction="#onShowBalance"/>
         </HBox>
 
-        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+        <HBox fx:id="historyContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
               <Image url="@../../art/icon/bicycle.png" />
@@ -76,7 +76,7 @@
           <Button fx:id="btnHistory" styleClass="menu-button" onAction="#onShowRideHistory"/>
         </HBox>
 
-        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+        <HBox fx:id="transactionContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
               <Image url="@../../art/icon/transaction.png" />
@@ -85,7 +85,34 @@
           <Button fx:id="btnTransaction" styleClass="menu-button"   onAction="#onShowTransactions"/>
         </HBox>
 
-        <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+        <HBox fx:id="adminUsersContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/anotheruser.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnUsers" styleClass="menu-button" onAction="#onShowUsers"/>
+        </HBox>
+
+        <HBox fx:id="adminEmployeesContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/anotheruser.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnEmployees" styleClass="menu-button" onAction="#onShowEmployees"/>
+        </HBox>
+
+        <HBox fx:id="adminBicyclesContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/bicycle.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnBicycles" styleClass="menu-button" onAction="#onShowBicycles"/>
+        </HBox>
+
+        <HBox fx:id="settingsContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
               <Image url="@../../art/icon/settings.png" />

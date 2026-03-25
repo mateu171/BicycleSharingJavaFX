@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.viewModel;
+package org.example.bicyclesharing.viewModel.user;
 
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -10,8 +10,9 @@ import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.services.TransactionService;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.viewModel.BaseViewModel;
 
-public class BalanceViewModel extends  BaseViewModel{
+public class BalanceViewModel extends BaseViewModel {
   public final StringProperty titleText = LocalizationManager.getStringProperty("balance.title");
   public final StringProperty yourBalanceText = LocalizationManager.getStringProperty("balance.yourBalance");
   public final StringProperty chooseAmountText = LocalizationManager.getStringProperty("balance.chooseAmount");

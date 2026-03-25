@@ -70,7 +70,7 @@ public class LoginController implements Navigable {
 
   @FXML
   private void openRegisterWindow() {
-    navigation.load("/org/example/bicyclesharing/presentation/view/RegisterView.fxml");
+    navigation.load("/org/example/bicyclesharing/presentation/view/user/RegisterView.fxml");
   }
   private  void openMainMenu()
   {

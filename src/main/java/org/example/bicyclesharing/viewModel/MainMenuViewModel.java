@@ -11,4 +11,8 @@ public class MainMenuViewModel {
   public final StringProperty settingsButtonText = LocalizationManager.getStringProperty("menu.settings");
   public final StringProperty transactionButtonText = LocalizationManager.getStringProperty("menu.transactions");
   public final StringProperty historyButtonText = LocalizationManager.getStringProperty("menu.history");
+
+  public final StringProperty usersButtonText = LocalizationManager.getStringProperty("menu.users");
+  public final StringProperty employeesButtonText = LocalizationManager.getStringProperty("menu.employees");
+  public final StringProperty bicyclesButtonText = LocalizationManager.getStringProperty("menu.bicycles");
 }

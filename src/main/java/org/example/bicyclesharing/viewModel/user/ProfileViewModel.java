@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.viewModel;
+package org.example.bicyclesharing.viewModel.user;
 
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
@@ -7,6 +7,7 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.viewModel.BaseViewModel;
 
 public class ProfileViewModel extends BaseViewModel {
 

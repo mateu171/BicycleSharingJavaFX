@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.controller.view;
+package org.example.bicyclesharing.controller.view.user;
 
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
@@ -11,11 +11,12 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
+import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.MapJSBuilder;
-import org.example.bicyclesharing.viewModel.MapViewModel;
+import org.example.bicyclesharing.viewModel.user.MapViewModel;
 
 public class MapController extends BaseController {
   @FXML

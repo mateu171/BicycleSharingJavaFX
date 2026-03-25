@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.controller.view;
+package org.example.bicyclesharing.controller.view.user;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -6,11 +6,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
+import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
-import org.example.bicyclesharing.viewModel.BalanceViewModel;
+import org.example.bicyclesharing.viewModel.user.BalanceViewModel;
 
-public class BalanceController extends BaseController{
+public class BalanceController extends BaseController {
 
   @FXML private Label title;
   @FXML private Label balanceLabel;

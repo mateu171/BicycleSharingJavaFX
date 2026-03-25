@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.viewModel;
+package org.example.bicyclesharing.viewModel.user;
 
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -7,6 +7,7 @@ import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.viewModel.BaseViewModel;
 
 public class RideHistoryViewModel extends BaseViewModel {
   public final StringProperty titleText = LocalizationManager.getStringProperty("history.title");

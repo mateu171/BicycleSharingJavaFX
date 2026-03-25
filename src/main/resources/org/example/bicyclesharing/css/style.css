@@ -364,3 +364,73 @@
 .settings-logout-button:pressed {
   -fx-background-color: #a93226;
 }
+
+
+
+
+.users-page {
+  -fx-padding: 20;
+}
+
+.users-toolbar {
+  -fx-padding: 8 0 8 0;
+}
+
+.users-stats {
+  -fx-padding: 0 0 4 0;
+}
+
+.users-count-label {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #364153;
+}
+
+.users-list {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+}
+
+.users-list .list-cell {
+  -fx-background-color: transparent;
+  -fx-padding: 6 0 6 0;
+}
+
+.user-card {
+  -fx-background-color: white;
+  -fx-background-radius: 16;
+  -fx-border-radius: 16;
+  -fx-border-color: #d9e1ea;
+  -fx-padding: 14;
+  -fx-spacing: 8;
+}
+
+.user-card-title {
+  -fx-font-size: 17px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.user-card-subtitle {
+  -fx-font-size: 13px;
+  -fx-text-fill: #6b7280;
+}
+
+.user-card-role {
+  -fx-font-size: 13px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #364153;
+}
+
+.button-danger {
+  -fx-background-color: #dc2626;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 10;
+  -fx-cursor: hand;
+  -fx-padding: 8 14 8 14;
+}
+
+.button-danger:hover {
+  -fx-background-color: #b91c1c;
+}

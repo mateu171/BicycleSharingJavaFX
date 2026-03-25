@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.viewModel;
+package org.example.bicyclesharing.viewModel.user;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -17,8 +17,9 @@ import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.viewModel.BaseViewModel;
 
-public class MapViewModel extends BaseViewModel{
+public class MapViewModel extends BaseViewModel {
 
   public final StringProperty titleText = LocalizationManager.getStringProperty("map.title");
   public final StringProperty rentButtonText = LocalizationManager.getStringProperty("button.rent");

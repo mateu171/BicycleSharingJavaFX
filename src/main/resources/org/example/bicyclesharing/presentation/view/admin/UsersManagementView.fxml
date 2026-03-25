@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.admin.UsersManagementController"
+  styleClass="stack-pane-root">
+
+  <VBox spacing="18" prefWidth="900" prefHeight="600" styleClass="users-page">
+
+    <Label fx:id="titleLabel" styleClass="label-title"/>
+
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="users-toolbar">
+      <TextField fx:id="searchField"
+        prefWidth="260"
+        styleClass="text-field-style"
+        style="-fx-padding: 5 5 5 0;"/>
+
+      <ComboBox fx:id="roleFilterComboBox"
+        prefWidth="180"
+        styleClass="settings-combo"/>
+
+      <Pane HBox.hgrow="ALWAYS"/>
+
+      <Button fx:id="refreshButton"
+        onAction="#onRefresh"
+        styleClass="button-secondary"/>
+
+      <Button fx:id="addAdminButton"
+        onAction="#onAddAdmin"
+        styleClass="button-primary"/>
+    </HBox>
+
+    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="users-stats">
+      <Label fx:id="countLabel" styleClass="users-count-label"/>
+    </HBox>
+
+    <ListView fx:id="usersListView"
+      VBox.vgrow="ALWAYS"
+      styleClass="users-list"/>
+
+  </VBox>
+
+</StackPane>

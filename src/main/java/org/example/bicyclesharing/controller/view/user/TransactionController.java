@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.controller.view;
+package org.example.bicyclesharing.controller.view.user;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.ListCell;
@@ -7,12 +7,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.control.Label;
 import javafx.geometry.Pos;
+import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.domain.Impl.Transaction;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
-import org.example.bicyclesharing.viewModel.TransactionViewModel;
+import org.example.bicyclesharing.viewModel.user.TransactionViewModel;
 
 import java.time.format.DateTimeFormatter;
 

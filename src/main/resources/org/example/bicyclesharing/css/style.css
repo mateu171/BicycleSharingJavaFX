@@ -434,3 +434,127 @@
 .button-danger:hover {
   -fx-background-color: #b91c1c;
 }
+
+.modal-root {
+  -fx-background-color: tranparent;
+}
+
+.modal-card {
+  -fx-background-color: linear-gradient(to bottom right, #ffffff, #f7f9fc);
+  -fx-background-radius: 22;
+  -fx-border-radius: 22;
+  -fx-border-color: #e3e8ef;
+  -fx-border-width: 1;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 35, 0.15, 0, 8);
+}
+
+.modal-header {
+  -fx-padding: 18 18 10 18;
+  -fx-border-color: transparent transparent #eef2f7 transparent;
+  -fx-border-width: 0 0 1 0;
+}
+
+.modal-title {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #243041;
+}
+
+.modal-body {
+  -fx-padding: 18;
+}
+
+.modal-footer {
+  -fx-padding: 0 18 18 18;
+}
+
+.modal-text-field {
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 12;
+  -fx-border-radius: 12;
+  -fx-border-color: #d7dee8;
+  -fx-padding: 10 12 10 12;
+  -fx-font-size: 14px;
+}
+
+.modal-text-field:focused {
+  -fx-border-color: #ffe600;
+  -fx-border-width: 2;
+}
+
+.modal-combo {
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 12;
+  -fx-border-radius: 12;
+  -fx-border-color: #d7dee8;
+  -fx-padding: 6 10 6 10;
+}
+
+.modal-combo:hover,
+.modal-combo:focused {
+  -fx-border-color: #ffe600;
+  -fx-border-width: 2;
+}
+
+.modal-combo .arrow-button {
+  -fx-background-color: transparent;
+}
+
+.modal-combo .arrow {
+  -fx-background-color: #364153;
+}
+
+.modal-close-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: #6b7280;
+  -fx-font-size: 15px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 100;
+  -fx-min-width: 32;
+  -fx-min-height: 32;
+  -fx-max-width: 32;
+  -fx-max-height: 32;
+}
+
+.modal-close-button:hover {
+  -fx-background-color: #f1f5f9;
+  -fx-text-fill: #111827;
+  -fx-cursor: hand;
+}
+
+.form-label {
+  -fx-font-size: 13px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #445050;
+}
+
+.button-secondary-outline {
+  -fx-background-color: white;
+  -fx-border-color: #d7dee8;
+  -fx-border-radius: 10;
+  -fx-background-radius: 10;
+  -fx-text-fill: #364153;
+  -fx-font-weight: bold;
+  -fx-padding: 8 16 8 16;
+}
+
+.button-secondary-outline:hover {
+  -fx-border-color: #ffe600;
+  -fx-cursor: hand;
+}
+
+.button-edit {
+  -fx-background-color: #f8fafc;
+  -fx-text-fill: #364153;
+  -fx-border-color: #d7dee8;
+  -fx-border-radius: 10;
+  -fx-background-radius: 10;
+  -fx-font-weight: bold;
+  -fx-padding: 8 14 8 14;
+}
+
+.button-edit:hover {
+  -fx-border-color: #ffe600;
+  -fx-background-color: #fffef0;
+  -fx-cursor: hand;
+}

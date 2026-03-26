@@ -62,6 +62,10 @@ public class Bicycle extends BaseEntity {
     return typeBicycle;
   }
 
+  public void setTypeBicycle(TypeBicycle typeBicycle) {
+    this.typeBicycle = typeBicycle;
+  }
+
   public StateBicycle getState() {
     return state;
   }
@@ -75,22 +79,22 @@ public class Bicycle extends BaseEntity {
   }
 
   public void setPricePerMinute(String priceStr) {
-    cleanErrors("pricePerHour");
+    cleanErrors("pricePerMinute");
 
     if (priceStr == null || priceStr.trim().isEmpty()) {
-      addError("pricePerHour", "bicycle.price.empty");
+      addError("pricePerMinute", "bicycle.price.empty");
       return;
     }
 
     try {
       double price = Double.parseDouble(priceStr);
       if (price < 0) {
-        addError("pricePerHour", "bicycle.price.negative");
+        addError("pricePerMinute", "bicycle.price.negative");
       } else {
         this.pricePerMinute = price;
       }
     } catch (NumberFormatException e) {
-      addError("pricePerHour", "bicycle.price.invalid");
+      addError("pricePerMinute", "bicycle.price.invalid");
     }
   }
   public double getLatitude() {
@@ -101,7 +105,7 @@ public class Bicycle extends BaseEntity {
     cleanErrors("latitude");
 
     if (latitude < -90 || latitude > 90) {
-      addError("latitude", "bicycle.latitude.invalid");
+      addError("latitude", "bicycle.latitude.range");
     }
 
     this.latitude = latitude;
@@ -115,7 +119,7 @@ public class Bicycle extends BaseEntity {
     cleanErrors("longitude");
 
     if (longitude < -180 || longitude > 180) {
-      addError("longitude", "bicycle.longitude.invalid");
+      addError("longitude", "bicycle.longitude.range");
     }
 
     this.longitude = longitude;

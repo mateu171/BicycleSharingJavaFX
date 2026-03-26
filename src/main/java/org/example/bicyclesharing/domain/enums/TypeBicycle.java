@@ -1,7 +1,10 @@
 package org.example.bicyclesharing.domain.enums;
 
 public enum TypeBicycle {
-   URBAN("міський");
+  URBAN("Міський"),
+  MOUNTAIN("Гірський"),
+  ROAD("Шосейний"),
+  ELECTRIC("Електричний");
 
   private final String name;
 

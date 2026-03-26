@@ -12,6 +12,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.User;
@@ -161,6 +162,10 @@ public class BicyclesManagementController extends BaseController {
           }
         });
 
+        Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
+        editButton.getStyleClass().add("button-edit");
+        editButton.setOnAction(e -> openBikeDialog(bicycle));
+
         Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
         deleteButton.getStyleClass().add("button-danger");
         deleteButton.setOnAction(e -> viewModel.deleteBicycle(bicycle));
@@ -169,7 +174,7 @@ public class BicyclesManagementController extends BaseController {
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         HBox stateBox = new HBox(8, stateLabel, stateComboBox);
-        HBox actions = new HBox(10, deleteButton);
+        HBox actions = new HBox(10, editButton, deleteButton);
         HBox bottomRow = new HBox(10, stateBox, spacer, actions);
 
         card.getChildren().addAll(modelLabel, infoLabel, bottomRow);
@@ -180,28 +185,33 @@ public class BicyclesManagementController extends BaseController {
 
   @FXML
   private void onAddBike() {
+   openBikeDialog(null);
+  }
+
+  private void openBikeDialog(Bicycle bicycle) {
     try {
       FXMLLoader loader = new FXMLLoader(
-          getClass().getResource("/org/example/bicyclesharing/presentation/view/admin/AddBicycleView.fxml")
+          getClass().getResource("/org/example/bicyclesharing/presentation/view/admin/AddEditBicycleView.fxml")
       );
 
       Parent root = loader.load();
 
-      AddBicycleController controller = loader.getController();
-      controller.setOnBikeAdded(() -> {
+      AddEditBicycleController controller = loader.getController();
+      controller.initData(bicycle, () -> {
         viewModel.loadBicycles();
         viewModel.applyFilters();
       });
 
       Scene scene = new Scene(root);
+      scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
       scene.getStylesheets().add(
           getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
       );
 
       Stage stage = new Stage();
       stage.initModality(Modality.APPLICATION_MODAL);
+      stage.initStyle(StageStyle.TRANSPARENT);
       stage.setScene(scene);
-      stage.setResizable(false);
       stage.showAndWait();
 
     } catch (Exception e) {

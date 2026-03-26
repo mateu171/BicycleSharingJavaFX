@@ -153,12 +153,6 @@
   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10,0,0,3);
 }
 
-.rental-card:hover {
-  -fx-border-color: #FFE600;
-  -fx-border-radius: 15;
-  -fx-border-width: 2;
-}
-
 .rental-title {
   -fx-font-weight: bold;
   -fx-text-fill: #364153;
@@ -178,7 +172,13 @@
 .transaction-list {
   -fx-background-color: transparent;
 }
-
+.rental-card:hover,
+.transaction-card:hover,
+.user-card:hover{
+  -fx-border-color: #FFE600;
+  -fx-border-radius: 15;
+  -fx-border-width: 2;
+}
 .transaction-card {
   -fx-background-color: white;
   -fx-background-radius: 15;

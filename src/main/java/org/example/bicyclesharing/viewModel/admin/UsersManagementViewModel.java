@@ -22,14 +22,12 @@ public class UsersManagementViewModel extends BaseViewModel {
       LocalizationManager.getStringProperty("admin.users.title");
   public final StringProperty searchPromptText =
       LocalizationManager.getStringProperty("admin.users.search");
-  public final StringProperty refreshButtonText =
-      LocalizationManager.getStringProperty("admin.users.refresh");
   public final StringProperty addAdminButtonText =
       LocalizationManager.getStringProperty("admin.users.addAdmin");
   public final StringProperty countText = new SimpleStringProperty("");
 
   public final StringProperty searchText = new SimpleStringProperty("");
-  public final StringProperty selectedRoleFilter = new SimpleStringProperty("ALL");
+  public final StringProperty selectedRoleFilter = new SimpleStringProperty(LocalizationManager.getStringByKey("all.text"));
 
   public UsersManagementViewModel(User currentUser, UserService userService) {
     super(currentUser);
@@ -50,7 +48,7 @@ public class UsersManagementViewModel extends BaseViewModel {
     List<User> allUsers = userService.getAll();
 
     String search = searchText.get() == null ? "" : searchText.get().trim().toLowerCase(Locale.ROOT);
-    String roleFilter = selectedRoleFilter.get() == null ? "ALL" : selectedRoleFilter.get();
+    String roleFilter = selectedRoleFilter.get() == null ? LocalizationManager.getStringByKey("all.text") : selectedRoleFilter.get();
 
     List<User> filtered = allUsers.stream()
         .filter(user -> {
@@ -60,7 +58,7 @@ public class UsersManagementViewModel extends BaseViewModel {
                   || user.getEmail().toLowerCase(Locale.ROOT).contains(search);
 
           boolean matchesRole =
-              roleFilter.equals("ALL")
+              roleFilter.equals(LocalizationManager.getStringByKey("all.text"))
                   || user.getRole().name().equals(roleFilter);
 
           return matchesSearch && matchesRole;
@@ -87,21 +85,6 @@ public class UsersManagementViewModel extends BaseViewModel {
     }
 
     userService.update(user);
-    applyFilters();
-  }
-
-  public void addAdmin() {
-    String login = "admin" + System.currentTimeMillis();
-    String email = login + "@gmail.com";
-
-    User newAdmin = User.create(
-        login,
-        "12345678",
-        email,
-        Role.ADMIN
-    );
-
-    userService.add(newAdmin);
     applyFilters();
   }
 

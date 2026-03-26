@@ -20,8 +20,6 @@ public class UsersManagementController extends BaseController {
   @FXML private Label countLabel;
   @FXML private TextField searchField;
   @FXML private ComboBox<String> roleFilterComboBox;
-  @FXML private Button refreshButton;
-  @FXML private Button addAdminButton;
   @FXML private ListView<User> usersListView;
 
   private UsersManagementViewModel viewModel;
@@ -38,8 +36,6 @@ public class UsersManagementController extends BaseController {
     titleLabel.textProperty().bind(viewModel.titleText);
     countLabel.textProperty().bind(viewModel.countText);
     searchField.promptTextProperty().bind(viewModel.searchPromptText);
-    refreshButton.textProperty().bind(viewModel.refreshButtonText);
-    addAdminButton.textProperty().bind(viewModel.addAdminButtonText);
 
     searchField.textProperty().bindBidirectional(viewModel.searchText);
     usersListView.setItems(viewModel.getUsers());
@@ -140,16 +136,5 @@ public class UsersManagementController extends BaseController {
         setGraphic(card);
       }
     });
-  }
-
-  @FXML
-  private void onRefresh() {
-    viewModel.loadUsers();
-    viewModel.applyFilters();
-  }
-
-  @FXML
-  private void onAddAdmin() {
-    viewModel.addAdmin();
   }
 }

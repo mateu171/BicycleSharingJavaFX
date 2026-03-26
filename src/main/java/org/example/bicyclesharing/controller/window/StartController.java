@@ -6,7 +6,7 @@ import org.example.bicyclesharing.util.LocalizationManager;
 
 public class StartController extends BaseWindowController{
   private void showRegister() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/user/RegisterView.fxml");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/RegisterView.fxml");
   }
 
   @Override

@@ -8,7 +8,7 @@
   fx:controller="org.example.bicyclesharing.controller.view.admin.UsersManagementController"
   styleClass="stack-pane-root">
 
-  <VBox spacing="18" prefWidth="900" prefHeight="600" styleClass="users-page">
+  <VBox spacing="18"  styleClass="users-page">
 
     <Label fx:id="titleLabel" styleClass="label-title"/>
 
@@ -23,14 +23,6 @@
         styleClass="settings-combo"/>
 
       <Pane HBox.hgrow="ALWAYS"/>
-
-      <Button fx:id="refreshButton"
-        onAction="#onRefresh"
-        styleClass="button-secondary"/>
-
-      <Button fx:id="addAdminButton"
-        onAction="#onAddAdmin"
-        styleClass="button-primary"/>
     </HBox>
 
     <HBox spacing="15" alignment="CENTER_LEFT" styleClass="users-stats">

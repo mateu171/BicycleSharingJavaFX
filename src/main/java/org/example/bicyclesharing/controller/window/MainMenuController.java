@@ -201,6 +201,6 @@ public class MainMenuController extends BaseWindowController{
 
   @FXML
   public void onShowBicycles() {
-    System.out.println("Відкрити екран велосипедів");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/admin/BicyclesManagementView.fxml");
   }
 }

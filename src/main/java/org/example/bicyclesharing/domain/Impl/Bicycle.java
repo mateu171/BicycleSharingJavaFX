@@ -51,9 +51,9 @@ public class Bicycle extends BaseEntity {
   public void setModel(String model) {
     cleanErrors("model");
     if (model == null || model.trim().isEmpty()) {
-      addError("model", "Моделя для велосипеда не повинна бути пустою");
+      addError("model", "bicycle.model.empty");
     } else if (model.length() < 4 || model.length() > 50) {
-      addError("model", "Модель велосипеда повинна бути не менше 4 та не більше 15 символів");
+      addError("model", "bicycle.model.length");
     }
     this.model = model;
   }
@@ -78,19 +78,19 @@ public class Bicycle extends BaseEntity {
     cleanErrors("pricePerHour");
 
     if (priceStr == null || priceStr.trim().isEmpty()) {
-      addError("pricePerHour", "Ціна за хвилину не може бути пустою!");
+      addError("pricePerHour", "bicycle.price.empty");
       return;
     }
 
     try {
       double price = Double.parseDouble(priceStr);
       if (price < 0) {
-        addError("pricePerHour", "Ціна за хвилину не може бути менше 0!");
+        addError("pricePerHour", "bicycle.price.negative");
       } else {
         this.pricePerMinute = price;
       }
     } catch (NumberFormatException e) {
-      addError("pricePerHour", "Ціна за хвилину повинна бути числом!");
+      addError("pricePerHour", "bicycle.price.invalid");
     }
   }
   public double getLatitude() {
@@ -101,7 +101,7 @@ public class Bicycle extends BaseEntity {
     cleanErrors("latitude");
 
     if (latitude < -90 || latitude > 90) {
-      addError("latitude", "Широта повинна бути від -90 до 90");
+      addError("latitude", "bicycle.latitude.invalid");
     }
 
     this.latitude = latitude;
@@ -115,11 +115,9 @@ public class Bicycle extends BaseEntity {
     cleanErrors("longitude");
 
     if (longitude < -180 || longitude > 180) {
-      addError("longitude", "Довгота повинна бути від -180 до 180");
+      addError("longitude", "bicycle.longitude.invalid");
     }
 
     this.longitude = longitude;
   }
-
-
 }

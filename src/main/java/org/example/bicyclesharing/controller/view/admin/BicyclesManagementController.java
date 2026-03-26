@@ -1,0 +1,211 @@
+package org.example.bicyclesharing.controller.view.admin;
+
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import org.example.bicyclesharing.controller.view.BaseController;
+import org.example.bicyclesharing.domain.Impl.Bicycle;
+import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.viewModel.admin.BicyclesManagementViewModel;
+
+public class BicyclesManagementController extends BaseController {
+
+  @FXML private Label titleLabel;
+  @FXML private Label countLabel;
+  @FXML private TextField searchField;
+  @FXML private ComboBox<String> stateFilterComboBox;
+  @FXML private Button addBikeButton;
+  @FXML private ListView<Bicycle> bicyclesListView;
+
+  private BicyclesManagementViewModel viewModel;
+
+  @Override
+  public void setCurrentUser(User currentUser) {
+    viewModel = new BicyclesManagementViewModel(currentUser, AppConfig.bicycleService());
+    bindFields();
+    setupFilters();
+    setupList();
+  }
+
+  private void bindFields() {
+    titleLabel.textProperty().bind(viewModel.titleText);
+    countLabel.textProperty().bind(viewModel.countText);
+    searchField.promptTextProperty().bind(viewModel.searchPromptText);
+    addBikeButton.textProperty().bind(viewModel.addBikeButtonText);
+
+    searchField.textProperty().bindBidirectional(viewModel.searchText);
+    bicyclesListView.setItems(viewModel.getBicycles());
+  }
+
+  private void setupFilters() {
+    stateFilterComboBox.setItems(FXCollections.observableArrayList(
+        "ALL",
+        StateBicycle.AVAILABLE.name(),
+        StateBicycle.RENTED.name()
+    ));
+    stateFilterComboBox.getSelectionModel().selectFirst();
+
+    stateFilterComboBox.setCellFactory(cb -> new ListCell<>() {
+      @Override
+      protected void updateItem(String item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (empty || item == null) {
+          setText(null);
+        } else if (item.equals("ALL")) {
+          setText(LocalizationManager.getStringByKey("all.text"));
+        } else {
+          setText(item);
+        }
+      }
+    });
+
+    stateFilterComboBox.setButtonCell(new ListCell<>() {
+      @Override
+      protected void updateItem(String item, boolean empty) {
+        super.updateItem(item, empty);
+
+        if (empty || item == null) {
+          setText(null);
+        } else if (item.equals("ALL")) {
+          setText(LocalizationManager.getStringByKey("all.text"));
+        } else {
+          setText(item);
+        }
+      }
+    });
+
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFilters());
+
+    stateFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
+      viewModel.selectedStateFilter.set(newVal);
+      viewModel.applyFilters();
+    });
+  }
+
+  private void setupList() {
+    bicyclesListView.setCellFactory(list -> new ListCell<>() {
+      @Override
+      protected void updateItem(Bicycle bicycle, boolean empty) {
+        super.updateItem(bicycle, empty);
+
+        if (empty || bicycle == null) {
+          setGraphic(null);
+          setText(null);
+          return;
+        }
+
+        VBox card = new VBox(8);
+        card.getStyleClass().add("user-card");
+
+        Label modelLabel = new Label(bicycle.getModel());
+        modelLabel.getStyleClass().add("user-card-title");
+
+        Label infoLabel = new Label(
+            LocalizationManager.getStringByKey("admin.bicycles.price") + ": "
+                + String.format("%.2f", bicycle.getPricePerMinute())
+                + " | "
+                + LocalizationManager.getStringByKey("admin.bicycles.coords") + ": "
+                + bicycle.getLatitude() + ", " + bicycle.getLongitude()
+        );
+        infoLabel.getStyleClass().add("user-card-subtitle");
+
+        Label stateLabel = new Label(LocalizationManager.getStringByKey("admin.bicycles.state"));
+        stateLabel.getStyleClass().add("user-card-role");
+
+        ComboBox<StateBicycle> stateComboBox = new ComboBox<>();
+        stateComboBox.setItems(FXCollections.observableArrayList(StateBicycle.values()));
+        stateComboBox.setValue(bicycle.getState());
+        stateComboBox.getStyleClass().add("settings-combo");
+
+        stateComboBox.setCellFactory(cb -> new ListCell<>() {
+          @Override
+          protected void updateItem(StateBicycle item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+              setText(null);
+            } else {
+              setText(item.name());
+            }
+          }
+        });
+
+        stateComboBox.setButtonCell(new ListCell<>() {
+          @Override
+          protected void updateItem(StateBicycle item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty || item == null) {
+              setText(null);
+            } else {
+              setText(item.name());
+            }
+          }
+        });
+
+        stateComboBox.setOnAction(e -> {
+          StateBicycle selectedState = stateComboBox.getValue();
+          if (selectedState != null && selectedState != bicycle.getState()) {
+            viewModel.changeState(bicycle, selectedState);
+          }
+        });
+
+        Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
+        deleteButton.getStyleClass().add("button-danger");
+        deleteButton.setOnAction(e -> viewModel.deleteBicycle(bicycle));
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        HBox stateBox = new HBox(8, stateLabel, stateComboBox);
+        HBox actions = new HBox(10, deleteButton);
+        HBox bottomRow = new HBox(10, stateBox, spacer, actions);
+
+        card.getChildren().addAll(modelLabel, infoLabel, bottomRow);
+        setGraphic(card);
+      }
+    });
+  }
+
+  @FXML
+  private void onAddBike() {
+    try {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/org/example/bicyclesharing/presentation/view/admin/AddBicycleView.fxml")
+      );
+
+      Parent root = loader.load();
+
+      AddBicycleController controller = loader.getController();
+      controller.setOnBikeAdded(() -> {
+        viewModel.loadBicycles();
+        viewModel.applyFilters();
+      });
+
+      Scene scene = new Scene(root);
+      scene.getStylesheets().add(
+          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
+      );
+
+      Stage stage = new Stage();
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setScene(scene);
+      stage.setResizable(false);
+      stage.showAndWait();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+}

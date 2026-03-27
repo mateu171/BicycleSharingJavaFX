@@ -3,6 +3,7 @@ package org.example.bicyclesharing.repository.db;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Employee;
+import org.example.bicyclesharing.domain.enums.EmployeeType;
 import org.example.bicyclesharing.repository.EmployeeRepository;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -26,7 +27,9 @@ public class EmployeeRepositoryDB extends BaseRepositoryDB<Employee, UUID> imple
         "id VARCHAR(36) PRIMARY KEY," +
         "name VARCHAR(255) NOT NULL," +
         "phone_number VARCHAR(50) NOT NULL," +
-        "station_id VARCHAR(36) NOT NULL" +
+        "station_id VARCHAR(36) NOT NULL," +
+        "type VARCHAR(50) NOT NULL," +
+        "salary DOUBLE NOT NULL" +
         ")";
   }
 
@@ -44,10 +47,12 @@ public class EmployeeRepositoryDB extends BaseRepositoryDB<Employee, UUID> imple
   protected RowMapper<Employee> rowMapper() {
     return (rs, rowNum) -> {
     Employee employee =  new Employee(
-          rs.getString("name"),
-          rs.getString("phone_number"),
-          UUID.fromString(rs.getString("station_id"))
-      );
+        rs.getString("name"),
+        rs.getString("phone_number"),
+        UUID.fromString(rs.getString("station_id")),
+        EmployeeType.valueOf(rs.getString("type")),
+        rs.getString("salary")
+    );
 
     employee.setId(UUID.fromString(rs.getString("id")));
 
@@ -58,14 +63,16 @@ public class EmployeeRepositoryDB extends BaseRepositoryDB<Employee, UUID> imple
   @Override
   protected Object[] getInsertValues(Employee entity) {
     if (entity == null) {
-      return new Object[]{"id", "name", "phone_number", "station_id"};
+      return new Object[]{"id", "name", "phone_number", "station_id", "type", "salary"};
     }
 
     return new Object[]{
         entity.getId().toString(),
         entity.getName(),
         entity.getPhoneNumber(),
-        entity.getStationId().toString()
+        entity.getStationId().toString(),
+        entity.getType().name(),
+        entity.getSalary()
     };
   }
 
@@ -75,6 +82,8 @@ public class EmployeeRepositoryDB extends BaseRepositoryDB<Employee, UUID> imple
         entity.getName(),
         entity.getPhoneNumber(),
         entity.getStationId().toString(),
+        entity.getType().name(),
+        entity.getSalary(),
         entity.getId().toString()
     };
   }
@@ -84,7 +93,9 @@ public class EmployeeRepositoryDB extends BaseRepositoryDB<Employee, UUID> imple
     return new String[]{
         "name",
         "phone_number",
-        "station_id"
+        "station_id",
+        "type",
+        "salary"
     };
   }
 

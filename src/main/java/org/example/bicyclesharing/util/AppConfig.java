@@ -3,12 +3,14 @@ package org.example.bicyclesharing.util;
 
 import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.repository.db.BicycleRepositoryDB;
+import org.example.bicyclesharing.repository.db.EmployeeRepositoryDB;
 import org.example.bicyclesharing.repository.db.RentalRepositoryDB;
 import org.example.bicyclesharing.repository.db.TransactionRepositoryDB;
 import org.example.bicyclesharing.repository.db.UserRepositoryDB;
 import org.example.bicyclesharing.services.AuthService;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.EmailService;
+import org.example.bicyclesharing.services.EmployeeService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.services.TransactionService;
 import org.example.bicyclesharing.services.UserService;
@@ -36,13 +38,13 @@ public class AppConfig {
         }
     );
   }
-//
-//  public static EmployeeService employeeService() {
-//    return new EmployeeService(
-//        new JsonEmployeeRepository("data/employees.json")
-//    );
-//  }
-//
+
+  public static EmployeeService employeeService() {
+    return new EmployeeService(
+        new EmployeeRepositoryDB()
+    );
+  }
+
   public static RentalService rentalService() {
     return new RentalService(
         new RentalRepositoryDB(),

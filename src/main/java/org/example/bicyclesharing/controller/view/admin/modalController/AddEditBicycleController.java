@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.controller.view.admin;
+package org.example.bicyclesharing.controller.view.admin.modalController;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -7,7 +7,7 @@ import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
 import org.example.bicyclesharing.util.AppConfig;
-import org.example.bicyclesharing.viewModel.admin.AddEditBicycleViewModel;
+import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditBicycleViewModel;
 
 public class AddEditBicycleController {
 

@@ -14,6 +14,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
+import org.example.bicyclesharing.controller.view.admin.modalController.AddEditBicycleController;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
@@ -191,7 +192,8 @@ public class BicyclesManagementController extends BaseController {
   private void openBikeDialog(Bicycle bicycle) {
     try {
       FXMLLoader loader = new FXMLLoader(
-          getClass().getResource("/org/example/bicyclesharing/presentation/view/admin/AddEditBicycleView.fxml")
+          getClass().getResource(
+              "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditBicycleView.fxml")
       );
 
       Parent root = loader.load();

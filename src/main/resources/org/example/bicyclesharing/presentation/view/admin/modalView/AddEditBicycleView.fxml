@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<StackPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.admin.modalController.AddEditBicycleController"
+  styleClass="modal-root">
+
+  <VBox prefWidth="460" maxWidth="460" styleClass="modal-card">
+
+    <HBox alignment="CENTER_LEFT" styleClass="modal-header">
+      <Label fx:id="titleLabel" styleClass="modal-title"/>
+      <Pane HBox.hgrow="ALWAYS"/>
+      <Button fx:id="closeButton"
+        onAction="#onClose"
+        text="✕"
+        styleClass="modal-close-button"/>
+    </HBox>
+
+    <VBox spacing="12" styleClass="modal-body">
+      <VBox spacing="4">
+        <Label fx:id="modelLabel" styleClass="form-label"/>
+        <TextField fx:id="modelField" styleClass="modal-text-field"/>
+        <Label fx:id="modelErrorLabel" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
+      <VBox spacing="4">
+        <Label fx:id="typeLabel" styleClass="form-label"/>
+        <ComboBox fx:id="typeComboBox" styleClass="modal-combo"/>
+        <Label fx:id="typeErrorLabel" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
+      <VBox spacing="4">
+        <Label fx:id="priceLabel" styleClass="form-label"/>
+        <TextField fx:id="priceField" styleClass="modal-text-field"/>
+        <Label fx:id="priceErrorLabel" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
+      <HBox spacing="10">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+          <Label fx:id="latitudeLabel" styleClass="form-label"/>
+          <TextField fx:id="latitudeField" styleClass="modal-text-field"/>
+          <Label fx:id="latitudeErrorLabel" styleClass="label-error" wrapText="true"/>
+        </VBox>
+
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+          <Label fx:id="longitudeLabel" styleClass="form-label"/>
+          <TextField fx:id="longitudeField" styleClass="modal-text-field"/>
+          <Label fx:id="longitudeErrorLabel" styleClass="label-error" wrapText="true"/>
+        </VBox>
+      </HBox>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="modal-footer">
+      <Button fx:id="cancelButton"
+        onAction="#onClose"
+        styleClass="button-secondary-outline"/>
+      <Button fx:id="saveButton"
+        onAction="#onSave"
+        styleClass="button-primary"/>
+    </HBox>
+  </VBox>
+
+  <padding>
+    <Insets top="20" right="20" bottom="20" left="20"/>
+  </padding>
+</StackPane>

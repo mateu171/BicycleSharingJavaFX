@@ -33,7 +33,6 @@ public class UserService extends BaseService<User, UUID> {
         .orElse(null);
   }
 
-
   @Override
   protected Repository<User, UUID> getRepository() {
     return userRepository;

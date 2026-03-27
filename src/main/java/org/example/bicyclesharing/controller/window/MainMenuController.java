@@ -196,7 +196,7 @@ public class MainMenuController extends BaseWindowController{
 
   @FXML
   public void onShowEmployees() {
-    System.out.println("Відкрити екран працівників");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/admin/EmployeeManagementView.fxml");
   }
 
   @FXML

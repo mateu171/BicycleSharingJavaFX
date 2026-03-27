@@ -1,4 +1,4 @@
-package org.example.bicyclesharing.viewModel.admin;
+package org.example.bicyclesharing.viewModel.admin.modalViewModal;
 
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;

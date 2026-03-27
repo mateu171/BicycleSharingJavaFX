@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<?import javafx.geometry.Insets?>
 <StackPane xmlns="http://javafx.com/javafx/25"
   xmlns:fx="http://javafx.com/fxml/1"
-  fx:controller="org.example.bicyclesharing.controller.view.admin.AddEditBicycleController"
+  fx:controller="org.example.bicyclesharing.controller.view.admin.modalController.AddEditEmployeeController"
   styleClass="modal-root">
 
   <VBox prefWidth="460" maxWidth="460" styleClass="modal-card">
@@ -22,9 +22,21 @@
 
     <VBox spacing="12" styleClass="modal-body">
       <VBox spacing="4">
-        <Label fx:id="modelLabel" styleClass="form-label"/>
-        <TextField fx:id="modelField" styleClass="modal-text-field"/>
-        <Label fx:id="modelErrorLabel" styleClass="label-error" wrapText="true"/>
+        <Label fx:id="nameLabel" styleClass="form-label"/>
+        <TextField fx:id="nameField" styleClass="modal-text-field"/>
+        <Label fx:id="nameErrorLabel" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
+      <VBox spacing="4">
+        <Label fx:id="phoneLabel" styleClass="form-label"/>
+        <TextField fx:id="phoneField" styleClass="modal-text-field"/>
+        <Label fx:id="phoneErrorLabel" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
+      <VBox spacing="4">
+        <Label fx:id="stationLabel" styleClass="form-label"/>
+        <TextField fx:id="stationField" styleClass="modal-text-field"/>
+        <Label fx:id="stationErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>
 
       <VBox spacing="4">
@@ -34,24 +46,10 @@
       </VBox>
 
       <VBox spacing="4">
-        <Label fx:id="priceLabel" styleClass="form-label"/>
-        <TextField fx:id="priceField" styleClass="modal-text-field"/>
-        <Label fx:id="priceErrorLabel" styleClass="label-error" wrapText="true"/>
+        <Label fx:id="salaryLabel" styleClass="form-label"/>
+        <TextField fx:id="salaryField" styleClass="modal-text-field"/>
+        <Label fx:id="salaryErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>
-
-      <HBox spacing="10">
-        <VBox spacing="4" HBox.hgrow="ALWAYS">
-          <Label fx:id="latitudeLabel" styleClass="form-label"/>
-          <TextField fx:id="latitudeField" styleClass="modal-text-field"/>
-          <Label fx:id="latitudeErrorLabel" styleClass="label-error" wrapText="true"/>
-        </VBox>
-
-        <VBox spacing="4" HBox.hgrow="ALWAYS">
-          <Label fx:id="longitudeLabel" styleClass="form-label"/>
-          <TextField fx:id="longitudeField" styleClass="modal-text-field"/>
-          <Label fx:id="longitudeErrorLabel" styleClass="label-error" wrapText="true"/>
-        </VBox>
-      </HBox>
     </VBox>
 
     <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="modal-footer">

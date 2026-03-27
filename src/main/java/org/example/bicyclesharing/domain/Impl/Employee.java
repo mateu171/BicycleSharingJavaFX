@@ -48,9 +48,9 @@ public class Employee extends BaseEntity {
   public void setName(String name) {
     cleanErrors("name");
     if (name == null || name.trim().isEmpty()) {
-      addError("name", "Ім’я не може бути пустим!");
+      addError("name", "employee.name.empty");
     } else if (name.trim().length() < 2 || name.trim().length() > 50) {
-      addError("name", "Ім’я повинно бути від 2 до 50 символів!");
+      addError("name", "employee.name.length");
     }
     this.name = name;
   }
@@ -62,10 +62,9 @@ public class Employee extends BaseEntity {
   public void setPhoneNumber(String phoneNumber) {
     cleanErrors("phoneNumber");
     if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-      addError("phoneNumber", "Номер телефону не може бути пустим!");
+      addError("phoneNumber", "employee.phone.empty");
     } else if (!phoneNumber.matches("^\\+?[0-9]{7,15}$")) {
-      addError("phoneNumber",
-          "Невірний формат телефону! Можна вводити лише цифри та опційно + спереду.");
+      addError("phoneNumber", "employee.phone.invalid");
     }
     this.phoneNumber = phoneNumber;
   }
@@ -77,7 +76,7 @@ public class Employee extends BaseEntity {
   public void setStationId(UUID stationId) {
     cleanErrors("stationId");
     if (stationId == null) {
-      addError("stationId", "Станція не може бути null!");
+      addError("stationId", "employee.station.empty");
     }
     this.stationId = stationId;
   }
@@ -89,7 +88,7 @@ public class Employee extends BaseEntity {
   public void setType(EmployeeType type) {
     cleanErrors("type");
     if (type == null) {
-      addError("type", "Тип працівника не може бути пустим!");
+      addError("type", "employee.type.empty");
     }
     this.type = type;
   }
@@ -102,40 +101,28 @@ public class Employee extends BaseEntity {
     cleanErrors("salary");
 
     if (salary == null || salary.trim().isEmpty()) {
-      addError("salary", "Зарплата не може бути пустою!");
+      addError("salary", "employee.salary.empty");
       return;
     }
 
     try {
       double parsedSalary = Double.parseDouble(salary);
       if (parsedSalary < 0) {
-        addError("salary", "Зарплата не може бути від’ємною!");
+        addError("salary", "employee.salary.negative");
       } else {
         this.salary = parsedSalary;
       }
     } catch (NumberFormatException e) {
-      addError("salary", "Невірний формат зарплати!");
+      addError("salary", "employee.salary.invalid");
     }
   }
 
   public void setSalary(double salary) {
     cleanErrors("salary");
     if (salary < 0) {
-      addError("salary", "Зарплата не може бути від’ємною!");
+      addError("salary", "employee.salary.negative");
     } else {
       this.salary = salary;
     }
-  }
-
-  @Override
-  public String toString() {
-    return String.format(
-        "Працівник: %s | Телефон: %s | Тип: %s | Зарплата: %.2f | Станція за яку відповідає: %s",
-        name,
-        phoneNumber,
-        type != null ? type.getName() : "—",
-        salary,
-        stationId
-    );
   }
 }

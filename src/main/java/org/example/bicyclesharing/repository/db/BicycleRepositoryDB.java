@@ -2,9 +2,9 @@ package org.example.bicyclesharing.repository.db;
 
 import java.util.List;
 import java.util.UUID;
-
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.domain.enums.TypeBicycle;
 import org.example.bicyclesharing.repository.BicycleRepository;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -14,9 +14,7 @@ public class BicycleRepositoryDB
 
   @Override
   public List<Bicycle> findByState(StateBicycle stateBicycle) {
-
-    String sql = "SELECT * FROM BICYCLES WHERE state=?";
-
+    String sql = "SELECT * FROM BICYCLES WHERE state = ?";
     return jdbcTemplate.query(sql, rowMapper(), stateBicycle.name());
   }
 
@@ -32,55 +30,54 @@ public class BicycleRepositoryDB
 
   @Override
   protected RowMapper<Bicycle> rowMapper() {
-
     return (rs, rowNum) -> {
+      String rentalIdRaw = rs.getString("rental_id");
+      UUID rentalId = rentalIdRaw != null && !rentalIdRaw.isBlank()
+          ? UUID.fromString(rentalIdRaw)
+          : null;
 
-      Bicycle bicycle = new Bicycle(
+      String stationIdRaw = rs.getString("station_id");
+      UUID stationId = stationIdRaw != null && !stationIdRaw.isBlank()
+          ? UUID.fromString(stationIdRaw)
+          : null;
+
+      return Bicycle.fromDatabase(
+          UUID.fromString(rs.getString("id")),
           rs.getString("model"),
-          String.valueOf(rs.getDouble("price_per_hour")),
-          rs.getDouble("latitude"),
-          rs.getDouble("longitude")
+          TypeBicycle.valueOf(rs.getString("type_bicycle")),
+          StateBicycle.valueOf(rs.getString("state")),
+          rs.getDouble("price_per_minute"),
+          rentalId,
+          stationId
       );
-
-      bicycle.setId(UUID.fromString(rs.getString("id")));
-
-      bicycle.setState(
-          StateBicycle.valueOf(rs.getString("state"))
-      );
-
-      return bicycle;
     };
   }
 
   @Override
   protected Object[] getInsertValues(Bicycle entity) {
+    if (entity == null) return new Object[7];
 
-    if (entity == null) return new Object[8];
-
-    return new Object[]{
-        entity.getId(),
+    return new Object[] {
+        entity.getId().toString(),
         entity.getModel(),
         entity.getTypeBicycle().name(),
         entity.getState().name(),
         entity.getPricePerMinute(),
-        entity.getRentalId(),
-        entity.getLatitude(),
-        entity.getLongitude()
+        entity.getRentalId() != null ? entity.getRentalId().toString() : null,
+        entity.getStationId() != null ? entity.getStationId().toString() : null
     };
   }
 
   @Override
   protected Object[] getUpdateValues(Bicycle entity) {
-
-    return new Object[]{
+    return new Object[] {
         entity.getModel(),
         entity.getTypeBicycle().name(),
         entity.getState().name(),
         entity.getPricePerMinute(),
-        entity.getRentalId(),
-        entity.getLatitude(),
-        entity.getLongitude(),
-        entity.getId()
+        entity.getRentalId() != null ? entity.getRentalId().toString() : null,
+        entity.getStationId() != null ? entity.getStationId().toString() : null,
+        entity.getId().toString()
     };
   }
 
@@ -91,29 +88,26 @@ public class BicycleRepositoryDB
 
   @Override
   protected String[] getUpdateColumns() {
-
-    return new String[]{
+    return new String[] {
         "model",
         "type_bicycle",
         "state",
-        "price_per_hour",
+        "price_per_minute",
         "rental_id",
-        "latitude",
-        "longitude"
+        "station_id"
     };
   }
 
   @Override
   protected String getCreateTableSQL() {
     return "CREATE TABLE IF NOT EXISTS BICYCLES (" +
-        "id VARCHAR(36) PRIMARY KEY," +
-        "model VARCHAR(255) NOT NULL," +
-        "type_bicycle VARCHAR(50) NOT NULL," +
-        "state VARCHAR(50) NOT NULL," +
-        "price_per_hour DOUBLE NOT NULL," +
-        "rental_id VARCHAR(36)," +
-        "latitude DOUBLE," +
-        "longitude DOUBLE" +
+        "id VARCHAR(36) PRIMARY KEY, " +
+        "model VARCHAR(255) NOT NULL, " +
+        "type_bicycle VARCHAR(50) NOT NULL, " +
+        "state VARCHAR(50) NOT NULL, " +
+        "price_per_minute DOUBLE NOT NULL, " +
+        "rental_id VARCHAR(36), " +
+        "station_id VARCHAR(36) NOT NULL" +
         ")";
   }
 }

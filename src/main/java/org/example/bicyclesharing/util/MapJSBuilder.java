@@ -11,8 +11,6 @@ public  class MapJSBuilder {
       js.append(String.format(
           java.util.Locale.US,
           "addBike(%f,%f,'%s',%f,'%s');",
-          bike.getLatitude(),
-          bike.getLongitude(),
           bike.getModel().replace("'", "\\'"),
           bike.getPricePerMinute(),
           bike.getId().toString()

@@ -112,6 +112,15 @@
           <Button fx:id="btnBicycles" styleClass="menu-button" onAction="#onShowBicycles"/>
         </HBox>
 
+        <HBox fx:id="adminStationContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/bicycle.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnStations" styleClass="menu-button" onAction="#onShowStations"/>
+        </HBox>
+
         <HBox fx:id="settingsContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>

@@ -118,9 +118,6 @@ public class BicyclesManagementController extends BaseController {
         Label infoLabel = new Label(
             LocalizationManager.getStringByKey("admin.bicycles.price") + ": "
                 + String.format("%.2f", bicycle.getPricePerMinute())
-                + " | "
-                + LocalizationManager.getStringByKey("admin.bicycles.coords") + ": "
-                + bicycle.getLatitude() + ", " + bicycle.getLongitude()
         );
         infoLabel.getStyleClass().add("user-card-subtitle");
 

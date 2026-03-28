@@ -34,6 +34,7 @@ public class MainMenuController extends BaseWindowController{
   @FXML private Button btnUsers;
   @FXML private Button btnEmployees;
   @FXML private Button btnBicycles;
+  @FXML private Button btnStations;
 
   @FXML private HBox adminUsersContainer;
   @FXML private HBox adminEmployeesContainer;
@@ -44,6 +45,7 @@ public class MainMenuController extends BaseWindowController{
   @FXML private HBox historyContainer;
   @FXML private HBox transactionContainer;
   @FXML private HBox settingsContainer;
+  @FXML private HBox adminStationContainer;
 
   private double xOffset = 0;
   private double yOffset = 0;
@@ -78,6 +80,7 @@ public class MainMenuController extends BaseWindowController{
     btnUsers.textProperty().bind(viewModel.usersButtonText);
     btnEmployees.textProperty().bind(viewModel.employeesButtonText);
     btnBicycles.textProperty().bind(viewModel.bicyclesButtonText);
+    btnStations.textProperty().bind(viewModel.stationButtonText);
   }
 
   @Override
@@ -170,6 +173,9 @@ public class MainMenuController extends BaseWindowController{
     adminBicyclesContainer.setVisible(isAdmin);
     adminBicyclesContainer.setManaged(isAdmin);
 
+    adminStationContainer.setVisible(isAdmin);
+    adminStationContainer.setManaged(isAdmin);
+
     mapContainer.setVisible(!isAdmin);
     mapContainer.setManaged(!isAdmin);
 
@@ -202,5 +208,9 @@ public class MainMenuController extends BaseWindowController{
   @FXML
   public void onShowBicycles() {
     navigationService.load("/org/example/bicyclesharing/presentation/view/admin/BicyclesManagementView.fxml");
+  }
+  @FXML
+  public void onShowStations() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/admin/StationManagementView.fxml");
   }
 }

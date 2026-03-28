@@ -2,9 +2,14 @@ package org.example.bicyclesharing.controller.view.admin.modalController;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.Employee;
+import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.enums.EmployeeType;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
@@ -21,7 +26,7 @@ public class AddEditEmployeeController {
 
   @FXML private TextField nameField;
   @FXML private TextField phoneField;
-  @FXML private TextField stationField;
+  @FXML private ComboBox<Station> stationComboBox;
   @FXML private ComboBox<EmployeeType> typeComboBox;
   @FXML private TextField salaryField;
 
@@ -40,8 +45,32 @@ public class AddEditEmployeeController {
 
   public void initData(Employee employee, Runnable onSaved) {
     this.onSaved = onSaved;
-    this.viewModel = new AddEditEmployeeViewModel(AppConfig.employeeService(), employee);
+    this.viewModel = new AddEditEmployeeViewModel(
+        AppConfig.employeeService(),
+        AppConfig.stationService(),
+        employee
+    );
+
     bind();
+
+    stationComboBox.setItems(viewModel.stations);
+    stationComboBox.setValue(viewModel.selectedStation);
+
+    stationComboBox.setCellFactory(cb -> new ListCell<>() {
+      @Override
+      protected void updateItem(Station item, boolean empty) {
+        super.updateItem(item, empty);
+        setText(empty || item == null ? null : item.getName());
+      }
+    });
+
+    stationComboBox.setButtonCell(new ListCell<>() {
+      @Override
+      protected void updateItem(Station item, boolean empty) {
+        super.updateItem(item, empty);
+        setText(empty || item == null ? null : item.getName());
+      }
+    });
 
     typeComboBox.setItems(FXCollections.observableArrayList(EmployeeType.values()));
     typeComboBox.setValue(viewModel.selectedType);
@@ -50,7 +79,8 @@ public class AddEditEmployeeController {
       @Override
       protected void updateItem(EmployeeType item, boolean empty) {
         super.updateItem(item, empty);
-        setText(empty || item == null ? null : LocalizationManager.getStringByKey("employee.type." + item.name()));
+        setText(empty || item == null ? null
+            : LocalizationManager.getStringByKey("employee.type." + item.name()));
       }
     });
 
@@ -58,14 +88,14 @@ public class AddEditEmployeeController {
       @Override
       protected void updateItem(EmployeeType item, boolean empty) {
         super.updateItem(item, empty);
-        setText(empty || item == null ? null : LocalizationManager.getStringByKey("employee.type." + item.name()));
+        setText(empty || item == null ? null
+            : LocalizationManager.getStringByKey("employee.type." + item.name()));
       }
     });
 
     if (viewModel.isEditMode()) {
       nameField.setPromptText(employee.getName());
       phoneField.setPromptText(employee.getPhoneNumber());
-      stationField.setPromptText(employee.getStationId().toString());
       salaryField.setPromptText(String.valueOf(employee.getSalary()));
     }
   }
@@ -83,7 +113,6 @@ public class AddEditEmployeeController {
 
     nameField.textProperty().bindBidirectional(viewModel.name);
     phoneField.textProperty().bindBidirectional(viewModel.phone);
-    stationField.textProperty().bindBidirectional(viewModel.stationId);
     salaryField.textProperty().bindBidirectional(viewModel.salary);
 
     nameErrorLabel.textProperty().bind(viewModel.nameError);
@@ -95,9 +124,13 @@ public class AddEditEmployeeController {
 
   @FXML
   private void onSave() {
+    viewModel.selectedStation = stationComboBox.getValue();
     viewModel.selectedType = typeComboBox.getValue();
+
     if (viewModel.save()) {
-      if (onSaved != null) onSaved.run();
+      if (onSaved != null) {
+        onSaved.run();
+      }
       close();
     }
   }

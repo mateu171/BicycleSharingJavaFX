@@ -12,36 +12,44 @@ public class Bicycle extends BaseEntity {
   private StateBicycle state;
   private double pricePerMinute;
   private UUID rentalId;
-  private double latitude;
-  private double longitude;
+  private UUID stationId;
 
   private Bicycle() {
     super();
   }
 
-  public Bicycle(String model, String pricePerMinute,
-      double latitude, double longitude) {
+  public Bicycle(String model,
+      TypeBicycle typeBicycle,
+      String pricePerMinute,
+      UUID stationId) {
     this();
     setModel(model);
-    this.typeBicycle = TypeBicycle.URBAN;
+    setTypeBicycle(typeBicycle);
     this.state = StateBicycle.AVAILABLE;
     setPricePerMinute(pricePerMinute);
-
-    setLatitude(latitude);
-    setLongitude(longitude);
+    setStationId(stationId);
 
     if (!isValid()) {
       throw new CustomEntityValidationExeption(getErrors());
     }
   }
 
-  public UUID getRentalId() {
-    return rentalId;
-  }
-
-  public void setRentalId(UUID rentalId) {
-    cleanErrors("rentalId");
-    this.rentalId = rentalId;
+  public static Bicycle fromDatabase(UUID id,
+      String model,
+      TypeBicycle typeBicycle,
+      StateBicycle state,
+      double pricePerMinute,
+      UUID rentalId,
+      UUID stationId) {
+    Bicycle bicycle = new Bicycle();
+    bicycle.setId(id);
+    bicycle.model = model;
+    bicycle.typeBicycle = typeBicycle;
+    bicycle.state = state;
+    bicycle.pricePerMinute = pricePerMinute;
+    bicycle.rentalId = rentalId;
+    bicycle.stationId = stationId;
+    return bicycle;
   }
 
   public String getModel() {
@@ -52,7 +60,7 @@ public class Bicycle extends BaseEntity {
     cleanErrors("model");
     if (model == null || model.trim().isEmpty()) {
       addError("model", "bicycle.model.empty");
-    } else if (model.length() < 4 || model.length() > 50) {
+    } else if (model.trim().length() < 4 || model.trim().length() > 50) {
       addError("model", "bicycle.model.length");
     }
     this.model = model;
@@ -63,6 +71,10 @@ public class Bicycle extends BaseEntity {
   }
 
   public void setTypeBicycle(TypeBicycle typeBicycle) {
+    cleanErrors("typeBicycle");
+    if (typeBicycle == null) {
+      addError("typeBicycle", "bicycle.type.empty");
+    }
     this.typeBicycle = typeBicycle;
   }
 
@@ -97,31 +109,24 @@ public class Bicycle extends BaseEntity {
       addError("pricePerMinute", "bicycle.price.invalid");
     }
   }
-  public double getLatitude() {
-    return latitude;
+
+  public UUID getRentalId() {
+    return rentalId;
   }
 
-  public void setLatitude(double latitude) {
-    cleanErrors("latitude");
+  public void setRentalId(UUID rentalId) {
+    this.rentalId = rentalId;
+  }
 
-    if (latitude < -90 || latitude > 90) {
-      addError("latitude", "bicycle.latitude.range");
+  public UUID getStationId() {
+    return stationId;
+  }
+
+  public void setStationId(UUID stationId) {
+    cleanErrors("stationId");
+    if (stationId == null) {
+      addError("stationId", "bicycle.station.empty");
     }
-
-    this.latitude = latitude;
-  }
-
-  public double getLongitude() {
-    return longitude;
-  }
-
-  public void setLongitude(double longitude) {
-    cleanErrors("longitude");
-
-    if (longitude < -180 || longitude > 180) {
-      addError("longitude", "bicycle.longitude.range");
-    }
-
-    this.longitude = longitude;
+    this.stationId = stationId;
   }
 }

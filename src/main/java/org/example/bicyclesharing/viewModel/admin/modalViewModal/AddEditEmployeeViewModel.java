@@ -1,18 +1,22 @@
 package org.example.bicyclesharing.viewModel.admin.modalViewModal;
 
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Employee;
+import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.enums.EmployeeType;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.EmployeeService;
+import org.example.bicyclesharing.services.StationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class AddEditEmployeeViewModel {
 
   private final EmployeeService employeeService;
+  private final StationService stationService;
   private final Employee editingEmployee;
 
   public final StringProperty titleText = new SimpleStringProperty();
@@ -34,10 +38,7 @@ public class AddEditEmployeeViewModel {
 
   public final StringProperty name = new SimpleStringProperty("");
   public final StringProperty phone = new SimpleStringProperty("");
-  public final StringProperty stationId = new SimpleStringProperty("");
   public final StringProperty salary = new SimpleStringProperty("");
-
-  public EmployeeType selectedType;
 
   public final StringProperty nameError = new SimpleStringProperty("");
   public final StringProperty phoneError = new SimpleStringProperty("");
@@ -45,9 +46,25 @@ public class AddEditEmployeeViewModel {
   public final StringProperty typeError = new SimpleStringProperty("");
   public final StringProperty salaryError = new SimpleStringProperty("");
 
-  public AddEditEmployeeViewModel(EmployeeService employeeService, Employee editingEmployee) {
+  public final ObservableList<Station> stations = FXCollections.observableArrayList();
+
+  public EmployeeType selectedType;
+  public Station selectedStation;
+
+  public AddEditEmployeeViewModel(
+      EmployeeService employeeService,
+      StationService stationService,
+      Employee editingEmployee
+  ) {
     this.employeeService = employeeService;
+    this.stationService = stationService;
     this.editingEmployee = editingEmployee;
+
+    stations.setAll(stationService.getAll());
+
+    if (!stations.isEmpty()) {
+      selectedStation = stations.get(0);
+    }
 
     if (editingEmployee == null) {
       titleText.set(LocalizationManager.getStringByKey("admin.employees.add.title"));
@@ -55,6 +72,11 @@ public class AddEditEmployeeViewModel {
     } else {
       titleText.set(LocalizationManager.getStringByKey("admin.employees.edit.title"));
       selectedType = editingEmployee.getType();
+
+      stations.stream()
+          .filter(station -> station.getId().equals(editingEmployee.getStationId()))
+          .findFirst()
+          .ifPresent(station -> selectedStation = station);
     }
   }
 
@@ -65,31 +87,55 @@ public class AddEditEmployeeViewModel {
   public boolean save() {
     clearErrors();
 
+    if (selectedStation == null) {
+      stationError.set(LocalizationManager.getStringByKey("employee.station.empty"));
+      return false;
+    }
+
+    if (selectedType == null) {
+      typeError.set(LocalizationManager.getStringByKey("employee.type.empty"));
+      return false;
+    }
+
     try {
       if (editingEmployee == null) {
-        UUID parsedStationId = parseStationId(stationId.get());
-
         Employee employee = new Employee(
             name.get(),
             phone.get(),
-            parsedStationId,
+            selectedStation.getId(),
             selectedType,
             salary.get()
         );
 
         employeeService.add(employee);
       } else {
-        String nameValue = isBlank(name.get()) ? editingEmployee.getName() : name.get().trim();
-        String phoneValue = isBlank(phone.get()) ? editingEmployee.getPhoneNumber() : phone.get().trim();
-        UUID stationValue = isBlank(stationId.get())
-            ? editingEmployee.getStationId()
-            : parseStationId(stationId.get());
-        EmployeeType typeValue = selectedType == null ? editingEmployee.getType() : selectedType;
+        String nameValue = isBlank(name.get())
+            ? editingEmployee.getName()
+            : name.get().trim();
+
+        String phoneValue = isBlank(phone.get())
+            ? editingEmployee.getPhoneNumber()
+            : phone.get().trim();
+
         String salaryValue = isBlank(salary.get())
             ? String.valueOf(editingEmployee.getSalary())
             : salary.get().trim();
 
-        Employee validated = new Employee(nameValue, phoneValue, stationValue, typeValue, salaryValue);
+        var stationValue = selectedStation == null
+            ? editingEmployee.getStationId()
+            : selectedStation.getId();
+
+        EmployeeType typeValue = selectedType == null
+            ? editingEmployee.getType()
+            : selectedType;
+
+        Employee validated = new Employee(
+            nameValue,
+            phoneValue,
+            stationValue,
+            typeValue,
+            salaryValue
+        );
 
         editingEmployee.setName(validated.getName());
         editingEmployee.setPhoneNumber(validated.getPhoneNumber());
@@ -120,22 +166,6 @@ public class AddEditEmployeeViewModel {
         }
       });
       return false;
-    } catch (IllegalArgumentException e) {
-      return false;
-    }
-  }
-
-  private UUID parseStationId(String value) {
-    if (value == null || value.trim().isEmpty()) {
-      stationError.set(LocalizationManager.getStringByKey("employee.station.empty"));
-      throw new IllegalArgumentException();
-    }
-
-    try {
-      return UUID.fromString(value.trim());
-    } catch (Exception e) {
-      stationError.set(LocalizationManager.getStringByKey("employee.station.invalid"));
-      throw new IllegalArgumentException();
     }
   }
 

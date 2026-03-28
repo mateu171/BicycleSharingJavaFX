@@ -29,18 +29,6 @@ public class Employee extends BaseEntity {
     }
   }
 
-  public static Employee fromDatabase(UUID id, String name, String phoneNumber, UUID stationId,
-      EmployeeType type, double salary) {
-    Employee employee = new Employee();
-    employee.setId(id);
-    employee.name = name;
-    employee.phoneNumber = phoneNumber;
-    employee.stationId = stationId;
-    employee.type = type;
-    employee.salary = salary;
-    return employee;
-  }
-
   public String getName() {
     return name;
   }

@@ -2,9 +2,14 @@ package org.example.bicyclesharing.controller.view.admin.modalController;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
+import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditBicycleViewModel;
@@ -15,20 +20,17 @@ public class AddEditBicycleController {
   @FXML private Label modelLabel;
   @FXML private Label typeLabel;
   @FXML private Label priceLabel;
-  @FXML private Label latitudeLabel;
-  @FXML private Label longitudeLabel;
+  @FXML private Label stationLabel;
 
   @FXML private TextField modelField;
   @FXML private ComboBox<TypeBicycle> typeComboBox;
   @FXML private TextField priceField;
-  @FXML private TextField latitudeField;
-  @FXML private TextField longitudeField;
+  @FXML private ComboBox<Station> stationComboBox;
 
   @FXML private Label modelErrorLabel;
   @FXML private Label typeErrorLabel;
   @FXML private Label priceErrorLabel;
-  @FXML private Label latitudeErrorLabel;
-  @FXML private Label longitudeErrorLabel;
+  @FXML private Label stationErrorLabel;
 
   @FXML private Button closeButton;
   @FXML private Button cancelButton;
@@ -39,7 +41,12 @@ public class AddEditBicycleController {
 
   public void initData(Bicycle bicycle, Runnable onSaved) {
     this.onSaved = onSaved;
-    this.viewModel = new AddEditBicycleViewModel(AppConfig.bicycleService(), bicycle);
+    this.viewModel = new AddEditBicycleViewModel(
+        AppConfig.bicycleService(),
+        AppConfig.stationService(),
+        bicycle
+    );
+
     bind();
 
     typeComboBox.setItems(FXCollections.observableArrayList(TypeBicycle.values()));
@@ -61,11 +68,28 @@ public class AddEditBicycleController {
       }
     });
 
+    stationComboBox.setItems(viewModel.stations);
+    stationComboBox.setValue(viewModel.selectedStation);
+
+    stationComboBox.setCellFactory(cb -> new ListCell<>() {
+      @Override
+      protected void updateItem(Station item, boolean empty) {
+        super.updateItem(item, empty);
+        setText(empty || item == null ? null : item.getName());
+      }
+    });
+
+    stationComboBox.setButtonCell(new ListCell<>() {
+      @Override
+      protected void updateItem(Station item, boolean empty) {
+        super.updateItem(item, empty);
+        setText(empty || item == null ? null : item.getName());
+      }
+    });
+
     if (viewModel.isEditMode()) {
       modelField.setPromptText(bicycle.getModel());
       priceField.setPromptText(String.valueOf(bicycle.getPricePerMinute()));
-      latitudeField.setPromptText(String.valueOf(bicycle.getLatitude()));
-      longitudeField.setPromptText(String.valueOf(bicycle.getLongitude()));
     }
   }
 
@@ -74,29 +98,29 @@ public class AddEditBicycleController {
     modelLabel.textProperty().bind(viewModel.modelLabelText);
     typeLabel.textProperty().bind(viewModel.typeLabelText);
     priceLabel.textProperty().bind(viewModel.priceLabelText);
-    latitudeLabel.textProperty().bind(viewModel.latitudeLabelText);
-    longitudeLabel.textProperty().bind(viewModel.longitudeLabelText);
+    stationLabel.textProperty().bind(viewModel.stationLabelText);
 
     cancelButton.textProperty().bind(viewModel.cancelButtonText);
     saveButton.textProperty().bind(viewModel.saveButtonText);
 
     modelField.textProperty().bindBidirectional(viewModel.model);
     priceField.textProperty().bindBidirectional(viewModel.price);
-    latitudeField.textProperty().bindBidirectional(viewModel.latitude);
-    longitudeField.textProperty().bindBidirectional(viewModel.longitude);
 
     modelErrorLabel.textProperty().bind(viewModel.modelError);
     typeErrorLabel.textProperty().bind(viewModel.typeError);
     priceErrorLabel.textProperty().bind(viewModel.priceError);
-    latitudeErrorLabel.textProperty().bind(viewModel.latitudeError);
-    longitudeErrorLabel.textProperty().bind(viewModel.longitudeError);
+    stationErrorLabel.textProperty().bind(viewModel.stationError);
   }
 
   @FXML
   private void onSave() {
     viewModel.selectedType = typeComboBox.getValue();
+    viewModel.selectedStation = stationComboBox.getValue();
+
     if (viewModel.save()) {
-      if (onSaved != null) onSaved.run();
+      if (onSaved != null) {
+        onSaved.run();
+      }
       close();
     }
   }

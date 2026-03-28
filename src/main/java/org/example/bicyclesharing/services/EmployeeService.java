@@ -19,12 +19,15 @@ public class EmployeeService extends BaseService<Employee, UUID> {
     return employeeRepository;
   }
 
-  public List<Employee> getByStationId(UUID stationId) {
-    return employeeRepository.findByStationId(stationId);
-  }
-
   public List<Employee> getByName(String name) {
     return employeeRepository.findByName(name);
   }
 
+  public Employee getById(UUID id) {
+    return employeeRepository.findAll()
+        .stream()
+        .filter(employee -> employee.getId().equals(id))
+        .findFirst()
+        .orElse(null);
+  }
 }

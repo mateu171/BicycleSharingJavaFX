@@ -3,15 +3,20 @@ package org.example.bicyclesharing.viewModel.admin.modalViewModal;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
+import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.BicycleService;
+import org.example.bicyclesharing.services.StationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class AddEditBicycleViewModel {
 
   private final BicycleService bicycleService;
+  private final StationService stationService;
   private final Bicycle editingBicycle;
 
   public final StringProperty titleText = new SimpleStringProperty();
@@ -26,27 +31,36 @@ public class AddEditBicycleViewModel {
       LocalizationManager.getStringProperty("admin.bicycles.type");
   public final StringProperty priceLabelText =
       LocalizationManager.getStringProperty("admin.bicycles.price");
-  public final StringProperty latitudeLabelText =
-      LocalizationManager.getStringProperty("admin.bicycles.latitude");
-  public final StringProperty longitudeLabelText =
-      LocalizationManager.getStringProperty("admin.bicycles.longitude");
+  public final StringProperty stationLabelText =
+      LocalizationManager.getStringProperty("admin.bicycles.station");
 
   public final StringProperty model = new SimpleStringProperty("");
   public final StringProperty price = new SimpleStringProperty("");
-  public final StringProperty latitude = new SimpleStringProperty("");
-  public final StringProperty longitude = new SimpleStringProperty("");
-
-  public TypeBicycle selectedType;
 
   public final StringProperty modelError = new SimpleStringProperty("");
   public final StringProperty typeError = new SimpleStringProperty("");
   public final StringProperty priceError = new SimpleStringProperty("");
-  public final StringProperty latitudeError = new SimpleStringProperty("");
-  public final StringProperty longitudeError = new SimpleStringProperty("");
+  public final StringProperty stationError = new SimpleStringProperty("");
 
-  public AddEditBicycleViewModel(BicycleService bicycleService, Bicycle editingBicycle) {
+  public final ObservableList<Station> stations = FXCollections.observableArrayList();
+
+  public TypeBicycle selectedType;
+  public Station selectedStation;
+
+  public AddEditBicycleViewModel(
+      BicycleService bicycleService,
+      StationService stationService,
+      Bicycle editingBicycle
+  ) {
     this.bicycleService = bicycleService;
+    this.stationService = stationService;
     this.editingBicycle = editingBicycle;
+
+    stations.setAll(stationService.getAll());
+
+    if (!stations.isEmpty()) {
+      selectedStation = stations.get(0);
+    }
 
     if (editingBicycle == null) {
       titleText.set(LocalizationManager.getStringByKey("admin.bicycles.add.title"));
@@ -54,6 +68,11 @@ public class AddEditBicycleViewModel {
     } else {
       titleText.set(LocalizationManager.getStringByKey("admin.bicycles.edit.title"));
       selectedType = editingBicycle.getTypeBicycle();
+
+      stations.stream()
+          .filter(station -> station.getId().equals(editingBicycle.getStationId()))
+          .findFirst()
+          .ifPresent(station -> selectedStation = station);
     }
   }
 
@@ -64,47 +83,54 @@ public class AddEditBicycleViewModel {
   public boolean save() {
     clearErrors();
 
+    if (selectedType == null) {
+      typeError.set(LocalizationManager.getStringByKey("bicycle.type.empty"));
+      return false;
+    }
+
+    if (selectedStation == null) {
+      stationError.set(LocalizationManager.getStringByKey("bicycle.station.empty"));
+      return false;
+    }
+
     try {
-      Bicycle bicycle;
-
       if (editingBicycle == null) {
-        double lat = parseLatitude(latitude.get());
-        double lon = parseLongitude(longitude.get());
-
-        bicycle = new Bicycle(
+        Bicycle bicycle = new Bicycle(
             model.get(),
+            selectedType,
             price.get(),
-            lat,
-            lon
+            selectedStation.getId()
         );
-        bicycle.setTypeBicycle(selectedType);
+
         bicycleService.add(bicycle);
       } else {
-        String modelValue = isBlank(model.get()) ? editingBicycle.getModel() : model.get().trim();
+        String modelValue = isBlank(model.get())
+            ? editingBicycle.getModel()
+            : model.get().trim();
+
         String priceValue = isBlank(price.get())
             ? String.valueOf(editingBicycle.getPricePerMinute())
             : price.get().trim();
-
-        double latValue = isBlank(latitude.get())
-            ? editingBicycle.getLatitude()
-            : parseLatitude(latitude.get());
-
-        double lonValue = isBlank(longitude.get())
-            ? editingBicycle.getLongitude()
-            : parseLongitude(longitude.get());
 
         TypeBicycle typeValue = selectedType == null
             ? editingBicycle.getTypeBicycle()
             : selectedType;
 
-        Bicycle validated = new Bicycle(modelValue, priceValue, latValue, lonValue);
-        validated.setTypeBicycle(typeValue);
+        var stationIdValue = selectedStation == null
+            ? editingBicycle.getStationId()
+            : selectedStation.getId();
+
+        Bicycle validated = new Bicycle(
+            modelValue,
+            typeValue,
+            priceValue,
+            stationIdValue
+        );
 
         editingBicycle.setModel(validated.getModel());
-        editingBicycle.setPricePerMinute(String.valueOf(validated.getPricePerMinute()));
-        editingBicycle.setLatitude(validated.getLatitude());
-        editingBicycle.setLongitude(validated.getLongitude());
         editingBicycle.setTypeBicycle(typeValue);
+        editingBicycle.setPricePerMinute(String.valueOf(validated.getPricePerMinute()));
+        editingBicycle.setStationId(stationIdValue);
 
         if (!editingBicycle.isValid()) {
           throw new CustomEntityValidationExeption(editingBicycle.getErrors());
@@ -122,32 +148,12 @@ public class AddEditBicycleViewModel {
 
         switch (field) {
           case "model" -> modelError.set(text);
-          case "pricePerMinute", "pricePerHour" -> priceError.set(text);
-          case "latitude" -> latitudeError.set(text);
-          case "longitude" -> longitudeError.set(text);
+          case "typeBicycle" -> typeError.set(text);
+          case "pricePerMinute" -> priceError.set(text);
+          case "stationId" -> stationError.set(text);
         }
       });
       return false;
-    } catch (IllegalArgumentException e) {
-      return false;
-    }
-  }
-
-  private double parseLatitude(String value) {
-    try {
-      return Double.parseDouble(value.trim());
-    } catch (Exception e) {
-      latitudeError.set(LocalizationManager.getStringByKey("bicycle.latitude.invalid"));
-      throw new IllegalArgumentException();
-    }
-  }
-
-  private double parseLongitude(String value) {
-    try {
-      return Double.parseDouble(value.trim());
-    } catch (Exception e) {
-      longitudeError.set(LocalizationManager.getStringByKey("bicycle.longitude.invalid"));
-      throw new IllegalArgumentException();
     }
   }
 
@@ -159,7 +165,6 @@ public class AddEditBicycleViewModel {
     modelError.set("");
     typeError.set("");
     priceError.set("");
-    latitudeError.set("");
-    longitudeError.set("");
+    stationError.set("");
   }
 }

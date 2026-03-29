@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,10 +13,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
+import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.RentalService;
+import org.example.bicyclesharing.services.StationService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.BaseViewModel;
@@ -26,23 +29,69 @@ public class MapViewModel extends BaseViewModel {
   public final StringProperty rentButtonText = LocalizationManager.getStringProperty("button.rent");
   public final StringProperty finishButtonText = LocalizationManager.getStringProperty("button.finish");
   public final StringProperty labelPrice = LocalizationManager.getStringProperty("label.price");
+  public final StringProperty stationTitleText = LocalizationManager.getStringProperty("map.station");
 
-  private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
+  private final ObservableList<Station> stations = FXCollections.observableArrayList();
+  private final ObservableList<Bicycle> bicycleForSelectedStation = FXCollections.observableArrayList();
+  private final StationService stationService = AppConfig.stationService();
   private final BicycleService bicycleService = AppConfig.bicycleService();
   private final RentalService rentalService = AppConfig.rentalService();
+
   private final Map<Bicycle, StringProperty> rentalTimeProps = new HashMap<>();
   private final Map<Bicycle, Timeline> timelines = new HashMap<>();
 
+  private Station selectedStation;
 
   public MapViewModel(User currentUser) {
     super(currentUser);
-    loadBicycles();
+    loadStations();
   }
 
-  private void loadBicycles()
+  public void loadStations()
   {
-    bicycles.clear();
-    bicycles.addAll(bicycleService.getAll());
+    stations.setAll(stationService.getAll());
+    if(!stations.isEmpty())
+    {
+      selecStation(stations.get(0));
+    }
+  }
+  public void selecStation(Station station)
+  {
+    selectedStation = station;
+    bicycleForSelectedStation.clear();
+
+    if(station == null)
+    {
+      return;
+    }
+
+    bicycleForSelectedStation.setAll(
+        bicycleService.getAll().stream()
+            .filter(b -> station.getId().equals(b.getStationId()))
+            .toList()
+    );
+  }
+
+  public ObservableList<Station> getStations()
+  {
+      return stations;
+  }
+
+  public ObservableList<Bicycle> getBicyclesForSelectedStation()
+  {
+    return bicycleForSelectedStation;
+  }
+
+  public Station getStationById(String id) {
+    try {
+      UUID uuid = UUID.fromString(id);
+      return stations.stream()
+          .filter(station -> station.getId().equals(uuid))
+          .findFirst()
+          .orElse(null);
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public Rental rentBike(Bicycle bike)
@@ -75,16 +124,6 @@ public class MapViewModel extends BaseViewModel {
         .findFirst()
         .orElse(null);
   }
-
-public Bicycle getBicycleById(String id)
-{
-  for (Bicycle bike : bicycles) {
-    if (bike.getId().toString().equals(id)) {
-      return bike;
-    }
-  }
-  return null;
-}
 
   public StringProperty getRentalDurationProperty(Bicycle bike) {
     return rentalTimeProps.computeIfAbsent(bike, b -> new SimpleStringProperty("00:00"));
@@ -122,7 +161,7 @@ public Bicycle getBicycleById(String id)
     getRentalDurationProperty(bike).set(String.format("%02d:%02d", mins, secs));
   }
 
-  public ObservableList<Bicycle> getBicycles() {
-    return bicycles;
+  public ObservableList<Bicycle> getBicycleForSelectedStation() {
+    return bicycleForSelectedStation;
   }
 }

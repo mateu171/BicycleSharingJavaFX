@@ -14,20 +14,19 @@ import netscape.javascript.JSObject;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
+import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.util.MapJSBuilder;
 import org.example.bicyclesharing.viewModel.user.MapViewModel;
 
 public class MapController extends BaseController {
-  @FXML
-  private WebView webView;
-  @FXML
-  private ListView<Bicycle> bikeList;
-  @FXML
-  private Label title;
+
+  @FXML private WebView webView;
+  @FXML private ListView<Bicycle> bikeList;
+  @FXML private Label title;
 
   private JSObject window;
   private MapViewModel viewModel;
+  private boolean mapLoaded = false;
 
   @FXML
   public void initialize() {
@@ -38,22 +37,41 @@ public class MapController extends BaseController {
 
     engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
       if (newState == Worker.State.SUCCEEDED) {
-        window = (JSObject) engine.executeScript("window");
-        window.setMember("javaApp", this);
+        mapLoaded = true;
 
-        setupList();
-        loadBicycles();
-        webView.getEngine().executeScript("setTimeout(() => map.invalidateSize(), 300)");
+        try {
+          window = (JSObject) engine.executeScript("window");
+          window.setMember("javaApp", this);
+          System.out.println("javaApp injected into JS");
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+
+        tryInitMapData();
+
+        engine.executeScript("setTimeout(() => map.invalidateSize(), 300)");
       }
     });
   }
 
-  private void setupList() {
-    bikeList.setCellFactory(list -> new ListCell<>() {
+  private void tryInitMapData() {
+    if (!mapLoaded || viewModel == null) {
+      return;
+    }
 
+    setupList();
+    clearMapMarkers();
+    loadStationsToMap();
+  }
+
+  private void setupList() {
+    bikeList.setItems(viewModel.getBicyclesForSelectedStation());
+
+    bikeList.setCellFactory(list -> new ListCell<>() {
       @Override
       protected void updateItem(Bicycle bicycle, boolean empty) {
         super.updateItem(bicycle, empty);
+
         if (empty || bicycle == null) {
           setGraphic(null);
           return;
@@ -62,13 +80,13 @@ public class MapController extends BaseController {
         VBox card = new VBox(5);
         card.getStyleClass().add("rental-card");
 
-        Label title = new Label(bicycle.getModel());
-        title.getStyleClass().add("rental-title");
+        Label bicycleTitle = new Label(bicycle.getModel());
+        bicycleTitle.getStyleClass().add("rental-title");
 
-        Label price = new Label(bicycle.getPricePerMinute() + " " + viewModel.labelPrice.getValue());
+        Label price = new Label(bicycle.getPricePerMinute() + " " + viewModel.labelPrice.get());
         price.getStyleClass().add("rental-cost");
 
-        Label timerLabel = new Label("00:00");
+        Label timerLabel = new Label();
         timerLabel.getStyleClass().add("timer-label");
         timerLabel.textProperty().bind(viewModel.getRentalDurationProperty(bicycle));
 
@@ -78,56 +96,90 @@ public class MapController extends BaseController {
         Rental activeRental = viewModel.getActiveRental(bicycle);
 
         if (activeRental != null) {
-          rentBtn.setText(viewModel.finishButtonText.getValue());
+          rentBtn.setText(viewModel.finishButtonText.get());
           viewModel.startRentalTimer(bicycle, activeRental);
         } else {
-          rentBtn.setText(viewModel.rentButtonText.getValue());
+          rentBtn.setText(viewModel.rentButtonText.get());
         }
 
         rentBtn.setOnAction(e -> {
-          if (rentBtn.getText().equals(viewModel.rentButtonText.getValue())) {
+          if (rentBtn.getText().equals(viewModel.rentButtonText.get())) {
             Rental rental = viewModel.rentBike(bicycle);
-            rentBtn.setText(viewModel.finishButtonText.getValue());
-            viewModel.startRentalTimer(bicycle, rental);
+            if (rental != null) {
+              rentBtn.setText(viewModel.finishButtonText.get());
+              viewModel.startRentalTimer(bicycle, rental);
+            }
           } else {
             viewModel.finishRental(bicycle);
-            rentBtn.setText(viewModel.rentButtonText.getValue());
+            rentBtn.setText(viewModel.rentButtonText.get());
             viewModel.stopRentalTimer(bicycle);
           }
+
+          bikeList.refresh();
         });
 
-        card.getChildren().addAll(title, price, timerLabel, rentBtn);
+        card.getChildren().addAll(bicycleTitle, price, timerLabel, rentBtn);
         setGraphic(card);
       }
     });
-
-    bikeList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, bike) -> {
-      if (bike != null) {
-        webView.getEngine().executeScript(
-            "focusBike('" + bike.getId() + "');"
-        );
-      }
-    });
   }
 
-  private void loadBicycles() {
-    bikeList.setItems(viewModel.getBicycles());
-    webView.getEngine().executeScript(MapJSBuilder.buildAddBikesScript(viewModel.getBicycles()));
+  private void loadStationsToMap() {
+    if (window == null || viewModel == null) {
+      return;
+    }
+
+    for (Station station : viewModel.getStations()) {
+      String safeName = escapeJs(station.getName());
+
+      String script = String.format(
+          "addStationMarker('%s', %s, %s, '%s')",
+          station.getId(),
+          station.getLatitude(),
+          station.getLongitude(),
+          safeName
+      );
+
+      webView.getEngine().executeScript(script);
+    }
   }
 
-  public void selectBike(String bikeId) {
-    Platform.runLater(() -> {
-      Bicycle bike = viewModel.getBicycleById(bikeId);
-      if (bike != null) {
-        bikeList.getSelectionModel().select(bike);
-        bikeList.scrollTo(bike);
-      }
-    });
+  private void clearMapMarkers() {
+    if (webView != null && mapLoaded) {
+      webView.getEngine().executeScript("clearStationMarkers()");
+    }
+  }
+
+  private String escapeJs(String text) {
+    if (text == null) {
+      return "";
+    }
+    return text
+        .replace("\\", "\\\\")
+        .replace("'", "\\'")
+        .replace("\"", "\\\"");
+  }
+
+  public void selectStation(String stationId) {
+    if (viewModel == null) {
+      return;
+    }
+
+    Station station = viewModel.getStationById(stationId);
+    if (station != null) {
+      viewModel.selecStation(station);
+    }
   }
 
   @Override
   public void setCurrentUser(User currentUser) {
     viewModel = new MapViewModel(currentUser);
     title.textProperty().bind(viewModel.titleText);
+
+    if (bikeList != null) {
+      bikeList.setItems(viewModel.getBicyclesForSelectedStation());
+    }
+
+    tryInitMapData();
   }
 }

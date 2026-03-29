@@ -1,81 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
-  <meta charset="utf-8"/>
+  <meta charset="UTF-8" />
   <script>
     window.L_DISABLE_3D = true;
   </script>
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"/>
-  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-
+  <title>Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
-    html, body, #map { width:100%; height:100%; margin:0; padding:0; overflow:hidden; }
+    html, body, #map {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
   </style>
 </head>
-
 <body>
 <div id="map"></div>
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
-  var map = L.map('map').setView([48.6208, 22.2879], 13);
+  const map = L.map('map').setView([48.6208, 22.2879], 13);
+  const stationMarkers = [];
 
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
   }).addTo(map);
 
-  var bikeIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/2972/2972185.png',
-    iconSize: [32,32],
-    iconAnchor: [16,32]
-  });
+  function addStationMarker(id, lat, lng, name) {
+    const marker = L.marker([lat, lng]).addTo(map);
+    marker.bindPopup(`<b>${name}</b>`);
 
-  var bikeCluster = L.markerClusterGroup();
-  map.addLayer(bikeCluster);
+    marker.on('click', function () {
+      console.log("Marker clicked:", id);
 
-  var markersMap = {};
-
-  function addBike(lat, lng, model, price, id){
-
-    var marker = L.marker([lat,lng], {icon: bikeIcon});
-
-    markersMap[id] = marker;
-
-    marker.bindPopup(
-        "<b>" + model + "</b><br>" +
-        "Ціна: " + price + " грн/год"
-    );
-
-    marker.on('click', function() {
-      if(window.javaApp){
-        window.javaApp.selectBike(id);
+      try {
+        if (window.javaApp) {
+          window.javaApp.selectStation(id);
+        } else {
+          console.log("window.javaApp is null");
+        }
+      } catch (e) {
+        console.error("Error calling Java:", e);
       }
     });
 
-    bikeCluster.addLayer(marker);
+    stationMarkers.push(marker);
   }
 
-  function focusBike(id){
-
-    var marker = markersMap[id];
-
-    if(marker){
-      bikeCluster.zoomToShowLayer(marker, function() {
-        map.panTo(marker.getLatLng());
-        marker.openPopup();
-      });
-    } else {
-      console.log("Marker not found: " + id);
+  function clearStationMarkers() {
+    for (const marker of stationMarkers) {
+      map.removeLayer(marker);
     }
+    stationMarkers.length = 0;
   }
-  setTimeout(function() {
-    map.invalidateSize();
-  }, 300);
 </script>
-
 </body>
 </html>

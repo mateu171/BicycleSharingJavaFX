@@ -16,7 +16,6 @@
     </StackPane>
     <VBox spacing="10" style="-fx-padding: 10;" maxWidth="Infinity" maxHeight="Infinity">
         <Label fx:id="title" styleClass="page-title"/>
-
         <ListView fx:id="bikeList"
           VBox.vgrow="ALWAYS"
           styleClass="rental-list"/>

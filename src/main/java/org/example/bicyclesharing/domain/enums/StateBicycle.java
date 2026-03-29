@@ -1,14 +1,16 @@
 package org.example.bicyclesharing.domain.enums;
 
 public enum StateBicycle {
-  AVAILABLE("вільний"), RENTED("в оренді");
-  private final String name;
+  AVAILABLE("state.available"),
+  RENTED("state.rented");
 
-  StateBicycle(String name) {
-    this.name = name;
+  private final String key;
+
+  StateBicycle(String key) {
+    this.key = key;
   }
 
-  public String getName() {
-    return name;
+  public String getKey() {
+    return key;
   }
 }

@@ -1,16 +1,16 @@
 package org.example.bicyclesharing.domain.enums;
 
 public enum Role {
-  CLIENT("Користувач"),
-  ADMIN("Адміністратор");
+  CLIENT("role.client"),
+  ADMIN("role.admin");
 
-  private final String name;
+  private final String key;
 
-  Role(String name) {
-    this.name = name;
+  Role(String key) {
+    this.key = key;
   }
 
-  public String getName() {
-    return name;
+  public String getKey() {
+    return key;
   }
 }

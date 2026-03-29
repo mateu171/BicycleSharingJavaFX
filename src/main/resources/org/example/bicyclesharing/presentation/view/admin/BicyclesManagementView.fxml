@@ -3,6 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <StackPane xmlns="http://javafx.com/javafx/25"
   xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="org.example.bicyclesharing.controller.view.admin.BicyclesManagementController"
@@ -13,10 +15,16 @@
     <Label fx:id="titleLabel" styleClass="label-title"/>
 
     <HBox spacing="12" alignment="CENTER_LEFT" styleClass="users-toolbar">
+      <StackPane>
       <TextField fx:id="searchField"
         prefWidth="220"
-        styleClass="text-field-style"
-        style="-fx-padding: 5 5 5 0;"/>
+        styleClass="text-field-style"/>
+        <ImageView fitHeight="15" fitWidth="15" preserveRatio="true" style="-fx-translate-x: -100;">
+          <image>
+            <Image url="@../../../art/icon/search.png" />
+          </image>
+        </ImageView>
+      </StackPane>
 
       <ComboBox fx:id="stateFilterComboBox"
         prefWidth="180"

@@ -57,7 +57,7 @@ public class EmployeeManagementViewModel extends BaseViewModel {
 
           boolean matchesType =
               typeFilter.equals("ALL")
-                  || employee.getType().name().equals(typeFilter);
+                  || LocalizationManager.getStringByKey(employee.getType().getKey()).equals(typeFilter);
 
           return matchesSearch && matchesType;
         })

@@ -12,6 +12,7 @@ import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditBicycleViewModel;
 
 public class AddEditBicycleController {
@@ -56,7 +57,7 @@ public class AddEditBicycleController {
       @Override
       protected void updateItem(TypeBicycle item, boolean empty) {
         super.updateItem(item, empty);
-        setText(empty || item == null ? null : item.getName());
+        setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
       }
     });
 
@@ -64,7 +65,7 @@ public class AddEditBicycleController {
       @Override
       protected void updateItem(TypeBicycle item, boolean empty) {
         super.updateItem(item, empty);
-        setText(empty || item == null ? null : item.getName());
+        setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
       }
     });
 

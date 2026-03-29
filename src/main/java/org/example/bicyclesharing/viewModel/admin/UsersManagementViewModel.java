@@ -22,8 +22,6 @@ public class UsersManagementViewModel extends BaseViewModel {
       LocalizationManager.getStringProperty("admin.users.title");
   public final StringProperty searchPromptText =
       LocalizationManager.getStringProperty("admin.users.search");
-  public final StringProperty addAdminButtonText =
-      LocalizationManager.getStringProperty("admin.users.addAdmin");
   public final StringProperty countText = new SimpleStringProperty("");
 
   public final StringProperty searchText = new SimpleStringProperty("");
@@ -48,7 +46,9 @@ public class UsersManagementViewModel extends BaseViewModel {
     List<User> allUsers = userService.getAll();
 
     String search = searchText.get() == null ? "" : searchText.get().trim().toLowerCase(Locale.ROOT);
-    String roleFilter = selectedRoleFilter.get() == null ? LocalizationManager.getStringByKey("all.text") : selectedRoleFilter.get();
+    String roleFilter = selectedRoleFilter.get() == null
+        ? LocalizationManager.getStringByKey("all.text")
+        : selectedRoleFilter.get();
 
     List<User> filtered = allUsers.stream()
         .filter(user -> {
@@ -59,7 +59,7 @@ public class UsersManagementViewModel extends BaseViewModel {
 
           boolean matchesRole =
               roleFilter.equals(LocalizationManager.getStringByKey("all.text"))
-                  || user.getRole().name().equals(roleFilter);
+                  || LocalizationManager.getStringByKey(user.getRole().getKey()).equals(roleFilter);
 
           return matchesSearch && matchesRole;
         })
@@ -72,19 +72,6 @@ public class UsersManagementViewModel extends BaseViewModel {
   public void deleteUser(User user) {
     if (user == null) return;
     userService.deleteById(user.getId());
-    applyFilters();
-  }
-
-  public void toggleRole(User user) {
-    if (user == null) return;
-
-    if (user.getRole() == Role.ADMIN) {
-      user.setRole(Role.CLIENT);
-    } else {
-      user.setRole(Role.ADMIN);
-    }
-
-    userService.update(user);
     applyFilters();
   }
 

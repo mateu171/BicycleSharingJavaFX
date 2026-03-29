@@ -13,6 +13,7 @@ import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.AppConfig;
@@ -47,6 +48,8 @@ public class MapViewModel extends BaseViewModel {
   public Rental rentBike(Bicycle bike)
   {
     Rental rental = new Rental(currentUser.getId(),bike.getId());
+    bike.setState(StateBicycle.RENTED);
+    bicycleService.update(bike);
     return rentalService.add(rental);
   }
 
@@ -59,6 +62,8 @@ public class MapViewModel extends BaseViewModel {
 
     if (rental != null) {
       rentalService.finishRental(rental);
+      bike.setState(StateBicycle.AVAILABLE);
+      bicycleService.update(bike);
     }
   }
 

@@ -54,8 +54,8 @@ public class BicyclesManagementController extends BaseController {
   private void setupFilters() {
     stateFilterComboBox.setItems(FXCollections.observableArrayList(
         "ALL",
-        StateBicycle.AVAILABLE.name(),
-        StateBicycle.RENTED.name()
+        LocalizationManager.getStringByKey(StateBicycle.AVAILABLE.getKey()),
+        LocalizationManager.getStringByKey(StateBicycle.RENTED.getKey())
     ));
     stateFilterComboBox.getSelectionModel().selectFirst();
 
@@ -124,41 +124,8 @@ public class BicyclesManagementController extends BaseController {
         Label stateLabel = new Label(LocalizationManager.getStringByKey("admin.bicycles.state"));
         stateLabel.getStyleClass().add("user-card-role");
 
-        ComboBox<StateBicycle> stateComboBox = new ComboBox<>();
-        stateComboBox.setItems(FXCollections.observableArrayList(StateBicycle.values()));
-        stateComboBox.setValue(bicycle.getState());
-        stateComboBox.getStyleClass().add("settings-combo");
-
-        stateComboBox.setCellFactory(cb -> new ListCell<>() {
-          @Override
-          protected void updateItem(StateBicycle item, boolean empty) {
-            super.updateItem(item, empty);
-            if (empty || item == null) {
-              setText(null);
-            } else {
-              setText(item.name());
-            }
-          }
-        });
-
-        stateComboBox.setButtonCell(new ListCell<>() {
-          @Override
-          protected void updateItem(StateBicycle item, boolean empty) {
-            super.updateItem(item, empty);
-            if (empty || item == null) {
-              setText(null);
-            } else {
-              setText(item.name());
-            }
-          }
-        });
-
-        stateComboBox.setOnAction(e -> {
-          StateBicycle selectedState = stateComboBox.getValue();
-          if (selectedState != null && selectedState != bicycle.getState()) {
-            viewModel.changeState(bicycle, selectedState);
-          }
-        });
+        Label stateLabelInfo = new Label(LocalizationManager.getStringByKey(bicycle.getState().getKey()));
+        stateLabelInfo.getStyleClass().add("user-card.subtitle");
 
         Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
         editButton.getStyleClass().add("button-edit");
@@ -171,7 +138,7 @@ public class BicyclesManagementController extends BaseController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox stateBox = new HBox(8, stateLabel, stateComboBox);
+        HBox stateBox = new HBox(8, stateLabel, stateLabelInfo);
         HBox actions = new HBox(10, editButton, deleteButton);
         HBox bottomRow = new HBox(10, stateBox, spacer, actions);
 

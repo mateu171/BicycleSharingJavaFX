@@ -1,18 +1,18 @@
 package org.example.bicyclesharing.domain.enums;
 
 public enum TypeBicycle {
-  URBAN("Міський"),
-  MOUNTAIN("Гірський"),
-  ROAD("Шосейний"),
-  ELECTRIC("Електричний");
+  URBAN("type.urban"),
+  MOUNTAIN("type.mountain"),
+  ROAD("type.road"),
+  ELECTRIC("type.electric");
 
-  private final String name;
+  private final String key;
 
-  TypeBicycle(String name) {
-    this.name = name;
+  TypeBicycle(String key) {
+    this.key = key;
   }
 
-  public String getName() {
-    return name;
+  public String getKey() {
+    return key;
   }
 }

@@ -3,16 +3,15 @@ package org.example.bicyclesharing.domain.enums;
 public enum EmployeeType {
   MANAGER("employee.type.MANAGER"),
   TECHNICIAN("employee.type.TECHNICIAN"),
-  MECHANIC("employee.type.MECHANIC"),
-  OPERATOR("employee.type.OPERATOR");
+  MECHANIC("employee.type.MECHANIC");
 
-  private final String name;
+  private final String key;
 
-  EmployeeType(String name) {
-    this.name = name;
+  EmployeeType(String key) {
+    this.key = key;
   }
 
-  public String getName() {
-    return name;
+  public String getKey() {
+    return key;
   }
 }

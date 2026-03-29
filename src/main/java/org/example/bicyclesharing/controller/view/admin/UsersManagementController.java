@@ -44,8 +44,8 @@ public class UsersManagementController extends BaseController {
   private void setupFilters() {
     roleFilterComboBox.setItems(FXCollections.observableArrayList(
         LocalizationManager.getStringByKey("all.text"),
-        Role.CLIENT.name(),
-        Role.ADMIN.name()
+        LocalizationManager.getStringByKey(Role.CLIENT.getKey()),
+        LocalizationManager.getStringByKey(Role.ADMIN.getKey())
     ));
     roleFilterComboBox.getSelectionModel().selectFirst();
 
@@ -95,7 +95,7 @@ public class UsersManagementController extends BaseController {
             if (empty || item == null) {
               setText(null);
             } else {
-              setText(item.getName());
+              setText(LocalizationManager.getStringByKey(item.getKey()));
             }
           }
         });
@@ -107,7 +107,7 @@ public class UsersManagementController extends BaseController {
             if (empty || item == null) {
               setText(null);
             } else {
-              setText(item.getName());
+              setText(LocalizationManager.getStringByKey(item.getKey()));
             }
           }
         });

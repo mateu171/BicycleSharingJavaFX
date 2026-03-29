@@ -55,10 +55,9 @@ public class EmployeeManagementController extends BaseController {
   private void setupFilters() {
     typeFilterComboBox.setItems(FXCollections.observableArrayList(
         "ALL",
-        EmployeeType.MANAGER.name(),
-        EmployeeType.TECHNICIAN.name(),
-        EmployeeType.MECHANIC.name(),
-        EmployeeType.OPERATOR.name()
+        LocalizationManager.getStringByKey(EmployeeType.MANAGER.getKey()),
+        LocalizationManager.getStringByKey(EmployeeType.TECHNICIAN.getKey()),
+        LocalizationManager.getStringByKey(EmployeeType.MECHANIC.getKey())
     ));
     typeFilterComboBox.getSelectionModel().selectFirst();
 
@@ -87,7 +86,7 @@ public class EmployeeManagementController extends BaseController {
         } else if (item.equals("ALL")) {
           setText(LocalizationManager.getStringByKey("all.text"));
         } else {
-          setText(LocalizationManager.getStringByKey("employee.type." + item));
+          setText(item);
         }
       }
     });

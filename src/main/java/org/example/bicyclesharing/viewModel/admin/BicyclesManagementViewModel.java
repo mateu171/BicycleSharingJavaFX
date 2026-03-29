@@ -59,7 +59,7 @@ public class BicyclesManagementViewModel extends BaseViewModel {
 
           boolean matchesState =
               stateFilter.equals("ALL")
-                  || bike.getState().name().equals(stateFilter);
+                  ||  LocalizationManager.getStringByKey(bike.getState().getKey()).equals(stateFilter);;
 
           return matchesSearch && matchesState;
         })

@@ -97,7 +97,7 @@
         <HBox fx:id="adminEmployeesContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../../art/icon/anotheruser.png" />
+              <Image url="@../../art/icon/employee.png" />
             </image>
           </ImageView>
           <Button fx:id="btnEmployees" styleClass="menu-button" onAction="#onShowEmployees"/>
@@ -115,7 +115,7 @@
         <HBox fx:id="adminStationContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../../art/icon/bicycle.png" />
+              <Image url="@../../art/icon/bicycleStation.png" />
             </image>
           </ImageView>
           <Button fx:id="btnStations" styleClass="menu-button" onAction="#onShowStations"/>

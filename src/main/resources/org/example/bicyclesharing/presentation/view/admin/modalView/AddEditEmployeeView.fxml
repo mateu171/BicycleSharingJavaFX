@@ -14,10 +14,6 @@
     <HBox alignment="CENTER_LEFT" styleClass="modal-header">
       <Label fx:id="titleLabel" styleClass="modal-title"/>
       <Pane HBox.hgrow="ALWAYS"/>
-      <Button fx:id="closeButton"
-        onAction="#onClose"
-        text="✕"
-        styleClass="modal-close-button"/>
     </HBox>
 
     <VBox spacing="12" styleClass="modal-body">
@@ -37,12 +33,6 @@
         <Label fx:id="stationLabel" styleClass="form-label"/>
         <ComboBox fx:id="stationComboBox" styleClass="modal-combo"/>
         <Label fx:id="stationErrorLabel" styleClass="label-error" wrapText="true"/>
-      </VBox>
-
-      <VBox spacing="4">
-        <Label fx:id="typeLabel" styleClass="form-label"/>
-        <ComboBox fx:id="typeComboBox" styleClass="modal-combo"/>
-        <Label fx:id="typeErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>
 
       <VBox spacing="4">

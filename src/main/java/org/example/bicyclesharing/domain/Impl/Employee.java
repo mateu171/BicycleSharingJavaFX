@@ -1,7 +1,6 @@
 package org.example.bicyclesharing.domain.Impl;
 
 import java.util.UUID;
-import org.example.bicyclesharing.domain.enums.EmployeeType;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 
 public class Employee extends BaseEntity {
@@ -9,19 +8,17 @@ public class Employee extends BaseEntity {
   private String name;
   private String phoneNumber;
   private UUID stationId;
-  private EmployeeType type;
   private double salary;
 
   private Employee() {
     super();
   }
 
-  public Employee(String name, String phoneNumber, UUID stationId, EmployeeType type, String salary) {
+  public Employee(String name, String phoneNumber, UUID stationId, String salary) {
     this();
     setName(name);
     setPhoneNumber(phoneNumber);
     setStationId(stationId);
-    setType(type);
     setSalary(salary);
 
     if (!isValid()) {
@@ -67,18 +64,6 @@ public class Employee extends BaseEntity {
       addError("stationId", "employee.station.empty");
     }
     this.stationId = stationId;
-  }
-
-  public EmployeeType getType() {
-    return type;
-  }
-
-  public void setType(EmployeeType type) {
-    cleanErrors("type");
-    if (type == null) {
-      addError("type", "employee.type.empty");
-    }
-    this.type = type;
   }
 
   public double getSalary() {

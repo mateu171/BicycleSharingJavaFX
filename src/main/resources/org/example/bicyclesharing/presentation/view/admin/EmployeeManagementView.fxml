@@ -26,10 +26,6 @@
         </ImageView>
       </StackPane>
 
-      <ComboBox fx:id="typeFilterComboBox"
-        prefWidth="180"
-        styleClass="settings-combo"/>
-
       <Pane HBox.hgrow="ALWAYS"/>
 
       <Button fx:id="addEmployeeButton"

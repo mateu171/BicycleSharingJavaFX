@@ -55,11 +55,7 @@ public class EmployeeManagementViewModel extends BaseViewModel {
                   || employee.getName().toLowerCase(Locale.ROOT).contains(search)
                   || employee.getPhoneNumber().toLowerCase(Locale.ROOT).contains(search);
 
-          boolean matchesType =
-              typeFilter.equals("ALL")
-                  || LocalizationManager.getStringByKey(employee.getType().getKey()).equals(typeFilter);
-
-          return matchesSearch && matchesType;
+          return matchesSearch;
         })
         .collect(Collectors.toList());
 

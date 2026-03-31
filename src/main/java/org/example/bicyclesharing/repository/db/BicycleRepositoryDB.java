@@ -55,8 +55,6 @@ public class BicycleRepositoryDB
 
   @Override
   protected Object[] getInsertValues(Bicycle entity) {
-    if (entity == null) return new Object[7];
-
     return new Object[] {
         entity.getId().toString(),
         entity.getModel(),

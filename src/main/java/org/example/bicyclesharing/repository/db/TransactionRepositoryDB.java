@@ -3,7 +3,6 @@ package org.example.bicyclesharing.repository.db;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-
 import org.example.bicyclesharing.domain.Impl.Transaction;
 import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.repository.TransactionRepository;
@@ -15,14 +14,13 @@ public class TransactionRepositoryDB
 
   @Override
   public List<Transaction> findByUserId(UUID userId) {
-
     String sql = """
                 SELECT * FROM TRANSACTIONS
                 WHERE USER_ID = ?
                 ORDER BY TIMESTAMP DESC
                 """;
 
-    return jdbcTemplate.query(sql, rowMapper(), userId);
+    return jdbcTemplate.query(sql, rowMapper(), userId.toString());
   }
 
   @Override
@@ -42,7 +40,7 @@ public class TransactionRepositoryDB
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[]{
+    return new String[] {
         "USER_ID",
         "AMOUNT",
         "TYPE",
@@ -53,31 +51,25 @@ public class TransactionRepositoryDB
 
   @Override
   protected RowMapper<Transaction> rowMapper() {
-
     return (rs, rowNum) -> {
-
       Transaction transaction = new Transaction(
-          rs.getObject("USER_ID", UUID.class),
+          UUID.fromString(rs.getString("USER_ID")),
           rs.getDouble("AMOUNT"),
           TransactionType.valueOf(rs.getString("TYPE")),
           rs.getTimestamp("TIMESTAMP").toLocalDateTime(),
           rs.getString("DESCRIPTION")
       );
 
-      transaction.setId(rs.getObject("ID", UUID.class));
-
+      transaction.setId(UUID.fromString(rs.getString("ID")));
       return transaction;
     };
   }
 
   @Override
   protected Object[] getInsertValues(Transaction entity) {
-
-    if (entity == null) return new Object[6];
-
-    return new Object[]{
-        entity.getId(),
-        entity.getUserId(),
+    return new Object[] {
+        entity.getId().toString(),
+        entity.getUserId().toString(),
         entity.getAmount(),
         entity.getType().name(),
         Timestamp.valueOf(entity.getTimestamp()),
@@ -87,14 +79,13 @@ public class TransactionRepositoryDB
 
   @Override
   protected Object[] getUpdateValues(Transaction entity) {
-
-    return new Object[]{
-        entity.getUserId(),
+    return new Object[] {
+        entity.getUserId().toString(),
         entity.getAmount(),
         entity.getType().name(),
         Timestamp.valueOf(entity.getTimestamp()),
         entity.getDescription(),
-        entity.getId()
+        entity.getId().toString()
     };
   }
 

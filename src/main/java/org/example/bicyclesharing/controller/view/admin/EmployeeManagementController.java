@@ -18,7 +18,6 @@ import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditEmployeeController;
 import org.example.bicyclesharing.domain.Impl.Employee;
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.domain.enums.EmployeeType;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.EmployeeManagementViewModel;
@@ -28,7 +27,6 @@ public class EmployeeManagementController extends BaseController {
   @FXML private Label titleLabel;
   @FXML private Label countLabel;
   @FXML private TextField searchField;
-  @FXML private ComboBox<String> typeFilterComboBox;
   @FXML private ListView<Employee> employeesListView;
   @FXML private Button addEmployeeButton;
 
@@ -53,50 +51,8 @@ public class EmployeeManagementController extends BaseController {
   }
 
   private void setupFilters() {
-    typeFilterComboBox.setItems(FXCollections.observableArrayList(
-        "ALL",
-        LocalizationManager.getStringByKey(EmployeeType.MANAGER.getKey()),
-        LocalizationManager.getStringByKey(EmployeeType.TECHNICIAN.getKey()),
-        LocalizationManager.getStringByKey(EmployeeType.MECHANIC.getKey())
-    ));
-    typeFilterComboBox.getSelectionModel().selectFirst();
-
-    typeFilterComboBox.setCellFactory(cb -> new ListCell<>() {
-      @Override
-      protected void updateItem(String item, boolean empty) {
-        super.updateItem(item, empty);
-
-        if (empty || item == null) {
-          setText(null);
-        } else if (item.equals("ALL")) {
-          setText(LocalizationManager.getStringByKey("all.text"));
-        } else {
-          setText(item);
-        }
-      }
-    });
-
-    typeFilterComboBox.setButtonCell(new ListCell<>() {
-      @Override
-      protected void updateItem(String item, boolean empty) {
-        super.updateItem(item, empty);
-
-        if (empty || item == null) {
-          setText(null);
-        } else if (item.equals("ALL")) {
-          setText(LocalizationManager.getStringByKey("all.text"));
-        } else {
-          setText(item);
-        }
-      }
-    });
-
     searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFilters());
 
-    typeFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-      viewModel.selectedTypeFilter.set(newVal);
-      viewModel.applyFilters();
-    });
   }
 
   private void setupList() {
@@ -121,10 +77,7 @@ public class EmployeeManagementController extends BaseController {
         phoneLabel.getStyleClass().add("user-card-subtitle");
 
         Label detailsLabel = new Label(
-            LocalizationManager.getStringByKey("admin.employees.type") + ": "
-                + LocalizationManager.getStringByKey("employee.type." + employee.getType().name())
-                + " | "
-                + LocalizationManager.getStringByKey("admin.employees.salary") + ": "
+            LocalizationManager.getStringByKey("admin.employees.salary") + ": "
                 + String.format("%.2f", employee.getSalary())
         );
         detailsLabel.getStyleClass().add("user-card-role");

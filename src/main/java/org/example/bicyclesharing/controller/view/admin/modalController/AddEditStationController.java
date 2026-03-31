@@ -30,7 +30,6 @@ public class AddEditStationController {
   @FXML private Label longitudeErrorLabel;
   @FXML private Label employeeErrorLabel;
 
-  @FXML private Button closeButton;
   @FXML private Button cancelButton;
   @FXML private Button saveButton;
 

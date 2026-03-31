@@ -35,7 +35,7 @@ public class BicyclesManagementController extends BaseController {
 
   @Override
   public void setCurrentUser(User currentUser) {
-    viewModel = new BicyclesManagementViewModel(currentUser, AppConfig.bicycleService());
+    viewModel = new BicyclesManagementViewModel(currentUser, AppConfig.bicycleService(),AppConfig.stationService());
     bindFields();
     setupFilters();
     setupList();

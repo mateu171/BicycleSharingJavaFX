@@ -18,6 +18,12 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
   }
 
   @Override
+  public Station getById(UUID id) {
+    String sql = "SELECT * FROM STATIONS WHERE id = ?";
+    return jdbcTemplate.queryForObject(sql, rowMapper(), id.toString());
+  }
+
+  @Override
   protected String getCreateTableSQL() {
     return """
         CREATE TABLE IF NOT EXISTS STATIONS (

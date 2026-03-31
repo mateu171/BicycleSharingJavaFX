@@ -8,15 +8,18 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
+import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.services.BicycleService;
+import org.example.bicyclesharing.services.StationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.BaseViewModel;
 
 public class BicyclesManagementViewModel extends BaseViewModel {
 
   private final BicycleService bicycleService;
+  private final StationService stationService;
   private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
 
   public final StringProperty titleText =
@@ -30,9 +33,10 @@ public class BicyclesManagementViewModel extends BaseViewModel {
   public final StringProperty searchText = new SimpleStringProperty("");
   public final StringProperty selectedStateFilter = new SimpleStringProperty("ALL");
 
-  public BicyclesManagementViewModel(User currentUser, BicycleService bicycleService) {
+  public BicyclesManagementViewModel(User currentUser, BicycleService bicycleService,StationService stationService) {
     super(currentUser);
     this.bicycleService = bicycleService;
+    this.stationService = stationService;
     loadBicycles();
   }
 
@@ -71,15 +75,11 @@ public class BicyclesManagementViewModel extends BaseViewModel {
 
   public void deleteBicycle(Bicycle bicycle) {
     if (bicycle == null) return;
+
+    Station station = stationService.getById(bicycle.getStationId());
+    station.removeBicycleId(bicycle.getId());
+    stationService.update(station);
     bicycleService.deleteById(bicycle.getId());
-    applyFilters();
-  }
-
-  public void changeState(Bicycle bicycle, StateBicycle newState) {
-    if (bicycle == null || newState == null) return;
-
-    bicycle.setState(newState);
-    bicycleService.update(bicycle);
     applyFilters();
   }
 

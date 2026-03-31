@@ -33,7 +33,6 @@ public class AddEditBicycleController {
   @FXML private Label priceErrorLabel;
   @FXML private Label stationErrorLabel;
 
-  @FXML private Button closeButton;
   @FXML private Button cancelButton;
   @FXML private Button saveButton;
 

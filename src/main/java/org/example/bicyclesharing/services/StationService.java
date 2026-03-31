@@ -19,6 +19,11 @@ public class StationService extends BaseService<Station, UUID>{
     return repository;
   }
 
+  public  Station getById(UUID id)
+  {
+    return repository.getById(id);
+  }
+
   public List<Station> getByName(String name)
   {
     return repository.getByName(name);

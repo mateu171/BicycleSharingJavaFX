@@ -3,7 +3,6 @@ package org.example.bicyclesharing.repository.db;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.repository.RentalRepository;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,13 +11,10 @@ public class RentalRepositoryDB
     extends BaseRepositoryDB<Rental, UUID>
     implements RentalRepository {
 
-
   @Override
   public List<Rental> findByUserId(UUID id) {
-
-    String sql = "SELECT * FROM RENTALS WHERE userId=?";
-
-    return jdbcTemplate.query(sql, rowMapper(), id);
+    String sql = "SELECT * FROM RENTALS WHERE userId = ?";
+    return jdbcTemplate.query(sql, rowMapper(), id.toString());
   }
 
   @Override
@@ -33,60 +29,45 @@ public class RentalRepositoryDB
 
   @Override
   protected RowMapper<Rental> rowMapper() {
-
     return (rs, rowNum) -> {
-
       Rental rental = new Rental();
 
       rental.setId(UUID.fromString(rs.getString("id")));
       rental.setUserId(UUID.fromString(rs.getString("userId")));
       rental.setBicycleId(UUID.fromString(rs.getString("bicycleId")));
-
-      rental.setStart(
-          rs.getTimestamp("start").toLocalDateTime()
-      );
+      rental.setStart(rs.getTimestamp("start").toLocalDateTime());
 
       Timestamp endTs = rs.getTimestamp("endTime");
-
       if (endTs != null) {
         rental.setEnd(endTs.toLocalDateTime());
       }
 
       rental.setTotalCost(rs.getDouble("totalCost"));
-
       return rental;
     };
   }
 
   @Override
   protected Object[] getInsertValues(Rental entity) {
-
-    if (entity == null) return new Object[6];
-
-    return new Object[]{
-        entity.getId(),
-        entity.getUserId(),
-        entity.getBicycleId(),
+    return new Object[] {
+        entity.getId().toString(),
+        entity.getUserId().toString(),
+        entity.getBicycleId().toString(),
         Timestamp.valueOf(entity.getStart()),
-        entity.getEnd() != null
-            ? Timestamp.valueOf(entity.getEnd())
-            : null,
+        entity.getEnd() != null ? Timestamp.valueOf(entity.getEnd()) : null,
         entity.getTotalCost()
     };
   }
 
   @Override
   protected Object[] getUpdateValues(Rental entity) {
-
-    return new Object[]{
-        entity.getUserId(),
-        entity.getBicycleId(),
+    return new Object[] {
+        entity.getUserId().toString(),
+        entity.getBicycleId().toString(),
         Timestamp.valueOf(entity.getStart()),
-        entity.getEnd() != null
-            ? Timestamp.valueOf(entity.getEnd())
-            : null,
+        entity.getEnd() != null ? Timestamp.valueOf(entity.getEnd()) : null,
         entity.getTotalCost(),
-        entity.getId()
+        entity.getId().toString()
     };
   }
 
@@ -97,8 +78,7 @@ public class RentalRepositoryDB
 
   @Override
   protected String[] getUpdateColumns() {
-
-    return new String[]{
+    return new String[] {
         "userId",
         "bicycleId",
         "start",

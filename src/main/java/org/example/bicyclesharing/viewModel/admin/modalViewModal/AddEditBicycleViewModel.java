@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.viewModel.admin.modalViewModal;
 
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -102,8 +103,13 @@ public class AddEditBicycleViewModel {
             selectedStation.getId()
         );
 
+        selectedStation.addBicycleId(bicycle.getId());
+        stationService.update(selectedStation);
         bicycleService.add(bicycle);
       } else {
+        UUID oldStationId = editingBicycle.getStationId();
+        UUID newStationId = selectedStation.getId();
+
         String modelValue = isBlank(model.get())
             ? editingBicycle.getModel()
             : model.get().trim();
@@ -116,24 +122,31 @@ public class AddEditBicycleViewModel {
             ? editingBicycle.getTypeBicycle()
             : selectedType;
 
-        var stationIdValue = selectedStation == null
-            ? editingBicycle.getStationId()
-            : selectedStation.getId();
-
         Bicycle validated = new Bicycle(
             modelValue,
             typeValue,
             priceValue,
-            stationIdValue
+            newStationId
         );
 
         editingBicycle.setModel(validated.getModel());
         editingBicycle.setTypeBicycle(typeValue);
         editingBicycle.setPricePerMinute(String.valueOf(validated.getPricePerMinute()));
-        editingBicycle.setStationId(stationIdValue);
+        editingBicycle.setStationId(newStationId);
 
         if (!editingBicycle.isValid()) {
           throw new CustomEntityValidationExeption(editingBicycle.getErrors());
+        }
+
+        if (!oldStationId.equals(newStationId)) {
+          Station oldStation = stationService.getById(oldStationId);
+          Station newStation = stationService.getById(newStationId);
+
+          oldStation.removeBicycleId(editingBicycle.getId());
+          newStation.addBicycleId(editingBicycle.getId());
+
+          stationService.update(oldStation);
+          stationService.update(newStation);
         }
 
         bicycleService.update(editingBicycle);

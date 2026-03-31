@@ -10,9 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.Employee;
 import org.example.bicyclesharing.domain.Impl.Station;
-import org.example.bicyclesharing.domain.enums.EmployeeType;
 import org.example.bicyclesharing.util.AppConfig;
-import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditEmployeeViewModel;
 
 public class AddEditEmployeeController {
@@ -27,16 +25,13 @@ public class AddEditEmployeeController {
   @FXML private TextField nameField;
   @FXML private TextField phoneField;
   @FXML private ComboBox<Station> stationComboBox;
-  @FXML private ComboBox<EmployeeType> typeComboBox;
   @FXML private TextField salaryField;
 
   @FXML private Label nameErrorLabel;
   @FXML private Label phoneErrorLabel;
   @FXML private Label stationErrorLabel;
-  @FXML private Label typeErrorLabel;
   @FXML private Label salaryErrorLabel;
 
-  @FXML private Button closeButton;
   @FXML private Button cancelButton;
   @FXML private Button saveButton;
 
@@ -72,27 +67,6 @@ public class AddEditEmployeeController {
       }
     });
 
-    typeComboBox.setItems(FXCollections.observableArrayList(EmployeeType.values()));
-    typeComboBox.setValue(viewModel.selectedType);
-
-    typeComboBox.setCellFactory(cb -> new ListCell<>() {
-      @Override
-      protected void updateItem(EmployeeType item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null
-            : LocalizationManager.getStringByKey("employee.type." + item.name()));
-      }
-    });
-
-    typeComboBox.setButtonCell(new ListCell<>() {
-      @Override
-      protected void updateItem(EmployeeType item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null
-            : LocalizationManager.getStringByKey("employee.type." + item.name()));
-      }
-    });
-
     if (viewModel.isEditMode()) {
       nameField.setPromptText(employee.getName());
       phoneField.setPromptText(employee.getPhoneNumber());
@@ -105,7 +79,6 @@ public class AddEditEmployeeController {
     nameLabel.textProperty().bind(viewModel.nameLabelText);
     phoneLabel.textProperty().bind(viewModel.phoneLabelText);
     stationLabel.textProperty().bind(viewModel.stationLabelText);
-    typeLabel.textProperty().bind(viewModel.typeLabelText);
     salaryLabel.textProperty().bind(viewModel.salaryLabelText);
 
     cancelButton.textProperty().bind(viewModel.cancelButtonText);
@@ -118,14 +91,12 @@ public class AddEditEmployeeController {
     nameErrorLabel.textProperty().bind(viewModel.nameError);
     phoneErrorLabel.textProperty().bind(viewModel.phoneError);
     stationErrorLabel.textProperty().bind(viewModel.stationError);
-    typeErrorLabel.textProperty().bind(viewModel.typeError);
     salaryErrorLabel.textProperty().bind(viewModel.salaryError);
   }
 
   @FXML
   private void onSave() {
     viewModel.selectedStation = stationComboBox.getValue();
-    viewModel.selectedType = typeComboBox.getValue();
 
     if (viewModel.save()) {
       if (onSaved != null) {

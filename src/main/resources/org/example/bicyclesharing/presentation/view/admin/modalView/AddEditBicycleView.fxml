@@ -19,11 +19,6 @@
         styleClass="modal-title"/>
 
       <Pane HBox.hgrow="ALWAYS"/>
-
-      <Button fx:id="closeButton"
-        text="✕"
-        onAction="#onClose"
-        styleClass="modal-close-button"/>
     </HBox>
 
     <VBox spacing="12"

@@ -1,10 +1,10 @@
 package org.example.bicyclesharing.repository.db;
 
 import java.util.List;
+import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.repository.UserRepository;
-import java.util.UUID;
 import org.springframework.jdbc.core.RowMapper;
 
 public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements UserRepository {
@@ -38,9 +38,8 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
 
   @Override
   protected Object[] getInsertValues(User entity) {
-    if (entity == null) return new Object[]{"id","login","password","email","role","balance"};
-    return new Object[]{
-        entity.getId(),
+    return new Object[] {
+        entity.getId().toString(),
         entity.getLogin(),
         entity.getHashedPassword(),
         entity.getEmail(),
@@ -51,19 +50,19 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
 
   @Override
   protected Object[] getUpdateValues(User entity) {
-    return new Object[]{
+    return new Object[] {
         entity.getLogin(),
         entity.getHashedPassword(),
         entity.getEmail(),
         entity.getRole().name(),
         entity.getBalance(),
-        entity.getId()
+        entity.getId().toString()
     };
   }
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[]{
+    return new String[] {
         "login",
         "password",
         "email",

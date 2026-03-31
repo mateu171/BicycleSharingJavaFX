@@ -1,8 +1,11 @@
 package org.example.bicyclesharing.controller.view.user;
 
-import javafx.application.Platform;
+import java.io.IOException;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -10,12 +13,18 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import netscape.javascript.JSObject;
 import org.example.bicyclesharing.controller.view.BaseController;
+import org.example.bicyclesharing.controller.view.user.modalController.ReportIssueDialogController;
+import org.example.bicyclesharing.controller.view.user.modalController.RideFeedbackDialogController;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.user.MapViewModel;
 
 public class MapController extends BaseController {
@@ -110,10 +119,12 @@ public class MapController extends BaseController {
               viewModel.startRentalTimer(bicycle, rental);
             }
           } else {
-            viewModel.finishRental(bicycle);
-            rentBtn.setText(viewModel.rentButtonText.get());
-            viewModel.stopRentalTimer(bicycle);
-          }
+          viewModel.finishRental(bicycle);
+          rentBtn.setText(viewModel.rentButtonText.get());
+          viewModel.stopRentalTimer(bicycle);
+
+          showRideFeedbackFlow(bicycle);
+        }
 
           bikeList.refresh();
         });
@@ -181,5 +192,91 @@ public class MapController extends BaseController {
     }
 
     tryInitMapData();
+  }
+
+  private void showRideFeedbackFlow(Bicycle bicycle) {
+    Boolean likedRide = showRideFeedbackDialog();
+
+    if (likedRide == null) {
+      return;
+    }
+
+    if (likedRide) {
+      return;
+    }
+
+    showProblemDetailsDialog(bicycle);
+  }
+
+  private Boolean showRideFeedbackDialog() {
+    try {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/org/example/bicyclesharing/presentation/view/user/modalView/RideFeedbackDialog.fxml")
+      );
+
+      Parent root = loader.load();
+      RideFeedbackDialogController controller = loader.getController();
+
+      Stage dialogStage = createModalStage(root);
+      controller.setStage(dialogStage);
+
+      dialogStage.showAndWait();
+
+      return controller.getLikedRide();
+
+    } catch (IOException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  private void showProblemDetailsDialog(Bicycle bicycle) {
+    try {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/org/example/bicyclesharing/presentation/view/user/modalView/ReportIssueDialog.fxml")
+      );
+
+      Parent root = loader.load();
+      ReportIssueDialogController controller = loader.getController();
+
+      Stage dialogStage = createModalStage(root);
+      controller.setStage(dialogStage);
+
+      dialogStage.showAndWait();
+
+      controller.getResult().ifPresent(result -> {
+        viewModel.handleNegativeRideFeedback(
+            bicycle,
+            result.problemType(),
+            result.comment()
+        );
+      });
+
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private Stage createModalStage(Parent root) {
+    Stage dialogStage = new Stage();
+    dialogStage.initModality(Modality.APPLICATION_MODAL);
+    dialogStage.initOwner(webView.getScene().getWindow());
+    dialogStage.initStyle(StageStyle.TRANSPARENT);
+
+    Scene scene = new Scene(root);
+    scene.setFill(null);
+    scene.getStylesheets().add(
+        getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
+    );
+
+    dialogStage.setScene(scene);
+    return dialogStage;
+  }
+
+  private boolean isTechnicalProblem(String problemType) {
+    return problemType.equals(LocalizationManager.getStringByKey("ride.problem.type.broken"))
+        || problemType.equals(LocalizationManager.getStringByKey("ride.problem.type.brakes"))
+        || problemType.equals(LocalizationManager.getStringByKey("ride.problem.type.wheel"))
+        || problemType.equals(LocalizationManager.getStringByKey("ride.problem.type.seat"));
   }
 }

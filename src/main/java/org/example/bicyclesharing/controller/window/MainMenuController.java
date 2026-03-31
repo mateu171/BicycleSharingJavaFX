@@ -16,36 +16,36 @@ import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.MainMenuViewModel;
 
 public class MainMenuController extends BaseWindowController{
-  @FXML
-  private VBox sidebar;
-  @FXML
-  private Button btnMap;
-  @FXML
-  private Button btnProfile;
-  @FXML
-  private Button btnBalance;
-  @FXML
-  private Button btnHistory;
-  @FXML
-  private Button btnTransaction;
-  @FXML
-  private Button btnSettings;
+  @FXML private VBox sidebar;
+  @FXML private Button btnMap;
+  @FXML private Button btnProfile;
+  @FXML private Button btnBalance;
+  @FXML private Button btnHistory;
+  @FXML private Button btnTransaction;
+  @FXML private Button btnSettings;
 
   @FXML private Button btnUsers;
   @FXML private Button btnEmployees;
   @FXML private Button btnBicycles;
   @FXML private Button btnStations;
 
+  @FXML private Button btnMechanicIssues;
+  @FXML private Button btnMechanicService;
+
+  @FXML private HBox mechanicIssuesContainer;
+  @FXML private HBox mechanicServiceContainer;
+
   @FXML private HBox adminUsersContainer;
   @FXML private HBox adminEmployeesContainer;
   @FXML private HBox adminBicyclesContainer;
+  @FXML private HBox adminStationContainer;
+
   @FXML private HBox mapContainer;
   @FXML private HBox profileContainer;
   @FXML private HBox balanceContainer;
   @FXML private HBox historyContainer;
   @FXML private HBox transactionContainer;
   @FXML private HBox settingsContainer;
-  @FXML private HBox adminStationContainer;
 
   private double xOffset = 0;
   private double yOffset = 0;
@@ -58,10 +58,11 @@ public class MainMenuController extends BaseWindowController{
 
     if (currentUser.getRole() == Role.ADMIN) {
       onShowUsers();
+    } else if (currentUser.getRole() == Role.MECHANIC) {
+      onShowMechanicIssues();
     } else {
       onShowProfile();
     }
-
   }
 
   @Override
@@ -81,6 +82,8 @@ public class MainMenuController extends BaseWindowController{
     btnEmployees.textProperty().bind(viewModel.employeesButtonText);
     btnBicycles.textProperty().bind(viewModel.bicyclesButtonText);
     btnStations.textProperty().bind(viewModel.stationButtonText);
+    btnMechanicIssues.textProperty().bind(viewModel.mechanicIssuesButtonText);
+    btnMechanicService.textProperty().bind(viewModel.mechanicServiceButtonText);
   }
 
   @Override
@@ -143,6 +146,16 @@ public class MainMenuController extends BaseWindowController{
     navigationService.load("/org/example/bicyclesharing/presentation/view/user/MapView.fxml");
   }
 
+  @FXML
+  public void onShowMechanicIssues() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/mechanic/MechanicIssuesView.fxml");
+  }
+
+  @FXML
+  public void onShowMechanicService() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/mechanic/MechanicServiceView.fxml");
+  }
+
   private void applyTheme() {
     contentPane.getScene().getRoot().getStylesheets().clear();
     contentPane.getScene().getRoot().getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
@@ -163,6 +176,8 @@ public class MainMenuController extends BaseWindowController{
 
   private void configureMenuByRole(User currentUser) {
     boolean isAdmin = currentUser != null && currentUser.getRole() == Role.ADMIN;
+    boolean isMechanic = currentUser != null && currentUser.getRole() == Role.MECHANIC;
+    boolean isClient = currentUser != null && currentUser.getRole() == Role.CLIENT;
 
     adminUsersContainer.setVisible(isAdmin);
     adminUsersContainer.setManaged(isAdmin);
@@ -176,20 +191,26 @@ public class MainMenuController extends BaseWindowController{
     adminStationContainer.setVisible(isAdmin);
     adminStationContainer.setManaged(isAdmin);
 
-    mapContainer.setVisible(!isAdmin);
-    mapContainer.setManaged(!isAdmin);
+    mechanicIssuesContainer.setVisible(isMechanic);
+    mechanicIssuesContainer.setManaged(isMechanic);
 
-    balanceContainer.setVisible(!isAdmin);
-    balanceContainer.setManaged(!isAdmin);
+    mechanicServiceContainer.setVisible(isMechanic);
+    mechanicServiceContainer.setManaged(isMechanic);
 
-    historyContainer.setVisible(!isAdmin);
-    historyContainer.setManaged(!isAdmin);
+    mapContainer.setVisible(isClient);
+    mapContainer.setManaged(isClient);
 
-    transactionContainer.setVisible(!isAdmin);
-    transactionContainer.setManaged(!isAdmin);
+    balanceContainer.setVisible(isClient);
+    balanceContainer.setManaged(isClient);
 
-    profileContainer.setVisible(!isAdmin);
-    profileContainer.setManaged(!isAdmin);
+    historyContainer.setVisible(isClient);
+    historyContainer.setManaged(isClient);
+
+    transactionContainer.setVisible(isClient);
+    transactionContainer.setManaged(isClient);
+
+    profileContainer.setVisible(isClient);
+    profileContainer.setManaged(isClient);
 
     settingsContainer.setVisible(true);
     settingsContainer.setManaged(true);

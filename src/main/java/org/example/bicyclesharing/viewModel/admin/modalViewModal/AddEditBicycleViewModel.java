@@ -138,15 +138,32 @@ public class AddEditBicycleViewModel {
           throw new CustomEntityValidationExeption(editingBicycle.getErrors());
         }
 
-        if (!oldStationId.equals(newStationId)) {
-          Station oldStation = stationService.getById(oldStationId);
+        if (oldStationId != null && newStationId != null) {
+
+          if (!oldStationId.equals(newStationId)) {
+
+            Station oldStation = stationService.getById(oldStationId);
+            Station newStation = stationService.getById(newStationId);
+
+            if (oldStation != null) {
+              oldStation.removeBicycleId(editingBicycle.getId());
+              stationService.update(oldStation);
+            }
+
+            if (newStation != null) {
+              newStation.addBicycleId(editingBicycle.getId());
+              stationService.update(newStation);
+            }
+          }
+
+        } else if (oldStationId == null && newStationId != null) {
+
           Station newStation = stationService.getById(newStationId);
 
-          oldStation.removeBicycleId(editingBicycle.getId());
-          newStation.addBicycleId(editingBicycle.getId());
-
-          stationService.update(oldStation);
-          stationService.update(newStation);
+          if (newStation != null) {
+            newStation.addBicycleId(editingBicycle.getId());
+            stationService.update(newStation);
+          }
         }
 
         bicycleService.update(editingBicycle);

@@ -12,11 +12,13 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
+import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.services.BicycleService;
+import org.example.bicyclesharing.services.BikeIssueService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.services.StationService;
 import org.example.bicyclesharing.util.AppConfig;
@@ -36,6 +38,7 @@ public class MapViewModel extends BaseViewModel {
   private final StationService stationService = AppConfig.stationService();
   private final BicycleService bicycleService = AppConfig.bicycleService();
   private final RentalService rentalService = AppConfig.rentalService();
+  private final BikeIssueService bikeIssueService = AppConfig.bikeIssueService();
 
   private final Map<Bicycle, StringProperty> rentalTimeProps = new HashMap<>();
   private final Map<Bicycle, Timeline> timelines = new HashMap<>();
@@ -161,7 +164,42 @@ public class MapViewModel extends BaseViewModel {
     getRentalDurationProperty(bike).set(String.format("%02d:%02d", mins, secs));
   }
 
-  public ObservableList<Bicycle> getBicycleForSelectedStation() {
-    return bicycleForSelectedStation;
+  public void handleNegativeRideFeedback(Bicycle bike, String problemType, String comment) {
+    Rental rental = getActiveOrLastRentalForBike(bike);
+
+    if (rental == null) {
+      return;
+    }
+
+    boolean isTechnicalProblem =
+        "Велосипед мав несправність".equals(problemType) ||
+            "Проблема з гальмами".equals(problemType) ||
+            "Проблема з колесом".equals(problemType) ||
+            "Проблема з сидінням".equals(problemType);
+
+    BikeIssue issue = new BikeIssue(
+        rental.getId(),
+        bike.getId(),
+        currentUser.getId(),
+        problemType,
+        comment,
+        isTechnicalProblem
+    );
+
+    bikeIssueService.add(issue);
+
+    if (isTechnicalProblem) {
+      bike.setState(StateBicycle.NEEDS_INSPECTION);
+      bicycleService.update(bike);
+    }
+  }
+
+  private Rental getActiveOrLastRentalForBike(Bicycle bike) {
+    return rentalService.getByUserId(currentUser.getId())
+        .stream()
+        .filter(r -> r.getBicycleId().equals(bike.getId()))
+        .sorted((r1, r2) -> r2.getStart().compareTo(r1.getStart()))
+        .findFirst()
+        .orElse(null);
   }
 }

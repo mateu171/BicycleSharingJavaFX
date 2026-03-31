@@ -558,3 +558,21 @@
   -fx-background-color: #fffef0;
   -fx-cursor: hand;
 }
+
+.modal-root {
+  -fx-background-color: rgba(0, 0, 0, 0.20);
+}
+
+.modal-text-area {
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 12;
+  -fx-border-radius: 12;
+  -fx-border-color: #d7dee8;
+  -fx-padding: 10 12 10 12;
+  -fx-font-size: 14px;
+}
+
+.modal-text-area:focused {
+  -fx-border-color: #ffe600;
+  -fx-border-width: 2;
+}

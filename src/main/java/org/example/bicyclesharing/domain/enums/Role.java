@@ -2,7 +2,8 @@ package org.example.bicyclesharing.domain.enums;
 
 public enum Role {
   CLIENT("role.client"),
-  ADMIN("role.admin");
+  ADMIN("role.admin"),
+  MECHANIC("role.mechanic");
 
   private final String key;
 

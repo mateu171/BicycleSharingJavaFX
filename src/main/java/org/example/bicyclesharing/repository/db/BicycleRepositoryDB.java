@@ -105,7 +105,7 @@ public class BicycleRepositoryDB
         "state VARCHAR(50) NOT NULL, " +
         "price_per_minute DOUBLE NOT NULL, " +
         "rental_id VARCHAR(36), " +
-        "station_id VARCHAR(36) NOT NULL" +
+        "station_id VARCHAR(36)" +
         ")";
   }
 }

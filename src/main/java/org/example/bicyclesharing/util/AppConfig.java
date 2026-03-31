@@ -3,6 +3,7 @@ package org.example.bicyclesharing.util;
 
 import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.repository.db.BicycleRepositoryDB;
+import org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB;
 import org.example.bicyclesharing.repository.db.EmployeeRepositoryDB;
 import org.example.bicyclesharing.repository.db.RentalRepositoryDB;
 import org.example.bicyclesharing.repository.db.StationRepositoryDB;
@@ -10,6 +11,7 @@ import org.example.bicyclesharing.repository.db.TransactionRepositoryDB;
 import org.example.bicyclesharing.repository.db.UserRepositoryDB;
 import org.example.bicyclesharing.services.AuthService;
 import org.example.bicyclesharing.services.BicycleService;
+import org.example.bicyclesharing.services.BikeIssueService;
 import org.example.bicyclesharing.services.EmailService;
 import org.example.bicyclesharing.services.EmployeeService;
 import org.example.bicyclesharing.services.RentalService;
@@ -65,6 +67,10 @@ public class AppConfig {
   public static TransactionService transactionService()
   {
     return new TransactionService(new TransactionRepositoryDB());
+  }
+
+  public static BikeIssueService bikeIssueService() {
+    return new BikeIssueService(new BikeIssueRepositoryDB());
   }
 
   public static AuthService authService() {

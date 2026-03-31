@@ -576,3 +576,35 @@
   -fx-border-color: #ffe600;
   -fx-border-width: 2;
 }
+
+.table-view {
+  -fx-background-color: white;
+  -fx-background-radius: 16;
+  -fx-border-radius: 16;
+  -fx-border-color: #d9e1ea;
+}
+
+.table-view .column-header-background {
+  -fx-background-color: #f8fafc;
+  -fx-background-radius: 16 16 0 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+  -fx-background-color: transparent;
+  -fx-size: 42;
+  -fx-border-color: transparent transparent #e5e7eb transparent;
+}
+
+.table-view .table-cell {
+  -fx-padding: 10 12 10 12;
+  -fx-text-fill: #364153;
+}
+
+.table-row-cell:selected {
+  -fx-background-color: #fff9cc;
+}
+
+.table-row-cell:hover {
+  -fx-background-color: #fffef0;
+}

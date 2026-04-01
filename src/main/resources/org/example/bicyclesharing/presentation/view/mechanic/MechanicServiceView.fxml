@@ -26,13 +26,10 @@
       <HBox spacing="10" styleClass="users-toolbar">
         <children>
           <TextField fx:id="searchField"
-            promptText="Пошук..."
             styleClass="modal-text-field"/>
           <ComboBox fx:id="stateFilterCombo"
-            prefWidth="200"
             styleClass="settings-combo"/>
           <ComboBox fx:id="sortCombo"
-            prefWidth="180"
             styleClass="settings-combo"/>
         </children>
       </HBox>
@@ -58,9 +55,9 @@
 
       <TableView fx:id="bicyclesTable" VBox.vgrow="ALWAYS">
         <columns>
-          <TableColumn fx:id="modelColumn" prefWidth="200"/>
-          <TableColumn fx:id="priceColumn" prefWidth="120"/>
-          <TableColumn fx:id="stateColumn" prefWidth="180"/>
+          <TableColumn fx:id="modelColumn"/>
+          <TableColumn fx:id="priceColumn"/>
+          <TableColumn fx:id="stateColumn"/>
         </columns>
       </TableView>
     </VBox>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true"
+  xmlns="http://javafx.com/javafx/21"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.mechanic.AddMaintenanceRecordController"
+  styleClass="page-scroll">
+
+  <content>
+    <VBox spacing="18" styleClass="users-page">
+      <padding>
+        <Insets top="24" right="28" bottom="24" left="28"/>
+      </padding>
+
+      <Label fx:id="titleLabel" styleClass="settings-title"/>
+
+      <VBox spacing="14" styleClass="form-card">
+        <children>
+          <Label fx:id="bikeSectionTitleLabel" styleClass="settings-section-title"/>
+
+          <VBox spacing="4">
+            <children>
+              <TextField fx:id="searchField" styleClass="modal-text-field"/>
+              <Label fx:id="searchErrorLabel" styleClass="label-error" wrapText="true"/>
+            </children>
+          </VBox>
+
+          <VBox spacing="4">
+            <children>
+              <TableView fx:id="bicyclesTable" prefHeight="240" VBox.vgrow="ALWAYS">
+                <columns>
+                  <TableColumn fx:id="modelColumn" prefWidth="280"/>
+                  <TableColumn fx:id="stateColumn" prefWidth="220"/>
+                </columns>
+              </TableView>
+              <Label fx:id="bicycleErrorLabel" styleClass="label-error" wrapText="true"/>
+            </children>
+          </VBox>
+        </children>
+      </VBox>
+
+      <VBox spacing="14" styleClass="form-card">
+        <children>
+          <Label fx:id="recordSectionTitleLabel" styleClass="settings-section-title"/>
+
+          <VBox spacing="4">
+            <children>
+              <Label fx:id="typeLabel" styleClass="form-label"/>
+              <ComboBox fx:id="typeCombo" prefWidth="320" styleClass="settings-combo"/>
+              <Label fx:id="typeErrorLabel" styleClass="label-error" wrapText="true"/>
+            </children>
+          </VBox>
+
+          <VBox spacing="4">
+            <children>
+              <Label fx:id="descriptionLabel" styleClass="form-label"/>
+              <TextArea fx:id="descriptionArea" prefRowCount="3" styleClass="modal-text-area" wrapText="true"/>
+              <Label fx:id="descriptionErrorLabel" styleClass="label-error" wrapText="true"/>
+            </children>
+          </VBox>
+
+          <VBox spacing="4">
+            <children>
+              <Label fx:id="resultLabel" styleClass="form-label"/>
+              <TextArea fx:id="resultArea" prefRowCount="3" styleClass="modal-text-area" wrapText="true"/>
+              <Label fx:id="resultErrorLabel" styleClass="label-error" wrapText="true"/>
+            </children>
+          </VBox>
+
+          <VBox spacing="6">
+            <children>
+              <CheckBox fx:id="returnedCheck"/>
+              <CheckBox fx:id="writeOffCheck"/>
+              <Label fx:id="flagsErrorLabel" styleClass="label-error" wrapText="true"/>
+            </children>
+          </VBox>
+
+          <HBox spacing="10" alignment="CENTER_LEFT">
+            <children>
+              <Button fx:id="saveButton" onAction="#onSave" styleClass="button-primary"/>
+              <Button fx:id="clearButton" onAction="#onClear" styleClass="button-secondary-outline"/>
+              <HBox HBox.hgrow="ALWAYS"/>
+            </children>
+          </HBox>
+
+          <Label fx:id="successLabel" styleClass="label-success" wrapText="true"/>
+        </children>
+      </VBox>
+    </VBox>
+  </content>
+</ScrollPane>

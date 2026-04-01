@@ -44,6 +44,9 @@ public class MechanicServiceController extends BaseController {
     titleLabel.textProperty().bind(viewModel.titleText);
     countLabel.textProperty().bind(viewModel.countText);
 
+    modelColumn.textProperty().bind(viewModel.modelColumnText);
+    priceColumn.textProperty().bind(viewModel.priceColumnText);
+    stateColumn.textProperty().bind(viewModel.stateColumnText);
     searchField.setPromptText(LocalizationManager.getStringByKey("mechanic.search.prompt"));
 
     stateFilterCombo.getItems().addAll(
@@ -122,6 +125,7 @@ public class MechanicServiceController extends BaseController {
     viewModel.setState(bicyclesTable.getSelectionModel().getSelectedItem(), StateBicycle.UNAVAILABLE);
     bicyclesTable.refresh();
   }
+
   @Override
   public void setCurrentUser(User currentUser) {
   }

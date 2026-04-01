@@ -17,8 +17,10 @@ public class MechanicServiceViewModel {
   private final BicycleService bicycleService = AppConfig.bicycleService();
   private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
 
-  public final StringProperty titleText =
-      LocalizationManager.getStringProperty("mechanic.service.title");
+  public final StringProperty titleText = LocalizationManager.getStringProperty("mechanic.service.title");
+  public final StringProperty modelColumnText = LocalizationManager.getStringProperty("mechanic.column.model");
+  public final StringProperty priceColumnText = LocalizationManager.getStringProperty("mechanic.column.price");
+  public final StringProperty stateColumnText = LocalizationManager.getStringProperty("mechanic.column.state");
   public final StringProperty countText = new SimpleStringProperty();
 
   public MechanicServiceViewModel() {

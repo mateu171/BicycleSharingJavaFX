@@ -15,7 +15,6 @@ import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.BikeIssueService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
-import org.example.bicyclesharing.viewModel.BaseViewModel;
 
 public class MechanicIssuesViewModel {
 
@@ -24,8 +23,13 @@ public class MechanicIssuesViewModel {
 
   private final ObservableList<BikeIssue> issues = FXCollections.observableArrayList();
 
-  public final StringProperty titleText =
-      LocalizationManager.getStringProperty("mechanic.issues.title");
+  public final StringProperty titleText = LocalizationManager.getStringProperty("mechanic.issues.title");
+  public final StringProperty bikeColumnText = LocalizationManager.getStringProperty("mechanic.column.bike");
+  public final StringProperty problemColumnText = LocalizationManager.getStringProperty("mechanic.column.problem");
+  public final StringProperty commentColumnText = LocalizationManager.getStringProperty("mechanic.column.comment");
+  public final StringProperty technicalColumnText = LocalizationManager.getStringProperty("mechanic.column.technical");
+  public final StringProperty dateColumnText = LocalizationManager.getStringProperty("mechanic.column.date");
+  public final StringProperty statusColumnText = LocalizationManager.getStringProperty("mechanic.column.status");
   public final StringProperty countText = new SimpleStringProperty();
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");

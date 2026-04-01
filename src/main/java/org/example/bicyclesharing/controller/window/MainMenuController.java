@@ -16,6 +16,7 @@ import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.MainMenuViewModel;
 
 public class MainMenuController extends BaseWindowController{
+
   @FXML private VBox sidebar;
   @FXML private Button btnMap;
   @FXML private Button btnProfile;
@@ -31,9 +32,13 @@ public class MainMenuController extends BaseWindowController{
 
   @FXML private Button btnMechanicIssues;
   @FXML private Button btnMechanicService;
+  @FXML private Button btnMechanicHistory;
+  @FXML private Button btnMechanicRecord;
 
   @FXML private HBox mechanicIssuesContainer;
   @FXML private HBox mechanicServiceContainer;
+  @FXML private HBox mechanicHistoryContainer;
+  @FXML private HBox mechanicRecordContainer;
 
   @FXML private HBox adminUsersContainer;
   @FXML private HBox adminEmployeesContainer;
@@ -84,6 +89,9 @@ public class MainMenuController extends BaseWindowController{
     btnStations.textProperty().bind(viewModel.stationButtonText);
     btnMechanicIssues.textProperty().bind(viewModel.mechanicIssuesButtonText);
     btnMechanicService.textProperty().bind(viewModel.mechanicServiceButtonText);
+    btnMechanicHistory.textProperty().bind(viewModel.mechanicHistoryButtonText);
+    btnMechanicRecord.textProperty().bind(viewModel.mechanicRecordButtonText);
+
   }
 
   @Override
@@ -156,6 +164,16 @@ public class MainMenuController extends BaseWindowController{
     navigationService.load("/org/example/bicyclesharing/presentation/view/mechanic/MechanicServiceView.fxml");
   }
 
+  @FXML
+  public void onShowMechanicAddRecord() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/mechanic/AddMaintenanceRecordView.fxml");
+  }
+
+  @FXML
+  public void onShowMechanicHistory() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/mechanic/MaintenanceHistoryView.fxml");
+  }
+
   private void applyTheme() {
     contentPane.getScene().getRoot().getStylesheets().clear();
     contentPane.getScene().getRoot().getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
@@ -196,6 +214,12 @@ public class MainMenuController extends BaseWindowController{
 
     mechanicServiceContainer.setVisible(isMechanic);
     mechanicServiceContainer.setManaged(isMechanic);
+
+    mechanicHistoryContainer.setVisible(isMechanic);
+    mechanicHistoryContainer.setManaged(isMechanic);
+
+    mechanicRecordContainer.setVisible(isMechanic);
+    mechanicRecordContainer.setManaged(isMechanic);
 
     mapContainer.setVisible(isClient);
     mapContainer.setManaged(isClient);

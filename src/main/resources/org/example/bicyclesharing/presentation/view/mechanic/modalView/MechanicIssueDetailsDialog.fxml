@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<StackPane xmlns="http://javafx.com/javafx/21"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.mechanic.modalController.MechanicIssueDetailsController"
+  styleClass="modal-root">
+
+  <children>
+    <VBox maxWidth="480" prefWidth="480" spacing="0" styleClass="modal-card">
+          <children>
+            <HBox alignment="CENTER_LEFT" styleClass="modal-header">
+              <children>
+                <Label fx:id="titleLabel" styleClass="modal-title"/>
+              </children>
+            </HBox>
+
+            <VBox spacing="12" styleClass="modal-body">
+              <children>
+                <Label fx:id="bikeLabel" styleClass="form-label"/>
+                <Label fx:id="problemLabel" styleClass="form-label"/>
+                <Label fx:id="commentLabel" styleClass="form-label"/>
+                <Label fx:id="technicalLabel" styleClass="form-label"/>
+                <Label fx:id="statusLabel" styleClass="form-label"/>
+                <Label fx:id="dateLabel" styleClass="form-label"/>
+              </children>
+              <padding>
+                <Insets top="0" right="0" bottom="0" left="0"/>
+              </padding>
+            </VBox>
+
+            <HBox alignment="CENTER_RIGHT" spacing="10" styleClass="modal-footer">
+              <children>
+                <Button fx:id="closeButton"
+                onAction="#onClose"
+                styleClass="button-primary"/>
+              </children>
+            </HBox>
+          </children>
+    </VBox>
+  </children>
+</StackPane>

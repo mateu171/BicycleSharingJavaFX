@@ -141,6 +141,26 @@
           <Button fx:id="btnMechanicService" styleClass="menu-button" onAction="#onShowMechanicService"/>
         </HBox>
 
+        <HBox fx:id="mechanicHistoryContainer" styleClass="menu-container" spacing="10"
+          alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/settings.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnMechanicHistory" styleClass="menu-button" onAction="#onShowMechanicHistory"/>
+        </HBox>
+
+        <HBox fx:id="mechanicRecordContainer" styleClass="menu-container" spacing="10"
+          alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/settings.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnMechanicRecord" styleClass="menu-button" onAction="#onShowMechanicAddRecord"/>
+        </HBox>
+
         <HBox fx:id="settingsContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>

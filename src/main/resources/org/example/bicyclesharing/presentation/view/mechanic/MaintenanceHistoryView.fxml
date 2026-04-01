@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.mechanic.MaintenanceHistoryController">
+
+  <children>
+    <VBox spacing="14" styleClass="users-page">
+      <padding>
+        <Insets top="16" right="16" bottom="16" left="16"/>
+      </padding>
+
+      <Label fx:id="titleLabel" styleClass="settings-title"/>
+
+      <HBox spacing="10">
+        <children>
+          <TextField fx:id="searchField" styleClass="modal-text-field"/>
+          <ComboBox fx:id="typeFilterCombo" styleClass="modal-combo"/>
+        </children>
+      </HBox>
+      <TableView fx:id="historyTable" VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn fx:id="bikeColumn" />
+          <TableColumn fx:id="typeColumn" />
+          <TableColumn fx:id="descriptionColumn" />
+          <TableColumn fx:id="resultColumn" />
+          <TableColumn fx:id="dateColumn" />
+        </columns>
+      </TableView>
+    </VBox>
+  </children>
+</StackPane>

@@ -26,7 +26,6 @@
       <HBox spacing="10" styleClass="users-toolbar">
         <children>
           <TextField fx:id="searchField"
-            promptText="Пошук..."
             styleClass="modal-text-field"/>
           <ComboBox fx:id="statusFilterCombo"
             prefWidth="180"
@@ -50,17 +49,18 @@
           <Button fx:id="resolveButton"
             onAction="#onResolve"
             styleClass="button-primary"/>
+          <Button fx:id="detailsButton"
+            onAction="#onShowDetails"
+            styleClass="button-secondary-outline"/>
         </children>
       </HBox>
 
       <TableView fx:id="issuesTable" VBox.vgrow="ALWAYS">
         <columns>
-          <TableColumn fx:id="bikeColumn" prefWidth="160" text="Велосипед"/>
-          <TableColumn fx:id="problemColumn" prefWidth="180" text="Проблема"/>
-          <TableColumn fx:id="commentColumn" prefWidth="260" text="Коментар"/>
-          <TableColumn fx:id="technicalColumn" prefWidth="110" text="Технічна"/>
-          <TableColumn fx:id="dateColumn" prefWidth="150" text="Дата"/>
-          <TableColumn fx:id="statusColumn" prefWidth="130" text="Статус"/>
+          <TableColumn fx:id="bikeColumn"/>
+          <TableColumn fx:id="technicalColumn"/>
+          <TableColumn fx:id="dateColumn"/>
+          <TableColumn fx:id="statusColumn"/>
         </columns>
       </TableView>
     </VBox>

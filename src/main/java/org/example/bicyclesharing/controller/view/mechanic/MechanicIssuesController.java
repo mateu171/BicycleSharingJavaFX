@@ -1,17 +1,25 @@
 package org.example.bicyclesharing.controller.view.mechanic;
 
+import java.io.IOException;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
+import org.example.bicyclesharing.controller.view.mechanic.modalController.MechanicIssueDetailsController;
 import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.LocalizationManager;
@@ -27,11 +35,10 @@ public class MechanicIssuesController extends BaseController {
   @FXML private ComboBox<String> sortCombo;
   @FXML private Button takeInWorkButton;
   @FXML private Button resolveButton;
+  @FXML private Button detailsButton;
 
   @FXML private TableView<BikeIssue> issuesTable;
   @FXML private TableColumn<BikeIssue, String> bikeColumn;
-  @FXML private TableColumn<BikeIssue, String> problemColumn;
-  @FXML private TableColumn<BikeIssue, String> commentColumn;
   @FXML private TableColumn<BikeIssue, String> technicalColumn;
   @FXML private TableColumn<BikeIssue, String> dateColumn;
   @FXML private TableColumn<BikeIssue, String> statusColumn;
@@ -69,12 +76,13 @@ public class MechanicIssuesController extends BaseController {
     );
     sortCombo.getSelectionModel().selectFirst();
 
+    bikeColumn.textProperty().bind(viewModel.bikeColumnText);
+    technicalColumn.textProperty().bind(viewModel.technicalColumnText);
+    statusColumn.textProperty().bind(viewModel.statusColumnText);
+    dateColumn.textProperty().bind(viewModel.dateColumnText);
+
     bikeColumn.setCellValueFactory(cell ->
         new SimpleStringProperty(viewModel.getBikeModel(cell.getValue())));
-    problemColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(viewModel.getProblem(cell.getValue())));
-    commentColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(viewModel.getComment(cell.getValue())));
     technicalColumn.setCellValueFactory(cell ->
         new SimpleStringProperty(viewModel.getTechnical(cell.getValue())));
     dateColumn.setCellValueFactory(cell ->
@@ -100,6 +108,7 @@ public class MechanicIssuesController extends BaseController {
 
     issuesTable.setItems(sorted);
 
+    detailsButton.setText(LocalizationManager.getStringByKey("mechanic.button.details"));
     takeInWorkButton.setText(LocalizationManager.getStringByKey("mechanic.button.take"));
     resolveButton.setText(LocalizationManager.getStringByKey("mechanic.button.resolve"));
 
@@ -115,6 +124,10 @@ public class MechanicIssuesController extends BaseController {
             () -> !viewModel.canResolve(issuesTable.getSelectionModel().getSelectedItem()),
             issuesTable.getSelectionModel().selectedItemProperty()
         )
+    );
+
+    detailsButton.disableProperty().bind(
+        Bindings.isNull(issuesTable.getSelectionModel().selectedItemProperty())
     );
 
     viewModel.updateCount();
@@ -140,6 +153,40 @@ public class MechanicIssuesController extends BaseController {
 
     viewModel.resolve(selected);
     issuesTable.refresh();
+  }
+
+  @FXML
+  private void onShowDetails()
+  {
+    BikeIssue selected = issuesTable.getSelectionModel().getSelectedItem();
+    if(selected == null)
+      return;
+
+    try {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/org/example/bicyclesharing/presentation/view/mechanic/modalView/MechanicIssueDetailsDialog.fxml")
+      );
+      Parent root = loader.load();
+      MechanicIssueDetailsController controller = loader.getController();
+
+      Stage dialogStage = new Stage();
+      dialogStage.initModality(Modality.APPLICATION_MODAL);
+      dialogStage.initOwner(issuesTable.getScene().getWindow());
+      dialogStage.initStyle(StageStyle.TRANSPARENT);
+
+      Scene scene = new Scene(root);
+
+      scene.getStylesheets().add(getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm());
+
+      dialogStage.setScene(scene);
+      controller.setStage(dialogStage);
+      controller.setData(viewModel.getBikeModel(selected),selected,viewModel.getDate(selected),viewModel.getStatus(selected),viewModel.getTechnical(selected));
+
+      dialogStage.showAndWait();
+    }catch (IOException e)
+    {
+      e.printStackTrace();
+    }
   }
 
   @Override

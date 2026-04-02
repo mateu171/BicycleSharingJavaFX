@@ -24,8 +24,19 @@
 
       <HBox spacing="10">
         <children>
-          <TextField fx:id="searchField" styleClass="modal-text-field"/>
-          <ComboBox fx:id="typeFilterCombo" styleClass="modal-combo"/>
+          <VBox HBox.hgrow="ALWAYS">
+            <children>
+              <Label fx:id="searchLabel" styleClass="form-label" text="Пошук"/>
+              <TextField fx:id="searchField" styleClass="modal-text-field"/>
+            </children>
+          </VBox>
+
+          <VBox spacing="4">
+            <children>
+              <Label fx:id="typeProblemLabel" styleClass="form-label" text="Тип проблеми"/>
+              <ComboBox fx:id="typeFilterCombo" styleClass="modal-combo"/>
+            </children>
+          </VBox>
         </children>
       </HBox>
       <TableView fx:id="historyTable" VBox.vgrow="ALWAYS">

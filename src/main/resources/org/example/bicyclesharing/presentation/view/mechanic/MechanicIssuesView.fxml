@@ -8,6 +8,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -23,19 +24,43 @@
 
       <Label fx:id="titleLabel" styleClass="settings-title"/>
 
-      <HBox spacing="10" styleClass="users-toolbar">
+      <HBox spacing="14" styleClass="users-toolbar" alignment="BOTTOM_LEFT">
         <children>
-          <TextField fx:id="searchField"
-            styleClass="modal-text-field"/>
-          <ComboBox fx:id="statusFilterCombo"
-            prefWidth="180"
-            styleClass="settings-combo"/>
-          <ComboBox fx:id="technicalFilterCombo"
-            prefWidth="180"
-            styleClass="settings-combo"/>
-          <ComboBox fx:id="sortCombo"
-            prefWidth="180"
-            styleClass="settings-combo"/>
+          <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <children>
+              <Label fx:id="searchLabel" styleClass="form-label"/>
+              <TextField fx:id="searchField"
+                styleClass="modal-text-field"
+                prefWidth="260"/>
+            </children>
+          </VBox>
+
+          <VBox spacing="4">
+            <children>
+              <Label fx:id="statusFilterLabel" styleClass="form-label"/>
+              <ComboBox fx:id="statusFilterCombo"
+                prefWidth="190"
+                styleClass="settings-combo"/>
+            </children>
+          </VBox>
+
+          <VBox spacing="4">
+            <children>
+              <Label fx:id="technicalFilterLabel" styleClass="form-label"/>
+              <ComboBox fx:id="technicalFilterCombo"
+                prefWidth="190"
+                styleClass="settings-combo"/>
+            </children>
+          </VBox>
+
+          <VBox spacing="4">
+            <children>
+              <Label fx:id="sortLabel" styleClass="form-label"/>
+              <ComboBox fx:id="sortCombo"
+                prefWidth="190"
+                styleClass="settings-combo"/>
+            </children>
+          </VBox>
         </children>
       </HBox>
 

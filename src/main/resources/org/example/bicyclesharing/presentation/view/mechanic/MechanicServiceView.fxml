@@ -25,12 +25,27 @@
 
       <HBox spacing="10" styleClass="users-toolbar">
         <children>
-          <TextField fx:id="searchField"
-            styleClass="modal-text-field"/>
-          <ComboBox fx:id="stateFilterCombo"
-            styleClass="settings-combo"/>
-          <ComboBox fx:id="sortCombo"
-            styleClass="settings-combo"/>
+          <VBox>
+            <children>
+              <Label fx:id="searchLabel" styleClass="form-label" text="Пошук"/>
+               <TextField fx:id="searchField"
+                 styleClass="modal-text-field"/>
+            </children>
+          </VBox>
+          <VBox>
+            <children>
+              <Label fx:id="statusLabel" styleClass="form-label" text="Фільтер"/>
+              <ComboBox fx:id="stateFilterCombo"
+                styleClass="settings-combo"/>
+            </children>
+          </VBox>
+          <VBox>
+            <children>
+              <Label fx:id="sortLabel" styleClass="form-label" text="Сортування"/>
+              <ComboBox fx:id="sortCombo"
+                styleClass="settings-combo"/>
+            </children>
+          </VBox>
         </children>
       </HBox>
 

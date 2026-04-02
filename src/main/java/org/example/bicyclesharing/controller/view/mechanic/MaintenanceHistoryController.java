@@ -25,6 +25,8 @@ import org.example.bicyclesharing.viewModel.mechanic.MaintenanceHistoryViewModel
 
 public class MaintenanceHistoryController extends BaseController {
 
+  @FXML private Label searchLabel;
+  @FXML private Label typeProblemLabel;
   @FXML private Label titleLabel;
   @FXML private TextField searchField;
   @FXML private ComboBox<String> typeFilterCombo;
@@ -44,14 +46,15 @@ public class MaintenanceHistoryController extends BaseController {
   @FXML
   public void initialize() {
     viewModel = new MaintenanceHistoryViewModel();
-    titleLabel.setText(LocalizationManager.getStringByKey("maintenance.history.title"));
-    searchField.setPromptText(LocalizationManager.getStringByKey("mechanic.search.prompt"));
-
-    bikeColumn.setText(LocalizationManager.getStringByKey("mechanic.column.bike"));
-    typeColumn.setText(LocalizationManager.getStringByKey("maintenance.column.type"));
-    descriptionColumn.setText(LocalizationManager.getStringByKey("maintenance.column.description"));
-    resultColumn.setText(LocalizationManager.getStringByKey("maintenance.column.result"));
-    dateColumn.setText(LocalizationManager.getStringByKey("mechanic.column.date"));
+    titleLabel.textProperty().bind(viewModel.titleLabelText);
+    searchField.promptTextProperty().bind(viewModel.searchPromText);
+    searchLabel.textProperty().bind(viewModel.searchLabelText);
+    typeProblemLabel.textProperty().bind(viewModel.typeProblemLabelText);
+    bikeColumn.textProperty().bind(viewModel.bikeColumnText);
+    typeColumn.textProperty().bind(viewModel.typeColumnText);
+    descriptionColumn.textProperty().bind(viewModel.descriptionColumnText);
+    resultColumn.textProperty().bind(viewModel.resultColumnText);
+    dateColumn.textProperty().bind(viewModel.dateColumnText);
 
     typeFilterCombo.getItems().add(LocalizationManager.getStringByKey("mechanic.filter.all"));
 
@@ -85,10 +88,7 @@ public class MaintenanceHistoryController extends BaseController {
       String typeName = LocalizationManager.getStringByKey(record.getType().getKey());
 
       boolean matchesSearch = search.isBlank()
-          || bikeName.contains(search)
-          || record.getDescription().toLowerCase().contains(search)
-          || record.getResult().toLowerCase().contains(search)
-          || typeName.toLowerCase().contains(search);
+          || bikeName.contains(search);
 
       boolean matchesType = typeFilter == null
           || typeFilter.equals(LocalizationManager.getStringByKey("mechanic.filter.all"))

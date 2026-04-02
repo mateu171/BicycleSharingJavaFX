@@ -20,6 +20,9 @@ import org.example.bicyclesharing.viewModel.mechanic.MechanicServiceViewModel;
 
 public class MechanicServiceController extends BaseController {
 
+  @FXML private Label searchLabel;
+  @FXML private Label statusLabel;
+  @FXML private Label sortLabel;
   @FXML private Label titleLabel;
   @FXML private Label countLabel;
   @FXML private TextField searchField;
@@ -43,11 +46,17 @@ public class MechanicServiceController extends BaseController {
     viewModel = new MechanicServiceViewModel();
     titleLabel.textProperty().bind(viewModel.titleText);
     countLabel.textProperty().bind(viewModel.countText);
-
     modelColumn.textProperty().bind(viewModel.modelColumnText);
     priceColumn.textProperty().bind(viewModel.priceColumnText);
     stateColumn.textProperty().bind(viewModel.stateColumnText);
-    searchField.setPromptText(LocalizationManager.getStringByKey("mechanic.search.prompt"));
+    inspectButton.textProperty().bind(viewModel.inspectButtonText);
+    availableButton.textProperty().bind(viewModel.availableButtonText);
+    maintenanceButton.textProperty().bind(viewModel.maintenanceButtonText);
+    unavailableButton.textProperty().bind(viewModel.unavailableButtonText);
+    searchLabel.textProperty().bind(viewModel.searchLabelText);
+    sortLabel.textProperty().bind(viewModel.sortLabelText);
+    statusLabel.textProperty().bind(viewModel.statusLabelText);
+    searchField.promptTextProperty().bind(viewModel.searchPromText);
 
     stateFilterCombo.getItems().addAll(
         LocalizationManager.getStringByKey("mechanic.filter.all"),
@@ -87,11 +96,6 @@ public class MechanicServiceController extends BaseController {
     sorted.setComparator(viewModel.getComparator(sortCombo.getValue()));
 
     bicyclesTable.setItems(sorted);
-
-    inspectButton.setText(LocalizationManager.getStringByKey("mechanic.button.inspect"));
-    maintenanceButton.setText(LocalizationManager.getStringByKey("mechanic.button.maintenance"));
-    availableButton.setText(LocalizationManager.getStringByKey("mechanic.button.available"));
-    unavailableButton.setText(LocalizationManager.getStringByKey("mechanic.button.unavailable"));
 
     inspectButton.disableProperty().bind(Bindings.isNull(bicyclesTable.getSelectionModel().selectedItemProperty()));
     maintenanceButton.disableProperty().bind(Bindings.isNull(bicyclesTable.getSelectionModel().selectedItemProperty()));

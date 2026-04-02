@@ -27,6 +27,10 @@ import org.example.bicyclesharing.viewModel.mechanic.MechanicIssuesViewModel;
 
 public class MechanicIssuesController extends BaseController {
 
+  @FXML private Label searchLabel;
+  @FXML private Label statusFilterLabel;
+  @FXML private Label technicalFilterLabel;
+  @FXML private Label sortLabel;
   @FXML private Label titleLabel;
   @FXML private Label countLabel;
   @FXML private TextField searchField;
@@ -49,9 +53,21 @@ public class MechanicIssuesController extends BaseController {
   public void initialize() {
     viewModel = new MechanicIssuesViewModel();
     titleLabel.textProperty().bind(viewModel.titleText);
+    searchLabel.textProperty().bind(viewModel.searchLabelText);
+    statusFilterLabel.textProperty().bind(viewModel.statusFilterLabelText);
+    technicalFilterLabel.textProperty().bind(viewModel.technicalFilterLabelText);
+    sortLabel.textProperty().bind(viewModel.sortLabelText);
+    detailsButton.textProperty().bind(viewModel.detailsButtonText);
+    takeInWorkButton.textProperty().bind(viewModel.takeInWorkButtonText);
+    resolveButton.textProperty().bind(viewModel.resolveButtonText);
+    bikeColumn.textProperty().bind(viewModel.bikeColumnText);
+    technicalColumn.textProperty().bind(viewModel.technicalColumnText);
+    statusColumn.textProperty().bind(viewModel.statusColumnText);
+    dateColumn.textProperty().bind(viewModel.dateColumnText);
+
+    searchField.promptTextProperty().bind(viewModel.searchPromptText);
     countLabel.textProperty().bind(viewModel.countText);
 
-    searchField.setPromptText(LocalizationManager.getStringByKey("mechanic.search.prompt"));
 
     statusFilterCombo.getItems().addAll(
         LocalizationManager.getStringByKey("mechanic.filter.all"),
@@ -75,11 +91,6 @@ public class MechanicIssuesController extends BaseController {
         LocalizationManager.getStringByKey("mechanic.sort.status")
     );
     sortCombo.getSelectionModel().selectFirst();
-
-    bikeColumn.textProperty().bind(viewModel.bikeColumnText);
-    technicalColumn.textProperty().bind(viewModel.technicalColumnText);
-    statusColumn.textProperty().bind(viewModel.statusColumnText);
-    dateColumn.textProperty().bind(viewModel.dateColumnText);
 
     bikeColumn.setCellValueFactory(cell ->
         new SimpleStringProperty(viewModel.getBikeModel(cell.getValue())));
@@ -107,10 +118,6 @@ public class MechanicIssuesController extends BaseController {
     sorted.setComparator(viewModel.getComparator(sortCombo.getValue()));
 
     issuesTable.setItems(sorted);
-
-    detailsButton.setText(LocalizationManager.getStringByKey("mechanic.button.details"));
-    takeInWorkButton.setText(LocalizationManager.getStringByKey("mechanic.button.take"));
-    resolveButton.setText(LocalizationManager.getStringByKey("mechanic.button.resolve"));
 
     takeInWorkButton.disableProperty().bind(
         Bindings.createBooleanBinding(

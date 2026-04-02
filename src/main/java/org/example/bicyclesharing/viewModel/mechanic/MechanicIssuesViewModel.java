@@ -25,11 +25,17 @@ public class MechanicIssuesViewModel {
 
   public final StringProperty titleText = LocalizationManager.getStringProperty("mechanic.issues.title");
   public final StringProperty bikeColumnText = LocalizationManager.getStringProperty("mechanic.column.bike");
-  public final StringProperty problemColumnText = LocalizationManager.getStringProperty("mechanic.column.problem");
-  public final StringProperty commentColumnText = LocalizationManager.getStringProperty("mechanic.column.comment");
   public final StringProperty technicalColumnText = LocalizationManager.getStringProperty("mechanic.column.technical");
   public final StringProperty dateColumnText = LocalizationManager.getStringProperty("mechanic.column.date");
   public final StringProperty statusColumnText = LocalizationManager.getStringProperty("mechanic.column.status");
+  public final StringProperty searchLabelText = LocalizationManager.getStringProperty("mechanic.search");
+  public final StringProperty searchPromptText = LocalizationManager.getStringProperty("mechanic.search.prompt");
+  public final StringProperty statusFilterLabelText = LocalizationManager.getStringProperty("mechanic.issues.filter.status");
+  public final StringProperty technicalFilterLabelText = LocalizationManager.getStringProperty("mechanic.issues.filter.technical");
+  public final StringProperty sortLabelText = LocalizationManager.getStringProperty("mechanic.sort");
+  public final StringProperty detailsButtonText = LocalizationManager.getStringProperty("mechanic.button.details");
+  public final StringProperty resolveButtonText = LocalizationManager.getStringProperty("mechanic.button.resolve");
+  public final StringProperty takeInWorkButtonText = LocalizationManager.getStringProperty("mechanic.button.take");
   public final StringProperty countText = new SimpleStringProperty();
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");

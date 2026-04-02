@@ -21,6 +21,14 @@ public class MechanicServiceViewModel {
   public final StringProperty modelColumnText = LocalizationManager.getStringProperty("mechanic.column.model");
   public final StringProperty priceColumnText = LocalizationManager.getStringProperty("mechanic.column.price");
   public final StringProperty stateColumnText = LocalizationManager.getStringProperty("mechanic.column.state");
+  public final StringProperty inspectButtonText = LocalizationManager.getStringProperty("mechanic.button.inspect");
+  public final StringProperty maintenanceButtonText = LocalizationManager.getStringProperty("mechanic.button.maintenance");
+  public final StringProperty availableButtonText = LocalizationManager.getStringProperty("mechanic.button.available");
+  public final StringProperty unavailableButtonText = LocalizationManager.getStringProperty("mechanic.button.unavailable");
+  public final StringProperty searchLabelText = LocalizationManager.getStringProperty("mechanic.search");
+  public final StringProperty statusLabelText = LocalizationManager.getStringProperty("mechanic.service.filter.state");
+  public final StringProperty sortLabelText = LocalizationManager.getStringProperty("mechanic.sort");
+  public final StringProperty searchPromText = LocalizationManager.getStringProperty("mechanic.search.prompt");
   public final StringProperty countText = new SimpleStringProperty();
 
   public MechanicServiceViewModel() {

@@ -1,10 +1,7 @@
 package org.example.bicyclesharing.controller.view.mechanic;
 
 import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -18,12 +15,12 @@ import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.MaintenanceType;
 import org.example.bicyclesharing.services.BicycleService;
-import org.example.bicyclesharing.services.MaintenanceRecordService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.mechanic.MaintenanceHistoryViewModel;
 
 public class MaintenanceHistoryController extends BaseController {
+
 
   @FXML private Label searchLabel;
   @FXML private Label typeProblemLabel;
@@ -37,6 +34,7 @@ public class MaintenanceHistoryController extends BaseController {
   @FXML private TableColumn<MaintenanceRecord, String> descriptionColumn;
   @FXML private TableColumn<MaintenanceRecord, String> resultColumn;
   @FXML private TableColumn<MaintenanceRecord, String> dateColumn;
+  @FXML private TableColumn<MaintenanceRecord,String> conclusionColumn;
 
 
   private final BicycleService bicycleService = AppConfig.bicycleService();
@@ -55,6 +53,7 @@ public class MaintenanceHistoryController extends BaseController {
     descriptionColumn.textProperty().bind(viewModel.descriptionColumnText);
     resultColumn.textProperty().bind(viewModel.resultColumnText);
     dateColumn.textProperty().bind(viewModel.dateColumnText);
+    conclusionColumn.textProperty().bind(viewModel.conclusionColumnText);
 
     typeFilterCombo.getItems().add(LocalizationManager.getStringByKey("mechanic.filter.all"));
 
@@ -72,6 +71,8 @@ public class MaintenanceHistoryController extends BaseController {
 
     typeColumn.setCellValueFactory(cell ->
         new SimpleStringProperty(LocalizationManager.getStringByKey(cell.getValue().getType().getKey())));
+    conclusionColumn.setCellValueFactory(cell ->
+        new SimpleStringProperty(LocalizationManager.getStringByKey(cell.getValue().getAction().getKey())));
     descriptionColumn.setCellValueFactory(cell ->
         new SimpleStringProperty(cell.getValue().getDescription()));
     resultColumn.setCellValueFactory(cell ->

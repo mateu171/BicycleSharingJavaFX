@@ -19,6 +19,7 @@ public class MaintenanceHistoryViewModel {
   public final StringProperty descriptionColumnText = LocalizationManager.getStringProperty("mechanic.column.comment");
   public final StringProperty resultColumnText = LocalizationManager.getStringProperty("mechanic.column.result");
   public final StringProperty dateColumnText = LocalizationManager.getStringProperty("mechanic.column.date");
+  public final StringProperty conclusionColumnText= LocalizationManager.getStringProperty("mechanic.column.сonclusion");
   private final MaintenanceRecordService service =
       AppConfig.maintenanceRecordService();
 

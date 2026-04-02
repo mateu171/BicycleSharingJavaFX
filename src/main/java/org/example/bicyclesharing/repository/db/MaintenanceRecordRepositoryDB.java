@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
+import org.example.bicyclesharing.domain.enums.MaintenanceAction;
 import org.example.bicyclesharing.domain.enums.MaintenanceType;
 import org.example.bicyclesharing.repository.MaintenanceRecordRepository;
 import org.springframework.jdbc.core.RowMapper;
@@ -24,12 +25,10 @@ public class MaintenanceRecordRepositoryDB
         "id VARCHAR(36) PRIMARY KEY," +
         "bicycle_id VARCHAR(36) NOT NULL," +
         "mechanic_id VARCHAR(36) NOT NULL," +
-        "issue_id VARCHAR(36)," +
         "type VARCHAR(50) NOT NULL," +
         "description TEXT," +
         "result TEXT," +
-        "returned_to_available BOOLEAN NOT NULL," +
-        "written_off BOOLEAN NOT NULL," +
+        "action VARCHAR(50) NOT NULL," +
         "created_at TIMESTAMP NOT NULL" +
         ")";
   }
@@ -51,12 +50,10 @@ public class MaintenanceRecordRepositoryDB
           UUID.fromString(rs.getString("id")),
           UUID.fromString(rs.getString("bicycle_id")),
           UUID.fromString(rs.getString("mechanic_id")),
-          rs.getString("issue_id") != null ? UUID.fromString(rs.getString("issue_id")) : null,
           MaintenanceType.valueOf(rs.getString("type")),
           rs.getString("description"),
           rs.getString("result"),
-          rs.getBoolean("returned_to_available"),
-          rs.getBoolean("written_off"),
+          MaintenanceAction.valueOf(rs.getString("action")),
           rs.getTimestamp("created_at").toLocalDateTime()
       );
   }
@@ -67,12 +64,10 @@ public class MaintenanceRecordRepositoryDB
         entity.getId().toString(),
         entity.getBicycleId().toString(),
         entity.getMechanicId().toString(),
-        entity.getIssueId() != null ? entity.getIssueId().toString() : null,
         entity.getType().name(),
         entity.getDescription(),
         entity.getResult(),
-        entity.isReturnedToAvailable(),
-        entity.isWrittenOff(),
+        entity.getAction().name(),
         Timestamp.valueOf(entity.getCreatedAt())
     };
   }
@@ -82,12 +77,10 @@ public class MaintenanceRecordRepositoryDB
     return new Object[] {
         entity.getBicycleId().toString(),
         entity.getMechanicId().toString(),
-        entity.getIssueId() != null ? entity.getIssueId().toString() : null,
         entity.getType().name(),
         entity.getDescription(),
         entity.getResult(),
-        entity.isReturnedToAvailable(),
-        entity.isWrittenOff(),
+        entity.getAction().name(),
         Timestamp.valueOf(entity.getCreatedAt()),
         entity.getId().toString()
     };
@@ -98,12 +91,10 @@ public class MaintenanceRecordRepositoryDB
     return new String[] {
         "bicycle_id",
         "mechanic_id",
-        "issue_id",
         "type",
         "description",
         "result",
-        "returned_to_available",
-        "written_off",
+        "action",
         "created_at"
     };
   }

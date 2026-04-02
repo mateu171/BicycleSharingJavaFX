@@ -7,22 +7,29 @@ import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.util.StringConverter;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.domain.enums.MaintenanceAction;
 import org.example.bicyclesharing.domain.enums.MaintenanceType;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.mechanic.AddMaintenanceRecordViewModel;
 
 public class AddMaintenanceRecordController extends BaseController {
 
+  @FXML private Label actionLabel;
+  @FXML private ComboBox actionCombo;
+  @FXML private Label actionErrorLabel;
   @FXML private Label titleLabel;
   @FXML private Label bikeSectionTitleLabel;
   @FXML private Label recordSectionTitleLabel;
@@ -35,7 +42,6 @@ public class AddMaintenanceRecordController extends BaseController {
   @FXML private Label typeErrorLabel;
   @FXML private Label descriptionErrorLabel;
   @FXML private Label resultErrorLabel;
-  @FXML private Label flagsErrorLabel;
   @FXML private Label successLabel;
 
   @FXML private TextField searchField;
@@ -46,8 +52,6 @@ public class AddMaintenanceRecordController extends BaseController {
   @FXML private ComboBox<MaintenanceType> typeCombo;
   @FXML private TextArea descriptionArea;
   @FXML private TextArea resultArea;
-  @FXML private CheckBox returnedCheck;
-  @FXML private CheckBox writeOffCheck;
   @FXML private Button saveButton;
   @FXML private Button clearButton;
 
@@ -55,37 +59,6 @@ public class AddMaintenanceRecordController extends BaseController {
 
   @FXML
   public void initialize() {
-    viewModel = new AddMaintenanceRecordViewModel();
-
-    titleLabel.textProperty().bind(viewModel.titleText);
-    bikeSectionTitleLabel.textProperty().bind(viewModel.bikeSectionTitleText);
-    recordSectionTitleLabel.textProperty().bind(viewModel.recordSectionTitleText);
-    typeLabel.textProperty().bind(viewModel.typeLabelText);
-    descriptionLabel.textProperty().bind(viewModel.descriptionLabelText);
-    resultLabel.textProperty().bind(viewModel.resultLabelText);
-
-    saveButton.textProperty().bind(viewModel.saveButtonText);
-    clearButton.textProperty().bind(viewModel.clearButtonText);
-    returnedCheck.textProperty().bind(viewModel.returnedText);
-    writeOffCheck.textProperty().bind(viewModel.writeOffText);
-    searchField.promptTextProperty().bind(viewModel.searchPromptText);
-
-    modelColumn.textProperty().bind(viewModel.modelColumnText);
-    stateColumn.textProperty().bind(viewModel.stateColumnText);
-
-    searchField.textProperty().bindBidirectional(viewModel.searchText);
-    typeCombo.valueProperty().bindBidirectional(viewModel.selectedType);
-    descriptionArea.textProperty().bindBidirectional(viewModel.description);
-    resultArea.textProperty().bindBidirectional(viewModel.result);
-    returnedCheck.selectedProperty().bindBidirectional(viewModel.returnedToAvailable);
-    writeOffCheck.selectedProperty().bindBidirectional(viewModel.writtenOff);
-
-    bicycleErrorLabel.textProperty().bind(localizedText(viewModel.bicycleErrorKey));
-    typeErrorLabel.textProperty().bind(localizedText(viewModel.typeErrorKey));
-    descriptionErrorLabel.textProperty().bind(localizedText(viewModel.descriptionErrorKey));
-    resultErrorLabel.textProperty().bind(localizedText(viewModel.resultErrorKey));
-    flagsErrorLabel.textProperty().bind(localizedText(viewModel.flagsErrorKey));
-    successLabel.textProperty().bind(localizedText(viewModel.successMessageKey));
 
     searchErrorLabel.setVisible(false);
     searchErrorLabel.setManaged(false);
@@ -94,8 +67,8 @@ public class AddMaintenanceRecordController extends BaseController {
     bindMessageVisibility(typeErrorLabel);
     bindMessageVisibility(descriptionErrorLabel);
     bindMessageVisibility(resultErrorLabel);
-    bindMessageVisibility(flagsErrorLabel);
     bindMessageVisibility(successLabel);
+    bindMessageVisibility(actionErrorLabel);
 
     typeCombo.getItems().setAll(MaintenanceType.values());
     typeCombo.setConverter(new StringConverter<>() {
@@ -110,25 +83,25 @@ public class AddMaintenanceRecordController extends BaseController {
       }
     });
 
+    actionCombo.getItems().setAll(MaintenanceAction.values());
+    actionCombo.setConverter(new StringConverter<>() {
+      @Override
+      public String toString(Object o) {
+        return (MaintenanceAction)o == null ? "" :
+            LocalizationManager.getStringByKey(((MaintenanceAction) o).getKey());
+      }
+
+      @Override
+      public MaintenanceAction fromString(String string) {
+        return null;
+      }
+    });
     modelColumn.setCellValueFactory(cell ->
         new SimpleStringProperty(cell.getValue().getModel()));
-
-    stateColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(viewModel.getStateText(cell.getValue())));
-
-    FilteredList<Bicycle> filtered = viewModel.getFilteredBicycles();
-    bicyclesTable.setItems(filtered);
-
-    bicyclesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-      viewModel.selectedBicycle.set(newValue);
-      viewModel.bicycleErrorKey.set("");
-    });
 
     typeCombo.valueProperty().addListener((obs, oldValue, newValue) -> viewModel.typeErrorKey.set(""));
     descriptionArea.textProperty().addListener((obs, oldValue, newValue) -> viewModel.descriptionErrorKey.set(""));
     resultArea.textProperty().addListener((obs, oldValue, newValue) -> viewModel.resultErrorKey.set(""));
-    returnedCheck.selectedProperty().addListener((obs, oldValue, newValue) -> viewModel.flagsErrorKey.set(""));
-    writeOffCheck.selectedProperty().addListener((obs, oldValue, newValue) -> viewModel.flagsErrorKey.set(""));
   }
 
   private StringBinding localizedText(javafx.beans.property.StringProperty keyProperty) {
@@ -157,6 +130,52 @@ public class AddMaintenanceRecordController extends BaseController {
 
   @Override
   public void setCurrentUser(User currentUser) {
-    viewModel.setCurrentUser(currentUser);
+    viewModel = new AddMaintenanceRecordViewModel(currentUser);
+    setupBindings();
+  }
+
+  private void setupBindings() {
+    titleLabel.textProperty().bind(viewModel.titleText);
+    bikeSectionTitleLabel.textProperty().bind(viewModel.bikeSectionTitleText);
+    recordSectionTitleLabel.textProperty().bind(viewModel.recordSectionTitleText);
+    typeLabel.textProperty().bind(viewModel.typeLabelText);
+    descriptionLabel.textProperty().bind(viewModel.descriptionLabelText);
+    resultLabel.textProperty().bind(viewModel.resultLabelText);
+    actionLabel.textProperty().bind(viewModel.actionText);
+
+    saveButton.textProperty().bind(viewModel.saveButtonText);
+    clearButton.textProperty().bind(viewModel.clearButtonText);
+
+    searchField.promptTextProperty().bind(viewModel.searchPromptText);
+
+    modelColumn.textProperty().bind(viewModel.modelColumnText);
+    stateColumn.textProperty().bind(viewModel.stateColumnText);
+
+    searchField.textProperty().bindBidirectional(viewModel.searchText);
+    typeCombo.valueProperty().bindBidirectional(viewModel.selectedType);
+    descriptionArea.textProperty().bindBidirectional(viewModel.description);
+    resultArea.textProperty().bindBidirectional(viewModel.result);
+
+    stateColumn.setCellValueFactory(cell ->
+        new SimpleStringProperty(viewModel.getStateText(cell.getValue())));
+
+    FilteredList<Bicycle> filtered = viewModel.getFilteredBicycles();
+    bicyclesTable.setItems(filtered);
+
+    bicyclesTable.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
+      viewModel.selectedBicycle.set(newValue);
+      viewModel.bicycleErrorKey.set("");
+    });
+    actionCombo.valueProperty().bindBidirectional(viewModel.selectedAction);
+    actionErrorLabel.textProperty().bind(
+        localizedText(viewModel.actionErrorKey)
+    );
+
+    bicycleErrorLabel.textProperty().bind(localizedText(viewModel.bicycleErrorKey));
+    typeErrorLabel.textProperty().bind(localizedText(viewModel.typeErrorKey));
+    descriptionErrorLabel.textProperty().bind(localizedText(viewModel.descriptionErrorKey));
+    resultErrorLabel.textProperty().bind(localizedText(viewModel.resultErrorKey));
+    actionErrorLabel.textProperty().bind(localizedText(viewModel.actionErrorKey));
+    successLabel.textProperty().bind(localizedText(viewModel.successMessageKey));
   }
 }

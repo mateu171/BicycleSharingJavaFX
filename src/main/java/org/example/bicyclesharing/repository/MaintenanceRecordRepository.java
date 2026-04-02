@@ -5,5 +5,5 @@ import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
 
 public interface MaintenanceRecordRepository extends Repository<MaintenanceRecord, UUID>{
-  public List<MaintenanceRecord> findByBicycleId(UUID bicycleId);
+   List<MaintenanceRecord> findByBicycleId(UUID bicycleId);
 }

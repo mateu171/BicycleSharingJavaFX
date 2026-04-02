@@ -2,6 +2,7 @@ package org.example.bicyclesharing.domain.Impl;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.example.bicyclesharing.domain.enums.MaintenanceAction;
 import org.example.bicyclesharing.domain.enums.MaintenanceType;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 
@@ -9,12 +10,10 @@ public class MaintenanceRecord extends BaseEntity {
 
   private UUID bicycleId;
   private UUID mechanicId;
-  private UUID issueId;
   private MaintenanceType type;
   private String description;
   private String result;
-  private boolean returnedToAvailable;
-  private boolean writtenOff;
+  private MaintenanceAction action;
   private LocalDateTime createdAt;
 
   private MaintenanceRecord() {
@@ -23,21 +22,17 @@ public class MaintenanceRecord extends BaseEntity {
 
   public MaintenanceRecord(UUID bicycleId,
       UUID mechanicId,
-      UUID issueId,
       MaintenanceType type,
       String description,
       String result,
-      boolean returnedToAvailable,
-      boolean writtenOff) {
+      MaintenanceAction action) {
     this();
     setBicycleId(bicycleId);
     setMechanicId(mechanicId);
-    setIssueId(issueId);
     setType(type);
     setDescription(description);
     setResult(result);
-    setReturnedToAvailable(returnedToAvailable);
-    setWrittenOff(writtenOff);
+    setAction(action);
     setCreatedAt(LocalDateTime.now());
 
     if (!isValid()) {
@@ -48,23 +43,19 @@ public class MaintenanceRecord extends BaseEntity {
   public static MaintenanceRecord fromDatabase(UUID id,
       UUID bicycleId,
       UUID mechanicId,
-      UUID issueId,
       MaintenanceType type,
       String description,
       String result,
-      boolean returnedToAvailable,
-      boolean writtenOff,
+      MaintenanceAction action,
       LocalDateTime createdAt) {
     MaintenanceRecord record = new MaintenanceRecord();
     record.setId(id);
     record.bicycleId = bicycleId;
     record.mechanicId = mechanicId;
-    record.issueId = issueId;
     record.type = type;
     record.description = description;
     record.result = result;
-    record.returnedToAvailable = returnedToAvailable;
-    record.writtenOff = writtenOff;
+    record.action = action;
     record.createdAt = createdAt;
     return record;
   }
@@ -91,14 +82,6 @@ public class MaintenanceRecord extends BaseEntity {
       addError("mechanicId", "maintenance.mechanic.empty");
     }
     this.mechanicId = mechanicId;
-  }
-
-  public UUID getIssueId() {
-    return issueId;
-  }
-
-  public void setIssueId(UUID issueId) {
-    this.issueId = issueId;
   }
 
   public MaintenanceType getType() {
@@ -145,34 +128,6 @@ public class MaintenanceRecord extends BaseEntity {
     this.result = result;
   }
 
-  public boolean isReturnedToAvailable() {
-    return returnedToAvailable;
-  }
-
-  public void setReturnedToAvailable(boolean returnedToAvailable) {
-    if (returnedToAvailable && writtenOff) {
-      cleanErrors("statusFlags");
-      addError("statusFlags", "maintenance.flags.conflict");
-    } else {
-      cleanErrors("statusFlags");
-    }
-    this.returnedToAvailable = returnedToAvailable;
-  }
-
-  public boolean isWrittenOff() {
-    return writtenOff;
-  }
-
-  public void setWrittenOff(boolean writtenOff) {
-    if (writtenOff && returnedToAvailable) {
-      cleanErrors("statusFlags");
-      addError("statusFlags", "maintenance.flags.conflict");
-    } else {
-      cleanErrors("statusFlags");
-    }
-    this.writtenOff = writtenOff;
-  }
-
   public LocalDateTime getCreatedAt() {
     return createdAt;
   }
@@ -183,5 +138,19 @@ public class MaintenanceRecord extends BaseEntity {
       addError("createdAt", "maintenance.createdAt.empty");
     }
     this.createdAt = createdAt;
+  }
+
+  public void setAction(MaintenanceAction action) {
+    cleanErrors("action");
+
+    if (action == null) {
+      addError("action", "maintenance.action.empty");
+    }
+
+    this.action = action;
+  }
+
+  public MaintenanceAction getAction() {
+    return action;
   }
 }

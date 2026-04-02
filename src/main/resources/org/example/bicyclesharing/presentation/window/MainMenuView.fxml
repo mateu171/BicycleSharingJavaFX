@@ -125,7 +125,7 @@
           alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../../art/icon/bicycle.png" />
+              <Image url="@../../art/icon/issue.png" />
             </image>
           </ImageView>
           <Button fx:id="btnMechanicIssues" styleClass="menu-button" onAction="#onShowMechanicIssues"/>
@@ -135,7 +135,7 @@
           alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../../art/icon/settings.png" />
+              <Image url="@../../art/icon/maintenance.png" />
             </image>
           </ImageView>
           <Button fx:id="btnMechanicService" styleClass="menu-button" onAction="#onShowMechanicService"/>
@@ -145,7 +145,7 @@
           alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../../art/icon/settings.png" />
+              <Image url="@../../art/icon/history.png" />
             </image>
           </ImageView>
           <Button fx:id="btnMechanicHistory" styleClass="menu-button" onAction="#onShowMechanicHistory"/>
@@ -155,7 +155,7 @@
           alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../../art/icon/settings.png" />
+              <Image url="@../../art/icon/addRecord.png" />
             </image>
           </ImageView>
           <Button fx:id="btnMechanicRecord" styleClass="menu-button" onAction="#onShowMechanicAddRecord"/>

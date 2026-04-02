@@ -46,6 +46,7 @@
           <TableColumn fx:id="descriptionColumn" />
           <TableColumn fx:id="resultColumn" />
           <TableColumn fx:id="dateColumn" />
+          <TableColumn fx:id="conclusionColumn" />
         </columns>
       </TableView>
     </VBox>

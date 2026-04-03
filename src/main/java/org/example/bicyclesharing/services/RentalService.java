@@ -35,8 +35,8 @@ public class RentalService extends BaseService<Rental, UUID> {
     return repository;
   }
 
-  public List<Rental> getByUserId(UUID id) {
-    return repository.findByUserId(id);
+  public List<Rental> getByCustomerId(UUID id) {
+    return repository.findByCustomerId(id);
   }
 
   public void finishRental(Rental rental) {
@@ -49,7 +49,7 @@ public class RentalService extends BaseService<Rental, UUID> {
     bicycle.setState(StateBicycle.AVAILABLE);
     bicycleService.update(bicycle);
 
-    User user = userService.getById(rental.getUserId()).orElse(null);
+    User user = userService.getById(rental.getCustomerId()).orElse(null);
     user.setBalance(user.getBalance() - rental.getTotalCost());
     userService.update(user);
 

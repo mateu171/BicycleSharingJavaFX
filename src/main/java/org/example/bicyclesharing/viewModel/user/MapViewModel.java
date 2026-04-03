@@ -106,7 +106,7 @@ public class MapViewModel extends BaseViewModel {
   }
 
   public void finishRental(Bicycle bike) {
-    Rental rental = rentalService.getByUserId(currentUser.getId())
+    Rental rental = rentalService.getByCustomerId(currentUser.getId())
         .stream()
         .filter(r -> r.getBicycleId().equals(bike.getId()) && r.getEnd() == null)
         .findFirst()
@@ -121,7 +121,7 @@ public class MapViewModel extends BaseViewModel {
 
   public Rental getActiveRental(Bicycle bicycle)
   {
-    return  rentalService.getByUserId(currentUser.getId())
+    return  rentalService.getByCustomerId(currentUser.getId())
         .stream()
         .filter(r -> r.getBicycleId().equals(bicycle.getId()) && r.getEnd() == null)
         .findFirst()
@@ -196,7 +196,7 @@ public class MapViewModel extends BaseViewModel {
   }
 
   private Rental getActiveOrLastRentalForBike(Bicycle bike) {
-    return rentalService.getByUserId(currentUser.getId())
+    return rentalService.getByCustomerId(currentUser.getId())
         .stream()
         .filter(r -> r.getBicycleId().equals(bike.getId()))
         .sorted((r1, r2) -> r2.getStart().compareTo(r1.getStart()))

@@ -6,7 +6,7 @@ import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 
 public class Rental extends BaseEntity {
 
-  private UUID userId;
+  private UUID customerId;
   private UUID bicycleId;
   private LocalDateTime start;
   private LocalDateTime end;
@@ -16,9 +16,9 @@ public class Rental extends BaseEntity {
     super();
   }
 
-  public Rental(UUID userId, UUID bicycleId) {
+  public Rental(UUID customerId, UUID bicycleId) {
     this();
-    setUserId(userId);
+    setCustomerId(customerId);
     setBicycleId(bicycleId);
     setStart(LocalDateTime.now());
 
@@ -27,16 +27,16 @@ public class Rental extends BaseEntity {
     }
   }
 
-  public UUID getUserId() {
-    return userId;
+  public UUID getCustomerId() {
+    return customerId;
   }
 
-  public void setUserId(UUID userId) {
+  public void setCustomerId(UUID customerId) {
     cleanErrors("userId");
-    if (userId == null) {
+    if (customerId == null) {
       addError("userId", "Користувач не може бути null!");
     }
-    this.userId = userId;
+    this.customerId = customerId;
   }
 
   public UUID getBicycleId() {

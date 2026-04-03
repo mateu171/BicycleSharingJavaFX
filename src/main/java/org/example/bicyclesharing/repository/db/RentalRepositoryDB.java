@@ -12,8 +12,8 @@ public class RentalRepositoryDB
     implements RentalRepository {
 
   @Override
-  public List<Rental> findByUserId(UUID id) {
-    String sql = "SELECT * FROM RENTALS WHERE userId = ?";
+  public List<Rental> findByCustomerId(UUID id) {
+    String sql = "SELECT * FROM RENTALS WHERE customerId = ?";
     return jdbcTemplate.query(sql, rowMapper(), id.toString());
   }
 
@@ -33,7 +33,7 @@ public class RentalRepositoryDB
       Rental rental = new Rental();
 
       rental.setId(UUID.fromString(rs.getString("id")));
-      rental.setUserId(UUID.fromString(rs.getString("userId")));
+      rental.setCustomerId(UUID.fromString(rs.getString("customerId")));
       rental.setBicycleId(UUID.fromString(rs.getString("bicycleId")));
       rental.setStart(rs.getTimestamp("start").toLocalDateTime());
 
@@ -51,7 +51,7 @@ public class RentalRepositoryDB
   protected Object[] getInsertValues(Rental entity) {
     return new Object[] {
         entity.getId().toString(),
-        entity.getUserId().toString(),
+        entity.getCustomerId().toString(),
         entity.getBicycleId().toString(),
         Timestamp.valueOf(entity.getStart()),
         entity.getEnd() != null ? Timestamp.valueOf(entity.getEnd()) : null,
@@ -62,7 +62,7 @@ public class RentalRepositoryDB
   @Override
   protected Object[] getUpdateValues(Rental entity) {
     return new Object[] {
-        entity.getUserId().toString(),
+        entity.getCustomerId().toString(),
         entity.getBicycleId().toString(),
         Timestamp.valueOf(entity.getStart()),
         entity.getEnd() != null ? Timestamp.valueOf(entity.getEnd()) : null,
@@ -79,7 +79,7 @@ public class RentalRepositoryDB
   @Override
   protected String[] getUpdateColumns() {
     return new String[] {
-        "userId",
+        "customerId",
         "bicycleId",
         "start",
         "endTime",
@@ -91,7 +91,7 @@ public class RentalRepositoryDB
   protected String getCreateTableSQL() {
     return "CREATE TABLE IF NOT EXISTS RENTALS (" +
         "id VARCHAR(36) PRIMARY KEY," +
-        "userId VARCHAR(36) NOT NULL," +
+        "customerId VARCHAR(36) NOT NULL," +
         "bicycleId VARCHAR(36) NOT NULL," +
         "start TIMESTAMP NOT NULL," +
         "endTime TIMESTAMP," +

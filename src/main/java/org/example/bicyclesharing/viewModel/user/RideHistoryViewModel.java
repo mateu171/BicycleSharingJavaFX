@@ -24,7 +24,7 @@ public class RideHistoryViewModel extends BaseViewModel {
 
   private void load()
   {
-    rentals.setAll(rentalService.getByUserId(currentUser.getId()));
+    rentals.setAll(rentalService.getByCustomerId(currentUser.getId()));
   }
 
   public ObservableList<Rental> getRentals() {

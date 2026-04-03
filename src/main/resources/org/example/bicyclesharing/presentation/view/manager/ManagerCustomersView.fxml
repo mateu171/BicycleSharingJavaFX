@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<StackPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.manager.ManagerCustomersController"
+  styleClass="stack-pane-root">
+
+  <VBox spacing="18"  styleClass="users-page">
+
+    <Label fx:id="titleLabel" styleClass="label-title"/>
+
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="users-toolbar">
+      <StackPane>
+        <TextField fx:id="searchField"
+          prefWidth="220"
+          styleClass="text-field-style"/>
+        <ImageView fitHeight="15" fitWidth="15" preserveRatio="true" style="-fx-translate-x: -100;">
+          <image>
+            <Image url="@../../../art/icon/search.png" />
+          </image>
+        </ImageView>
+      </StackPane>
+
+      <Pane HBox.hgrow="ALWAYS"/>
+      <Button fx:id="addCustomerButton"
+        onAction="#onAddCustomer"
+        styleClass="button-primary"/>
+    </HBox>
+
+    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="users-stats">
+      <Label fx:id="countLabel" styleClass="users-count-label"/>
+    </HBox>
+
+    <ListView fx:id="customersListView"
+      VBox.vgrow="ALWAYS"
+      styleClass="users-list"/>
+
+  </VBox>
+
+</StackPane>

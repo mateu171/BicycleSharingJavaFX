@@ -4,6 +4,7 @@ package org.example.bicyclesharing.util;
 import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.repository.db.BicycleRepositoryDB;
 import org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB;
+import org.example.bicyclesharing.repository.db.CustomerRepositoryDB;
 import org.example.bicyclesharing.repository.db.EmployeeRepositoryDB;
 import org.example.bicyclesharing.repository.db.MaintenanceRecordRepositoryDB;
 import org.example.bicyclesharing.repository.db.RentalRepositoryDB;
@@ -13,6 +14,7 @@ import org.example.bicyclesharing.repository.db.UserRepositoryDB;
 import org.example.bicyclesharing.services.AuthService;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.BikeIssueService;
+import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.services.EmailService;
 import org.example.bicyclesharing.services.EmployeeService;
 import org.example.bicyclesharing.services.MaintenanceRecordService;
@@ -83,5 +85,10 @@ public class AppConfig {
     return new MaintenanceRecordService(
         new MaintenanceRecordRepositoryDB()
     );
+  }
+
+  public static CustomerService customerService()
+  {
+    return new CustomerService(new CustomerRepositoryDB());
   }
 }

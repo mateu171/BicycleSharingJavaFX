@@ -17,6 +17,8 @@ import org.example.bicyclesharing.viewModel.MainMenuViewModel;
 
 public class MainMenuController extends BaseWindowController{
 
+  @FXML private HBox managerCustomersContainer;
+  @FXML private Button btnManagerCustomers;
   @FXML private VBox sidebar;
   @FXML private Button btnMap;
   @FXML private Button btnProfile;
@@ -65,7 +67,7 @@ public class MainMenuController extends BaseWindowController{
       onShowUsers();
     } else if (currentUser.getRole() == Role.MECHANIC) {
       onShowMechanicIssues();
-    } else {
+    } else if(currentUser.getRole() == Role.CLIENT){
       onShowProfile();
     }
   }
@@ -91,6 +93,7 @@ public class MainMenuController extends BaseWindowController{
     btnMechanicService.textProperty().bind(viewModel.mechanicServiceButtonText);
     btnMechanicHistory.textProperty().bind(viewModel.mechanicHistoryButtonText);
     btnMechanicRecord.textProperty().bind(viewModel.mechanicRecordButtonText);
+    btnManagerCustomers.textProperty().bind(viewModel.managerCustomersButtonText);
 
   }
 
@@ -174,6 +177,11 @@ public class MainMenuController extends BaseWindowController{
     navigationService.load("/org/example/bicyclesharing/presentation/view/mechanic/MaintenanceHistoryView.fxml");
   }
 
+  @FXML
+  public void onShowManager() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerCustomersView.fxml");
+  }
+
   private void applyTheme() {
     contentPane.getScene().getRoot().getStylesheets().clear();
     contentPane.getScene().getRoot().getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
@@ -196,6 +204,7 @@ public class MainMenuController extends BaseWindowController{
     boolean isAdmin = currentUser != null && currentUser.getRole() == Role.ADMIN;
     boolean isMechanic = currentUser != null && currentUser.getRole() == Role.MECHANIC;
     boolean isClient = currentUser != null && currentUser.getRole() == Role.CLIENT;
+    boolean isManager = currentUser != null && currentUser.getRole() == Role.MANAGER;
 
     adminUsersContainer.setVisible(isAdmin);
     adminUsersContainer.setManaged(isAdmin);
@@ -235,6 +244,9 @@ public class MainMenuController extends BaseWindowController{
 
     profileContainer.setVisible(isClient);
     profileContainer.setManaged(isClient);
+
+    managerCustomersContainer.setVisible(isManager);
+    managerCustomersContainer.setManaged(isManager);
 
     settingsContainer.setVisible(true);
     settingsContainer.setManaged(true);

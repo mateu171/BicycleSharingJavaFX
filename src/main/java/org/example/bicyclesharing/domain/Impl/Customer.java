@@ -51,7 +51,7 @@ public class Customer extends BaseEntity {
     if (fullName == null || fullName.trim().isEmpty()) {
       addError("fullName", "customer.fullName.empty");
     }
-    else if (!fullName.matches("^[A-Za-zА-Яа-яІіЇїЄє'\\- ]{3,100}$")) {
+    else if (!fullName.matches("^[А-ЯІЇЄ][а-яіїє'\\-]+ [А-ЯІЇЄ][а-яіїє'\\-]+ [А-ЯІЇЄ][а-яіїє'\\-]+$")) {
       addError("fullName", "customer.fullName.invalid");
     }
 

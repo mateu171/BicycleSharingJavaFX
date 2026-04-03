@@ -28,7 +28,9 @@ module org.example.bicyclesharing {
   opens org.example.bicyclesharing.controller.view.admin.modalController to javafx.fxml;
   opens org.example.bicyclesharing.controller.view.user.modalController to javafx.fxml;
   opens org.example.bicyclesharing.controller.view.mechanic to javafx.fxml;
+  opens org.example.bicyclesharing.controller.view.manager to javafx.fxml;
   opens org.example.bicyclesharing.controller.view.mechanic.modalController to javafx.fxml;
+  opens org.example.bicyclesharing.controller.view.manager.modalController to javafx.fxml;
 
   opens org.example.bicyclesharing.domain.Impl to javafx.base;
 }

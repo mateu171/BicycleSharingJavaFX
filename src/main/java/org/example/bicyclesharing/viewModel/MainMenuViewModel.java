@@ -20,4 +20,6 @@ public class MainMenuViewModel {
   public final StringProperty mechanicServiceButtonText = LocalizationManager.getStringProperty("menu.mechanic.service");
   public final StringProperty mechanicHistoryButtonText = LocalizationManager.getStringProperty("menu.mechanic.history");
   public final StringProperty mechanicRecordButtonText = LocalizationManager.getStringProperty("menu.mechanic.add_record");
+
+  public final StringProperty managerCustomersButtonText = LocalizationManager.getStringProperty("manager.customer");
 }

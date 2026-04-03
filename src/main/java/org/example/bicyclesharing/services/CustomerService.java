@@ -8,7 +8,12 @@ import org.example.bicyclesharing.repository.Repository;
 
 public class CustomerService extends BaseService<Customer, UUID>{
 
-  private CustomerRepository repository;
+  private final CustomerRepository repository;
+
+  public CustomerService(CustomerRepository repository) {
+    this.repository = repository;
+  }
+
   @Override
   protected Repository<Customer, UUID> getRepository() {
     return repository;

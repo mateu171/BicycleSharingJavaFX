@@ -40,7 +40,7 @@ public class RentalService extends BaseService<Rental, UUID> {
   }
 
   public void finishRental(Rental rental) {
-    Bicycle bicycle = bicycleService.getById(rental.getBicycleId());
+    Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
 
     rental.setEnd(LocalDateTime.now());
 
@@ -49,7 +49,7 @@ public class RentalService extends BaseService<Rental, UUID> {
     bicycle.setState(StateBicycle.AVAILABLE);
     bicycleService.update(bicycle);
 
-    User user = userService.getById(rental.getUserId());
+    User user = userService.getById(rental.getUserId()).orElse(null);
     user.setBalance(user.getBalance() - rental.getTotalCost());
     userService.update(user);
 

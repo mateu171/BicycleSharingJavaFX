@@ -61,7 +61,7 @@ public class MechanicIssuesViewModel {
 
   public String getBikeModel(BikeIssue issue)
   {
-    Bicycle bicycle = bicycleService.getById(issue.getBicycleId());
+    Bicycle bicycle = bicycleService.getById(issue.getBicycleId()).orElse(null);
     return bicycle != null ? bicycle.getModel() : "";
   }
 
@@ -165,7 +165,7 @@ public class MechanicIssuesViewModel {
     bikeIssueService.update(issue);
 
     if (issue.isTechnicalProblem()) {
-      Bicycle bicycle = bicycleService.getById(issue.getBicycleId());
+      Bicycle bicycle = bicycleService.getById(issue.getBicycleId()).orElse(null);
       if (bicycle != null) {
         bicycle.setState(StateBicycle.ON_MAINTENANCE);
         bicycleService.update(bicycle);
@@ -184,7 +184,7 @@ public class MechanicIssuesViewModel {
     bikeIssueService.update(issue);
 
     if (issue.isTechnicalProblem()) {
-      Bicycle bicycle = bicycleService.getById(issue.getBicycleId());
+      Bicycle bicycle = bicycleService.getById(issue.getBicycleId()).orElse(null);
       if (bicycle != null
           && (bicycle.getState() == StateBicycle.NEEDS_INSPECTION
           || bicycle.getState() == StateBicycle.ON_MAINTENANCE)) {

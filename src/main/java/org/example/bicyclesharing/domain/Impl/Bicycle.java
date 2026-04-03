@@ -13,6 +13,7 @@ public class Bicycle extends BaseEntity {
   private double pricePerMinute;
   private UUID rentalId;
   private UUID stationId;
+  private UUID issueId;
 
   private Bicycle() {
     super();
@@ -34,11 +35,20 @@ public class Bicycle extends BaseEntity {
     }
   }
 
+  public void setIssueId(UUID issueId) {
+    this.issueId = issueId;
+  }
+
+  public UUID getIssueId() {
+    return issueId;
+  }
+
   public static Bicycle fromDatabase(UUID id,
       String model,
       TypeBicycle typeBicycle,
       StateBicycle state,
       double pricePerMinute,
+      UUID issueId,
       UUID rentalId,
       UUID stationId) {
     Bicycle bicycle = new Bicycle();
@@ -47,6 +57,7 @@ public class Bicycle extends BaseEntity {
     bicycle.typeBicycle = typeBicycle;
     bicycle.state = state;
     bicycle.pricePerMinute = pricePerMinute;
+    bicycle.issueId = issueId;
     bicycle.rentalId = rentalId;
     bicycle.stationId = stationId;
     return bicycle;

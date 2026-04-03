@@ -190,6 +190,7 @@ public class MapViewModel extends BaseViewModel {
 
     if (isTechnicalProblem) {
       bike.setState(StateBicycle.NEEDS_INSPECTION);
+      bike.setIssueId(issue.getId());
       bicycleService.update(bike);
     }
   }

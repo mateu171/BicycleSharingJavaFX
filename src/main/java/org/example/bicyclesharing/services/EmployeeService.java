@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.services;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Employee;
 import org.example.bicyclesharing.repository.EmployeeRepository;
@@ -23,11 +24,7 @@ public class EmployeeService extends BaseService<Employee, UUID> {
     return employeeRepository.findByName(name);
   }
 
-  public Employee getById(UUID id) {
-    return employeeRepository.findAll()
-        .stream()
-        .filter(employee -> employee.getId().equals(id))
-        .findFirst()
-        .orElse(null);
+  public Optional<Employee> getById(UUID id) {
+    return employeeRepository.findById(id);
   }
 }

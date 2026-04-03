@@ -16,8 +16,6 @@ public interface Repository<T, ID> {
 
   boolean deleteById(ID id);
 
-  Optional<T> findById(UUID uuid);
-
   boolean deleteById(UUID uuid);
 
   boolean delete(T entity);

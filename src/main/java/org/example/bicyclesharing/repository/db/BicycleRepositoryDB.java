@@ -41,12 +41,18 @@ public class BicycleRepositoryDB
           ? UUID.fromString(stationIdRaw)
           : null;
 
+      String issueIdRaw = rs.getString("issue_id");
+      UUID issueId = issueIdRaw != null && !issueIdRaw.isBlank()
+          ? UUID.fromString(issueIdRaw)
+          : null;
+
       return Bicycle.fromDatabase(
           UUID.fromString(rs.getString("id")),
           rs.getString("model"),
           TypeBicycle.valueOf(rs.getString("type_bicycle")),
           StateBicycle.valueOf(rs.getString("state")),
           rs.getDouble("price_per_minute"),
+          issueId,
           rentalId,
           stationId
       );
@@ -61,6 +67,7 @@ public class BicycleRepositoryDB
         entity.getTypeBicycle().name(),
         entity.getState().name(),
         entity.getPricePerMinute(),
+        entity.getIssueId() != null ? entity.getIssueId().toString() : null,
         entity.getRentalId() != null ? entity.getRentalId().toString() : null,
         entity.getStationId() != null ? entity.getStationId().toString() : null
     };
@@ -73,6 +80,7 @@ public class BicycleRepositoryDB
         entity.getTypeBicycle().name(),
         entity.getState().name(),
         entity.getPricePerMinute(),
+        entity.getIssueId() != null ? entity.getIssueId().toString() : null,
         entity.getRentalId() != null ? entity.getRentalId().toString() : null,
         entity.getStationId() != null ? entity.getStationId().toString() : null,
         entity.getId().toString()
@@ -91,6 +99,7 @@ public class BicycleRepositoryDB
         "type_bicycle",
         "state",
         "price_per_minute",
+        "issue_id",
         "rental_id",
         "station_id"
     };
@@ -104,6 +113,7 @@ public class BicycleRepositoryDB
         "type_bicycle VARCHAR(50) NOT NULL, " +
         "state VARCHAR(50) NOT NULL, " +
         "price_per_minute DOUBLE NOT NULL, " +
+        "issue_id VARCHAR(36), " +
         "rental_id VARCHAR(36), " +
         "station_id VARCHAR(36)" +
         ")";

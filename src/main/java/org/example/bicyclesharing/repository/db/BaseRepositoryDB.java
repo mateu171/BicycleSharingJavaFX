@@ -1,8 +1,9 @@
 package org.example.bicyclesharing.repository.db;
 
+import java.util.Optional;
+import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.repository.Repository;
 import java.util.List;
-import java.util.Optional;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;

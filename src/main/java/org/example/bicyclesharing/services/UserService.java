@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.services;
 
+import java.util.Optional;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.security.PasswordHasher;
@@ -25,12 +26,8 @@ public class UserService extends BaseService<User, UUID> {
     return user != null && !user.getId().equals(currentUserId);
   }
 
-  public User getById(UUID id) {
-    return userRepository.findAll()
-        .stream()
-        .filter(user -> user.getId().equals(id))
-        .findFirst()
-        .orElse(null);
+  public Optional<User> getById(UUID id) {
+    return userRepository.findById(id);
   }
 
   @Override

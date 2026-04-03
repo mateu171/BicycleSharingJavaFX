@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditStationController;
+import org.example.bicyclesharing.domain.Impl.Employee;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.services.EmployeeService;
@@ -79,7 +80,7 @@ public class StationManagementController extends BaseController {
         String employeeName = "—";
 
         if (station.getEmployeeId() != null) {
-          var employee = employeeService.getById(station.getEmployeeId());
+          Employee employee = employeeService.getById(station.getEmployeeId()).orElse(null);
           if (employee != null) {
             employeeName = employee.getName();
           }

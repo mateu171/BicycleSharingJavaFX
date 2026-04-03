@@ -65,7 +65,7 @@ public class MaintenanceHistoryController extends BaseController {
 
     bikeColumn.setCellValueFactory(cell ->
     {
-      Bicycle bicycle = bicycleService.getById(cell.getValue().getBicycleId());
+      Bicycle bicycle = bicycleService.getById(cell.getValue().getBicycleId()).orElse(null);
       return new SimpleStringProperty(bicycle.getModel());
     });
 
@@ -84,7 +84,7 @@ public class MaintenanceHistoryController extends BaseController {
       String search = searchField.getText() == null ? "" : searchField.getText().toLowerCase().trim();
       String typeFilter = typeFilterCombo.getValue();
 
-      Bicycle bicycle = bicycleService.getById(record.getBicycleId());
+      Bicycle bicycle = bicycleService.getById(record.getBicycleId()).orElse(null);
       String bikeName = bicycle != null ? bicycle.getModel().toLowerCase() : "";
       String typeName = LocalizationManager.getStringByKey(record.getType().getKey());
 

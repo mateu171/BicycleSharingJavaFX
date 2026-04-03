@@ -55,7 +55,7 @@ public class RideHistoryController extends BaseController {
         DateTimeFormatter formatter =
             DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-        Bicycle bicycle = bicycleService.getById(rental.getBicycleId());
+        Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
         String bicycleName = bicycle != null ? bicycle.getModel() : "Невідомий велосипед";
 
         Label bikeLabel = new Label(

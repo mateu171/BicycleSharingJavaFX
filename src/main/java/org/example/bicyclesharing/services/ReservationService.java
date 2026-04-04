@@ -6,10 +6,16 @@ import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
 import org.example.bicyclesharing.repository.Repository;
 import org.example.bicyclesharing.repository.ReservationRepository;
+import org.example.bicyclesharing.repository.db.ReservationRepositoryDB;
 
 public class ReservationService extends BaseService<Reservation, UUID>{
 
   private ReservationRepository reservationRepository;
+
+  public ReservationService(ReservationRepositoryDB reservationRepositoryDB) {
+    this.reservationRepository = reservationRepositoryDB;
+  }
+
   @Override
   protected Repository<Reservation, UUID> getRepository() {
     return reservationRepository;

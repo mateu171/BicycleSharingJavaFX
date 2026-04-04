@@ -16,9 +16,6 @@ import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.MainMenuViewModel;
 
 public class MainMenuController extends BaseWindowController{
-
-  @FXML private HBox managerCustomersContainer;
-  @FXML private Button btnManagerCustomers;
   @FXML private VBox sidebar;
   @FXML private Button btnMap;
   @FXML private Button btnProfile;
@@ -32,10 +29,16 @@ public class MainMenuController extends BaseWindowController{
   @FXML private Button btnBicycles;
   @FXML private Button btnStations;
 
+  @FXML private Button btnManagerCustomers;
+  @FXML private Button btnManagerReservation;
+
   @FXML private Button btnMechanicIssues;
   @FXML private Button btnMechanicService;
   @FXML private Button btnMechanicHistory;
   @FXML private Button btnMechanicRecord;
+
+  @FXML private HBox managerCustomersContainer;
+  @FXML private HBox managerReservationContainer;
 
   @FXML private HBox mechanicIssuesContainer;
   @FXML private HBox mechanicServiceContainer;
@@ -94,7 +97,7 @@ public class MainMenuController extends BaseWindowController{
     btnMechanicHistory.textProperty().bind(viewModel.mechanicHistoryButtonText);
     btnMechanicRecord.textProperty().bind(viewModel.mechanicRecordButtonText);
     btnManagerCustomers.textProperty().bind(viewModel.managerCustomersButtonText);
-
+    btnManagerReservation.textProperty().bind(viewModel.managerReservationsButtonText);
   }
 
   @Override
@@ -182,6 +185,11 @@ public class MainMenuController extends BaseWindowController{
     navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerCustomersView.fxml");
   }
 
+  @FXML
+  public void onShowReservation() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerReservationsView.fxml");
+  }
+
   private void applyTheme() {
     contentPane.getScene().getRoot().getStylesheets().clear();
     contentPane.getScene().getRoot().getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
@@ -247,6 +255,9 @@ public class MainMenuController extends BaseWindowController{
 
     managerCustomersContainer.setVisible(isManager);
     managerCustomersContainer.setManaged(isManager);
+
+    managerReservationContainer.setVisible(isManager);
+    managerReservationContainer.setManaged(isMechanic);
 
     settingsContainer.setVisible(true);
     settingsContainer.setManaged(true);

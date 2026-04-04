@@ -171,6 +171,16 @@
           <Button fx:id="btnManagerCustomers" styleClass="menu-button" onAction="#onShowManager"/>
         </HBox>
 
+        <HBox fx:id="managerReservationContainer" styleClass="menu-container" spacing="10"
+          alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/addRecord.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnManagerReservation" styleClass="menu-button" onAction="#onShowReservation"/>
+        </HBox>
+
         <HBox fx:id="settingsContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>

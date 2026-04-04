@@ -8,6 +8,7 @@ import org.example.bicyclesharing.repository.db.CustomerRepositoryDB;
 import org.example.bicyclesharing.repository.db.EmployeeRepositoryDB;
 import org.example.bicyclesharing.repository.db.MaintenanceRecordRepositoryDB;
 import org.example.bicyclesharing.repository.db.RentalRepositoryDB;
+import org.example.bicyclesharing.repository.db.ReservationRepositoryDB;
 import org.example.bicyclesharing.repository.db.StationRepositoryDB;
 import org.example.bicyclesharing.repository.db.TransactionRepositoryDB;
 import org.example.bicyclesharing.repository.db.UserRepositoryDB;
@@ -19,6 +20,7 @@ import org.example.bicyclesharing.services.EmailService;
 import org.example.bicyclesharing.services.EmployeeService;
 import org.example.bicyclesharing.services.MaintenanceRecordService;
 import org.example.bicyclesharing.services.RentalService;
+import org.example.bicyclesharing.services.ReservationService;
 import org.example.bicyclesharing.services.StationService;
 import org.example.bicyclesharing.services.TransactionService;
 import org.example.bicyclesharing.services.UserService;
@@ -90,5 +92,10 @@ public class AppConfig {
   public static CustomerService customerService()
   {
     return new CustomerService(new CustomerRepositoryDB());
+  }
+
+  public static ReservationService reservationService()
+  {
+    return new ReservationService(new ReservationRepositoryDB());
   }
 }

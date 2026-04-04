@@ -1,10 +1,12 @@
 package org.example.bicyclesharing.domain.Impl;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.enums.DocumentType;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
+import org.example.bicyclesharing.util.LocalizationManager;
 
 public class Reservation extends BaseEntity {
 
@@ -31,8 +33,8 @@ public class Reservation extends BaseEntity {
   public Reservation(UUID customerId,
       UUID bicycleId,
       UUID managerId,
-      LocalDateTime startTime,
-      LocalDateTime endTime,
+      String startTime,
+      String endTime,
       DocumentType documentType,
       String documentNumber,
       String depositAmount) {
@@ -123,28 +125,46 @@ public class Reservation extends BaseEntity {
     return startTime;
   }
 
-  public void setStartTime(LocalDateTime startTime) {
+  public void setStartTime(String startTime) {
     cleanErrors("startTime");
     if (startTime == null) {
       addError("startTime", "reservation.start.empty");
     }
-    this.startTime = startTime;
+    LocalDateTime parsedStart = null;
+      try {
+        parsedStart = LocalDateTime.parse(startTime.trim());
+      } catch (DateTimeParseException e) {
+        addError("startTime","reservation.start.invalid");
+      }
+    this.startTime = parsedStart;
   }
 
   public LocalDateTime getEndTime() {
     return endTime;
   }
 
-  public void setEndTime(LocalDateTime endTime) {
+  public void setEndTime(String endTime) {
     cleanErrors("endTime");
 
-    if (endTime == null) {
+    if (endTime == null || endTime.trim().isEmpty()) {
       addError("endTime", "reservation.end.empty");
-    } else if (startTime != null && endTime.isBefore(startTime)) {
+      return;
+    }
+
+    LocalDateTime parsedEnd;
+
+    try {
+      parsedEnd = LocalDateTime.parse(endTime.trim());
+    } catch (DateTimeParseException e) {
+      addError("endTime", "reservation.end.invalidFormat");
+      return;
+    }
+
+    if (startTime != null && parsedEnd.isBefore(startTime)) {
       addError("endTime", "reservation.end.invalid");
     }
 
-    this.endTime = endTime;
+    this.endTime = parsedEnd;
   }
 
   public DocumentType getDocumentType() {

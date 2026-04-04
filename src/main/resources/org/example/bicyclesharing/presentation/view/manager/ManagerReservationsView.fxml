@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.manager.ManagerReservationsController"
+  styleClass="stack-pane-root">
+
+  <VBox spacing="18" styleClass="users-page">
+
+    <Label fx:id="titleLabel" styleClass="label-title"/>
+
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="users-toolbar">
+      <StackPane>
+        <TextField fx:id="searchField"
+          prefWidth="220"
+          styleClass="text-field-style"/>
+        <ImageView fitHeight="15" fitWidth="15" preserveRatio="true" style="-fx-translate-x: -100;">
+          <image>
+            <Image url="@../../../art/icon/search.png"/>
+          </image>
+        </ImageView>
+      </StackPane>
+
+      <ComboBox fx:id="statusFilterCombo"
+        prefWidth="180"
+        styleClass="settings-combo"/>
+
+      <Pane HBox.hgrow="ALWAYS"/>
+
+      <Button fx:id="addReservationButton"
+        onAction="#onAddReservation"
+        styleClass="button-primary"/>
+
+      <Button fx:id="issueButton"
+        onAction="#onIssueReservation"
+        styleClass="button-secondary-outline"/>
+
+      <Button fx:id="cancelButton"
+        onAction="#onCancelReservation"
+        styleClass="button-danger"/>
+    </HBox>
+
+    <HBox spacing="15" alignment="CENTER_LEFT" styleClass="users-stats">
+      <Label fx:id="countLabel" styleClass="users-count-label"/>
+    </HBox>
+
+    <ListView fx:id="reservationsListView"
+      VBox.vgrow="ALWAYS"
+      styleClass="users-list"/>
+
+  </VBox>
+</StackPane>

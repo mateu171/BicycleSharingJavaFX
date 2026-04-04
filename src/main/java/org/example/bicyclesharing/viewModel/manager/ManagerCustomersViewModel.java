@@ -74,9 +74,4 @@ public class ManagerCustomersViewModel extends BaseViewModel {
     applyFilters();
   }
 
-  public void editCustomer(Customer customer)
-  {
-
-  }
-
 }

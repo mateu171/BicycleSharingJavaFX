@@ -1,11 +1,15 @@
 package org.example.bicyclesharing.controller.view.admin.modalController;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.Employee;
 import org.example.bicyclesharing.domain.Impl.Station;
@@ -16,22 +20,19 @@ public class AddEditStationController {
 
   @FXML private Label titleLabel;
   @FXML private Label nameLabel;
-  @FXML private Label latitudeLabel;
-  @FXML private Label longitudeLabel;
   @FXML private Label employeeLabel;
 
   @FXML private TextField nameField;
-  @FXML private TextField latitudeField;
-  @FXML private TextField longitudeField;
   @FXML private ComboBox<Employee> employeeComboBox;
 
   @FXML private Label nameErrorLabel;
   @FXML private Label latitudeErrorLabel;
-  @FXML private Label longitudeErrorLabel;
   @FXML private Label employeeErrorLabel;
 
   @FXML private Button cancelButton;
   @FXML private Button saveButton;
+  @FXML private Button pickOnMapButton;
+  @FXML private Label locationInfoLabel;
 
   private AddEditStationViewModel viewModel;
   private Runnable onSaved;
@@ -70,29 +71,34 @@ public class AddEditStationController {
 
     if (viewModel.isEditMode()) {
       nameField.setPromptText(station.getName());
-      latitudeField.setPromptText(String.valueOf(station.getLatitude()));
-      longitudeField.setPromptText(String.valueOf(station.getLongitude()));
     }
   }
 
   private void bind() {
     titleLabel.textProperty().bind(viewModel.titleText);
     nameLabel.textProperty().bind(viewModel.nameLabelText);
-    latitudeLabel.textProperty().bind(viewModel.latitudeLabelText);
-    longitudeLabel.textProperty().bind(viewModel.longitudeLabelText);
     employeeLabel.textProperty().bind(viewModel.employeeLabelText);
 
     cancelButton.textProperty().bind(viewModel.cancelButtonText);
     saveButton.textProperty().bind(viewModel.saveButtonText);
+    pickOnMapButton.textProperty().bind(viewModel.pickOnMapButtonText);
 
     nameField.textProperty().bindBidirectional(viewModel.name);
-    latitudeField.textProperty().bindBidirectional(viewModel.latitude);
-    longitudeField.textProperty().bindBidirectional(viewModel.longitude);
+    locationInfoLabel.textProperty().bind(viewModel.locationInfo);
 
     nameErrorLabel.textProperty().bind(viewModel.nameError);
     latitudeErrorLabel.textProperty().bind(viewModel.latitudeError);
-    longitudeErrorLabel.textProperty().bind(viewModel.longitudeError);
     employeeErrorLabel.textProperty().bind(viewModel.employeeError);
+
+    bindErrorVisibility(nameErrorLabel);
+    bindErrorVisibility(latitudeErrorLabel);
+    bindErrorVisibility(employeeErrorLabel);
+    bindErrorVisibility(locationInfoLabel);
+  }
+
+  private void bindErrorVisibility(Label label) {
+    label.visibleProperty().bind(label.textProperty().isNotEmpty());
+    label.managedProperty().bind(label.visibleProperty());
   }
 
   @FXML
@@ -114,5 +120,27 @@ public class AddEditStationController {
 
   private void close() {
     ((Stage) saveButton.getScene().getWindow()).close();
+  }
+
+  @FXML
+  private void onPickOnMap() {
+    try {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/org/example/bicyclesharing/presentation/view/admin/modalView/MapPickerView.fxml")
+      );
+
+      Parent root = loader.load();
+
+      MapPickerController controller = loader.getController();
+      controller.setListener((lat, lng) -> viewModel.setCoordinates(lat, lng));
+
+      Stage stage = new Stage();
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.setScene(new Scene(root, 900, 600));
+      stage.showAndWait();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

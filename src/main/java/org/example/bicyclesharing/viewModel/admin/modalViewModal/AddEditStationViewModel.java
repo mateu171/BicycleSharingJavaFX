@@ -23,23 +23,21 @@ public class AddEditStationViewModel {
       LocalizationManager.getStringProperty("save.button");
   public final StringProperty cancelButtonText =
       LocalizationManager.getStringProperty("cancel.button");
+  public final StringProperty pickOnMapButtonText =
+      LocalizationManager.getStringProperty("station.pick.on.map");
 
   public final StringProperty nameLabelText =
       LocalizationManager.getStringProperty("admin.stations.name");
-  public final StringProperty latitudeLabelText =
-      LocalizationManager.getStringProperty("admin.stations.latitude");
-  public final StringProperty longitudeLabelText =
-      LocalizationManager.getStringProperty("admin.stations.longitude");
   public final StringProperty employeeLabelText =
       LocalizationManager.getStringProperty("admin.stations.employee");
 
   public final StringProperty name = new SimpleStringProperty("");
   public final StringProperty latitude = new SimpleStringProperty("");
   public final StringProperty longitude = new SimpleStringProperty("");
+  public final StringProperty locationInfo = new SimpleStringProperty("");
 
   public final StringProperty nameError = new SimpleStringProperty("");
   public final StringProperty latitudeError = new SimpleStringProperty("");
-  public final StringProperty longitudeError = new SimpleStringProperty("");
   public final StringProperty employeeError = new SimpleStringProperty("");
 
   public final ObservableList<Employee> employees = FXCollections.observableArrayList();
@@ -60,21 +58,6 @@ public class AddEditStationViewModel {
       if (!employees.isEmpty()) {
         selectedEmployee = employees.get(0);
       }
-    } else {
-      employees.stream()
-          .filter(emp -> emp.getId().equals(editingStation.getEmployeeId()))
-          .findFirst()
-          .ifPresentOrElse(
-              emp -> selectedEmployee = emp,
-              () -> {
-                if (!employees.isEmpty()) {
-                  selectedEmployee = employees.get(0);
-                }
-              }
-          );
-    }
-
-    if (editingStation == null) {
       titleText.set(LocalizationManager.getStringByKey("admin.stations.add.title"));
     } else {
       titleText.set(LocalizationManager.getStringByKey("admin.stations.edit.title"));
@@ -82,7 +65,16 @@ public class AddEditStationViewModel {
       employees.stream()
           .filter(employee -> employee.getId().equals(editingStation.getEmployeeId()))
           .findFirst()
-          .ifPresent(employee -> selectedEmployee = employee);
+          .ifPresentOrElse(
+              employee -> selectedEmployee = employee,
+              () -> {
+                if (!employees.isEmpty()) {
+                  selectedEmployee = employees.get(0);
+                }
+              }
+          );
+
+      setCoordinates(editingStation.getLatitude(), editingStation.getLongitude());
     }
   }
 
@@ -92,39 +84,35 @@ public class AddEditStationViewModel {
 
   public boolean save() {
     clearErrors();
-
-    if (selectedEmployee == null) {
-      employeeError.set(LocalizationManager.getStringByKey("station.employee.empty"));
-      return false;
-    }
-
     try {
       if (editingStation == null) {
         Station station = new Station(
             name.get(),
-            parseLatitude(latitude.get()),
-            parseLongitude(longitude.get())
+            latitude.get(),
+            longitude.get()
         );
-        station.setEmployeeId(selectedEmployee.getId());
+        station.setEmployeeId(selectedEmployee == null ? null : selectedEmployee.getId());
 
         stationService.add(station);
 
-        selectedEmployee.setStationId(station.getId());
-        employeeService.update(selectedEmployee);
+        if (selectedEmployee != null) {
+          selectedEmployee.setStationId(station.getId());
+          employeeService.update(selectedEmployee);
+        }
+
       } else {
         String nameValue = isBlank(name.get()) ? editingStation.getName() : name.get().trim();
-        double latitudeValue = isBlank(latitude.get())
-            ? editingStation.getLatitude()
-            : parseLatitude(latitude.get());
-        double longitudeValue = isBlank(longitude.get())
-            ? editingStation.getLongitude()
-            : parseLongitude(longitude.get());
 
-        Station validated = new Station(nameValue, latitudeValue, longitudeValue);
+        Station validated = new Station(
+            nameValue,
+            latitude.get(),
+            longitude.get()
+        );
 
         editingStation.setName(validated.getName());
-        editingStation.setLatitude(validated.getLatitude());
-        editingStation.setLongitude(validated.getLongitude());
+        editingStation.setLatitude(String.valueOf(validated.getLatitude()));
+        editingStation.setLongitude(String.valueOf(validated.getLongitude()));
+        if(selectedEmployee != null)
         editingStation.setEmployeeId(selectedEmployee.getId());
 
         if (!editingStation.isValid()) {
@@ -133,11 +121,14 @@ public class AddEditStationViewModel {
 
         stationService.update(editingStation);
 
-        selectedEmployee.setStationId(editingStation.getId());
-        employeeService.update(selectedEmployee);
+        if(selectedEmployee != null) {
+          selectedEmployee.setStationId(editingStation.getId());
+          employeeService.update(selectedEmployee);
+        }
       }
 
       return true;
+
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {
         String text = messages.stream()
@@ -146,31 +137,13 @@ public class AddEditStationViewModel {
 
         switch (field) {
           case "name" -> nameError.set(text);
-          case "latitude" -> latitudeError.set(text);
-          case "longitude" -> longitudeError.set(text);
+          case "latitude", "longitude" -> latitudeError.set(text);
         }
       });
       return false;
+
     } catch (IllegalArgumentException e) {
       return false;
-    }
-  }
-
-  private double parseLatitude(String value) {
-    try {
-      return Double.parseDouble(value.trim());
-    } catch (Exception e) {
-      latitudeError.set(LocalizationManager.getStringByKey("station.latitude.invalid"));
-      throw new IllegalArgumentException();
-    }
-  }
-
-  private double parseLongitude(String value) {
-    try {
-      return Double.parseDouble(value.trim());
-    } catch (Exception e) {
-      longitudeError.set(LocalizationManager.getStringByKey("station.longitude.invalid"));
-      throw new IllegalArgumentException();
     }
   }
 
@@ -178,10 +151,19 @@ public class AddEditStationViewModel {
     return value == null || value.trim().isEmpty();
   }
 
+  public void setCoordinates(double lat, double lng) {
+    latitude.set(String.valueOf(lat));
+    longitude.set(String.valueOf(lng));
+    locationInfo.set(
+        LocalizationManager.getStringByKey("station.location.selected")
+            + ": " + String.format("%.5f, %.5f", lat, lng)
+    );
+    latitudeError.set("");
+  }
+
   private void clearErrors() {
     nameError.set("");
     latitudeError.set("");
-    longitudeError.set("");
     employeeError.set("");
   }
 }

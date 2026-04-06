@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <script>
+    window.L_DISABLE_3D = true;
+  </script>
+  <title>Map Picker</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #map {
+      width: 100%;
+      height: calc(100% - 50px);
+    }
+
+    #controls {
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      background: #f5f5f5;
+      border-top: 1px solid #ddd;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #2d89ef;
+      color: white;
+      font-size: 14px;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: default;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="controls">
+  <span id="coords">Точку не обрано</span>
+  <button id="saveBtn" disabled>Підтвердити</button>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  const map = L.map('map').setView([48.6208, 22.2879], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  let marker = null;
+  let selectedLat = null;
+  let selectedLng = null;
+
+  const coordsLabel = document.getElementById("coords");
+  const saveBtn = document.getElementById("saveBtn");
+
+  map.on('click', function(e) {
+    selectedLat = e.latlng.lat;
+    selectedLng = e.latlng.lng;
+
+    if (marker) {
+      map.removeLayer(marker);
+    }
+
+    marker = L.marker([selectedLat, selectedLng]).addTo(map);
+
+    coordsLabel.textContent =
+        `Обрано: ${selectedLat.toFixed(5)}, ${selectedLng.toFixed(5)}`;
+
+    saveBtn.disabled = false;
+  });
+
+  saveBtn.addEventListener("click", function() {
+    if (window.javaConnector && selectedLat !== null && selectedLng !== null) {
+      window.javaConnector.selectCoordinate(selectedLat, selectedLng);
+    }
+  });
+</script>
+</body>
+</html>

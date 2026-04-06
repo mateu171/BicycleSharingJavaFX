@@ -63,9 +63,7 @@ public class ManagerReservationsController extends BaseController {
     statusFilterCombo.getItems().setAll(
         LocalizationManager.getStringByKey("manager.reservations.filter.all"),
         LocalizationManager.getStringByKey("reservation.status.new"),
-        LocalizationManager.getStringByKey("reservation.status.confirmed"),
         LocalizationManager.getStringByKey("reservation.status.issued"),
-        LocalizationManager.getStringByKey("reservation.status.completed"),
         LocalizationManager.getStringByKey("reservation.status.cancelled")
     );
     statusFilterCombo.getSelectionModel().selectFirst();

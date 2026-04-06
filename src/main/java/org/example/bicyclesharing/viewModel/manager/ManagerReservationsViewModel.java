@@ -165,14 +165,12 @@ public class ManagerReservationsViewModel extends BaseViewModel {
 
   public boolean canIssue(Reservation reservation) {
     return reservation != null
-        && (reservation.getStatus() == ReservationStatus.NEW
-        || reservation.getStatus() == ReservationStatus.CONFIRMED);
+        && (reservation.getStatus() == ReservationStatus.NEW);
   }
 
   public boolean canCancel(Reservation reservation) {
     return reservation != null
         && reservation.getStatus() != ReservationStatus.CANCELLED
-        && reservation.getStatus() != ReservationStatus.COMPLETED
         && reservation.getStatus() != ReservationStatus.ISSUED;
   }
 }

@@ -18,7 +18,7 @@ public class Station extends BaseEntity {
     this.bicyclesId = new ArrayList<>();
   }
 
-  public Station(String name, double latitude, double longitude) {
+  public Station(String name, String latitude, String longitude) {
     this();
     setName(name);
     setLatitude(latitude);
@@ -63,32 +63,56 @@ public class Station extends BaseEntity {
     return latitude;
   }
 
-  public void setLatitude(double latitude) {
+  public void setLatitude(String value) {
     cleanErrors("latitude");
-    if (latitude < -90 || latitude > 90) {
-      addError("latitude", "station.latitude.range");
+
+    if (value == null || value.trim().isEmpty()) {
+      addError("latitude", "station.latitude.empty");
+      return;
     }
-    this.latitude = latitude;
+
+    try {
+      double lat = Double.parseDouble(value.trim());
+
+      if (lat < -90 || lat > 90) {
+        addError("latitude", "station.latitude.range");
+      } else {
+        this.latitude = lat;
+      }
+
+    } catch (NumberFormatException e) {
+      addError("latitude", "station.latitude.invalid");
+    }
   }
 
   public double getLongitude() {
     return longitude;
   }
 
-  public void setLongitude(double longitude) {
+  public void setLongitude(String value) {
     cleanErrors("longitude");
-    if (longitude < -180 || longitude > 180) {
-      addError("longitude", "station.longitude.range");
+
+    if (value == null || value.trim().isEmpty()) {
+      addError("longitude", "station.longitude.empty");
+      return;
     }
-    this.longitude = longitude;
+
+    try {
+      double lng = Double.parseDouble(value.trim());
+
+      if (lng < -180 || lng > 180) {
+        addError("longitude", "station.longitude.range");
+      } else {
+        this.longitude = lng;
+      }
+
+    } catch (NumberFormatException e) {
+      addError("longitude", "station.longitude.invalid");
+    }
   }
 
   public List<UUID> getBicyclesId() {
     return new ArrayList<>(bicyclesId);
-  }
-
-  public void setBicyclesId(List<UUID> bicyclesId) {
-    this.bicyclesId = bicyclesId != null ? new ArrayList<>(bicyclesId) : new ArrayList<>();
   }
 
   public void addBicycleId(UUID bicycleId) {

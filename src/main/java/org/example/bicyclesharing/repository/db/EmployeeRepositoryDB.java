@@ -44,10 +44,15 @@ public class EmployeeRepositoryDB extends BaseRepositoryDB<Employee, UUID> imple
   @Override
   protected RowMapper<Employee> rowMapper() {
     return (rs, rowNum) -> {
+      String stationIdStr = rs.getString("station_id");
+      UUID stationId = stationIdStr != null
+          ? UUID.fromString(stationIdStr)
+          : null;
+
       Employee employee = new Employee(
           rs.getString("name"),
           rs.getString("phone_number"),
-          UUID.fromString(rs.getString("station_id")),
+          stationId,
           rs.getString("salary")
       );
 

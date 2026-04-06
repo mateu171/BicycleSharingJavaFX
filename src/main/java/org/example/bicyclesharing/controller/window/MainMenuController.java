@@ -75,6 +75,8 @@ public class MainMenuController extends BaseWindowController{
       onShowMechanicIssues();
     } else if(currentUser.getRole() == Role.CLIENT){
       onShowProfile();
+    } else if (currentUser.getRole() == Role.MANAGER) {
+      onShowCustomerManager();
     }
   }
 
@@ -185,7 +187,7 @@ public class MainMenuController extends BaseWindowController{
   }
 
   @FXML
-  public void onShowManager() {
+  public void onShowCustomerManager() {
     navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerCustomersView.fxml");
   }
 

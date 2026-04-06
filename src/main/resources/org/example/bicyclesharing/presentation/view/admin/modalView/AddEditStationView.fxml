@@ -30,15 +30,16 @@
       </VBox>
 
       <VBox spacing="4">
-        <Label fx:id="latitudeLabel" styleClass="form-label"/>
-        <TextField fx:id="latitudeField" styleClass="modal-text-field"/>
-        <Label fx:id="latitudeErrorLabel" styleClass="label-error" wrapText="true"/>
-      </VBox>
-
-      <VBox spacing="4">
-        <Label fx:id="longitudeLabel" styleClass="form-label"/>
-        <TextField fx:id="longitudeField" styleClass="modal-text-field"/>
-        <Label fx:id="longitudeErrorLabel" styleClass="label-error" wrapText="true"/>
+        <Label text="Локація" styleClass="form-label"/>
+        <Button fx:id="pickOnMapButton"
+          onAction="#onPickOnMap"
+          styleClass="button-secondary-outline"/>
+        <Label fx:id="locationInfoLabel"
+          styleClass="form-hint"
+          wrapText="true"/>
+        <Label fx:id="latitudeErrorLabel"
+          styleClass="label-error"
+          wrapText="true"/>
       </VBox>
     </VBox>
 

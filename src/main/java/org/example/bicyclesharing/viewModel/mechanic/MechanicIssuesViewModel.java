@@ -9,10 +9,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.BikeIssue;
+import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.BikeIssueService;
+import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 
@@ -20,6 +22,7 @@ public class MechanicIssuesViewModel {
 
   private final BikeIssueService bikeIssueService = AppConfig.bikeIssueService();
   private final BicycleService bicycleService = AppConfig.bicycleService();
+  private final RentalService rentalService = AppConfig.rentalService();
 
   private final ObservableList<BikeIssue> issues = FXCollections.observableArrayList();
 
@@ -39,6 +42,7 @@ public class MechanicIssuesViewModel {
   public final StringProperty countText = new SimpleStringProperty();
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+  private Rental rental;
 
   public MechanicIssuesViewModel() {
     loadIssues();
@@ -61,7 +65,8 @@ public class MechanicIssuesViewModel {
 
   public String getBikeModel(BikeIssue issue)
   {
-    Bicycle bicycle = bicycleService.getById(issue.getBicycleId()).orElse(null);
+    Rental rental = rentalService.getById(issue.getRentalId());
+    Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
     return bicycle != null ? bicycle.getModel() : "";
   }
 
@@ -165,7 +170,8 @@ public class MechanicIssuesViewModel {
     bikeIssueService.update(issue);
 
     if (issue.isTechnicalProblem()) {
-      Bicycle bicycle = bicycleService.getById(issue.getBicycleId()).orElse(null);
+      Rental rental = rentalService.getById(issue.getRentalId());
+      Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
       if (bicycle != null) {
         bicycle.setState(StateBicycle.ON_MAINTENANCE);
         bicycleService.update(bicycle);
@@ -183,8 +189,9 @@ public class MechanicIssuesViewModel {
     issue.setStatus(IssueStatus.RESOLVED);
     bikeIssueService.update(issue);
 
+    Rental rental = rentalService.getById(issue.getRentalId());
     if (issue.isTechnicalProblem()) {
-      Bicycle bicycle = bicycleService.getById(issue.getBicycleId()).orElse(null);
+      Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
       if (bicycle != null
           && (bicycle.getState() == StateBicycle.NEEDS_INSPECTION
           || bicycle.getState() == StateBicycle.ON_MAINTENANCE)) {

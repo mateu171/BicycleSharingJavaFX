@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.manager.modalController.FinishRentalDialogController"
+  styleClass="modal-root">
+
+  <VBox prefWidth="460"
+    maxWidth="460"
+    styleClass="modal-card">
+
+    <HBox alignment="CENTER_LEFT" styleClass="modal-header">
+      <Label fx:id="titleLabel" styleClass="modal-title"/>
+      <Pane HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <VBox spacing="12" styleClass="modal-body">
+
+      <CheckBox fx:id="problemCheckBox"/>
+
+      <!-- Тип проблеми -->
+      <VBox spacing="4">
+        <Label fx:id="problemTypeLabel" styleClass="form-label"/>
+        <ComboBox fx:id="problemTypeCombo"
+          styleClass="modal-text-field"/>
+        <Label fx:id="problemTypeErrorLabel"
+          styleClass="label-error"/>
+      </VBox>
+
+      <CheckBox fx:id="technicalProblemCheckBox"/>
+
+      <!-- Коментар -->
+      <VBox spacing="4">
+        <Label fx:id="commentLabel" styleClass="form-label"/>
+        <TextArea fx:id="commentArea"
+          prefRowCount="4"
+          styleClass="modal-text-area"
+          wrapText="true"/>
+        <Label fx:id="commentErrorLabel"
+          styleClass="label-error"/>
+      </VBox>
+
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="modal-footer">
+      <Button fx:id="cancelButton"
+        onAction="#onClose"
+        styleClass="button-secondary-outline"/>
+      <Button fx:id="finishButton"
+        onAction="#onFinish"
+        styleClass="button-primary"/>
+    </HBox>
+  </VBox>
+
+  <padding>
+    <Insets top="20" right="20" bottom="20" left="20"/>
+  </padding>
+</StackPane>

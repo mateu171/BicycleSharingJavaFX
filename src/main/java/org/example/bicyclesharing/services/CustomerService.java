@@ -29,4 +29,5 @@ public class CustomerService extends BaseService<Customer, UUID>{
   public Optional<Customer> getById(UUID id) {
     return repository.findById(id);
   }
+
 }

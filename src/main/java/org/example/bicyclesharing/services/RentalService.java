@@ -74,4 +74,9 @@ public class RentalService extends BaseService<Rental, UUID> {
     rental.setTotalCost(totalCost);
   }
 
+  public Rental getById(UUID id)
+  {
+    return repository.findById(id).orElse(null);
+  }
+
 }

@@ -28,8 +28,6 @@ import org.example.bicyclesharing.viewModel.manager.ManagerReservationsViewModel
 public class ManagerReservationsController extends BaseController {
 
   @FXML private Button addReservationButton;
-  @FXML private Button issueButton;
-  @FXML private Button cancelButton;
   @FXML private Label titleLabel;
   @FXML private TextField searchField;
   @FXML private ComboBox<String> statusFilterCombo;
@@ -44,6 +42,7 @@ public class ManagerReservationsController extends BaseController {
     viewModel = new ManagerReservationsViewModel(
         this.currentUser = currentUser,
         AppConfig.reservationService(),
+        AppConfig.rentalService(),
         AppConfig.customerService(),
         AppConfig.bicycleService()
     );
@@ -60,8 +59,6 @@ public class ManagerReservationsController extends BaseController {
     reservationsListView.setItems(viewModel.getReservations());
 
     addReservationButton.textProperty().bind(viewModel.addButtonText);
-    issueButton.textProperty().bind(viewModel.issueButtonText);
-    cancelButton.textProperty().bind(viewModel.cancelButtonText);
 
     statusFilterCombo.getItems().setAll(
         LocalizationManager.getStringByKey("manager.reservations.filter.all"),
@@ -133,7 +130,7 @@ public class ManagerReservationsController extends BaseController {
         issueCardButton.textProperty().bind(viewModel.issueButtonText);
         issueCardButton.getStyleClass().add("button-edit");
         issueCardButton.setDisable(!viewModel.canIssue(reservation));
-        issueCardButton.setOnAction(e -> issueReservation(reservation));
+        issueCardButton.setOnAction(e -> viewModel.issueReservation(reservation));
 
         Button cancelCardButton = new Button();
         cancelCardButton.textProperty().bind(viewModel.cancelButtonText);
@@ -164,24 +161,6 @@ public class ManagerReservationsController extends BaseController {
   @FXML
   private void onAddReservation() {
     openReservationDialog(null);
-  }
-
-  @FXML
-  private void onIssueReservation() {
-    Reservation selected = reservationsListView.getSelectionModel().getSelectedItem();
-    if (selected == null) {
-      return;
-    }
-    issueReservation(selected);
-  }
-
-  @FXML
-  private void onCancelReservation() {
-    Reservation selected = reservationsListView.getSelectionModel().getSelectedItem();
-    if (selected == null) {
-      return;
-    }
-    viewModel.cancelReservation(selected);
   }
 
   private void issueReservation(Reservation reservation) {

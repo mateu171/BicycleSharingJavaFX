@@ -16,6 +16,7 @@ import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.MainMenuViewModel;
 
 public class MainMenuController extends BaseWindowController{
+
   @FXML private VBox sidebar;
   @FXML private Button btnMap;
   @FXML private Button btnProfile;
@@ -31,6 +32,7 @@ public class MainMenuController extends BaseWindowController{
 
   @FXML private Button btnManagerCustomers;
   @FXML private Button btnManagerReservation;
+  @FXML private Button btnManagerActiveRentals;
 
   @FXML private Button btnMechanicIssues;
   @FXML private Button btnMechanicService;
@@ -39,6 +41,7 @@ public class MainMenuController extends BaseWindowController{
 
   @FXML private HBox managerCustomersContainer;
   @FXML private HBox managerReservationContainer;
+  @FXML private HBox managerAcitveRentalsContainer;
 
   @FXML private HBox mechanicIssuesContainer;
   @FXML private HBox mechanicServiceContainer;
@@ -98,6 +101,7 @@ public class MainMenuController extends BaseWindowController{
     btnMechanicRecord.textProperty().bind(viewModel.mechanicRecordButtonText);
     btnManagerCustomers.textProperty().bind(viewModel.managerCustomersButtonText);
     btnManagerReservation.textProperty().bind(viewModel.managerReservationsButtonText);
+    btnManagerActiveRentals.textProperty().bind(viewModel.managerActiveRentalsButtonText);
   }
 
   @Override
@@ -189,6 +193,10 @@ public class MainMenuController extends BaseWindowController{
   public void onShowReservation() {
     navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerReservationsView.fxml");
   }
+  @FXML
+  public void onShowActiveRentals() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerActiveRentalsView.fxml");
+  }
 
   private void applyTheme() {
     contentPane.getScene().getRoot().getStylesheets().clear();
@@ -258,6 +266,9 @@ public class MainMenuController extends BaseWindowController{
 
     managerReservationContainer.setVisible(isManager);
     managerReservationContainer.setManaged(isMechanic);
+
+    managerAcitveRentalsContainer.setVisible(isManager);
+    managerAcitveRentalsContainer.setManaged(isManager);
 
     settingsContainer.setVisible(true);
     settingsContainer.setManaged(true);

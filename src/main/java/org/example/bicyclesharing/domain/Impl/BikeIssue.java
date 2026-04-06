@@ -8,8 +8,6 @@ import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 public class BikeIssue extends BaseEntity {
 
   private UUID rentalId;
-  private UUID bicycleId;
-  private UUID userId;
   private String problemType;
   private String comment;
   private boolean technicalProblem;
@@ -22,16 +20,12 @@ public class BikeIssue extends BaseEntity {
 
   public BikeIssue(
       UUID rentalId,
-      UUID bicycleId,
-      UUID userId,
       String problemType,
       String comment,
       boolean technicalProblem
   ) {
     this();
     setRentalId(rentalId);
-    setBicycleId(bicycleId);
-    setUserId(userId);
     setProblemType(problemType);
     setComment(comment);
     this.technicalProblem = technicalProblem;
@@ -46,8 +40,6 @@ public class BikeIssue extends BaseEntity {
   public static BikeIssue fromDatabase(
       UUID id,
       UUID rentalId,
-      UUID bicycleId,
-      UUID userId,
       String problemType,
       String comment,
       boolean technicalProblem,
@@ -57,8 +49,6 @@ public class BikeIssue extends BaseEntity {
     BikeIssue issue = new BikeIssue();
     issue.setId(id);
     issue.rentalId = rentalId;
-    issue.bicycleId = bicycleId;
-    issue.userId = userId;
     issue.problemType = problemType;
     issue.comment = comment;
     issue.technicalProblem = technicalProblem;
@@ -77,30 +67,6 @@ public class BikeIssue extends BaseEntity {
       addError("rentalId", "bikeIssue.rental.empty");
     }
     this.rentalId = rentalId;
-  }
-
-  public UUID getBicycleId() {
-    return bicycleId;
-  }
-
-  public void setBicycleId(UUID bicycleId) {
-    cleanErrors("bicycleId");
-    if (bicycleId == null) {
-      addError("bicycleId", "bikeIssue.bicycle.empty");
-    }
-    this.bicycleId = bicycleId;
-  }
-
-  public UUID getUserId() {
-    return userId;
-  }
-
-  public void setUserId(UUID userId) {
-    cleanErrors("userId");
-    if (userId == null) {
-      addError("userId", "bikeIssue.user.empty");
-    }
-    this.userId = userId;
   }
 
   public String getProblemType() {

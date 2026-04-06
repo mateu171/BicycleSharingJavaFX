@@ -179,8 +179,6 @@ public class MapViewModel extends BaseViewModel {
 
     BikeIssue issue = new BikeIssue(
         rental.getId(),
-        bike.getId(),
-        currentUser.getId(),
         problemType,
         comment,
         isTechnicalProblem
@@ -190,7 +188,6 @@ public class MapViewModel extends BaseViewModel {
 
     if (isTechnicalProblem) {
       bike.setState(StateBicycle.NEEDS_INSPECTION);
-      bike.setIssueId(issue.getId());
       bicycleService.update(bike);
     }
   }

@@ -13,7 +13,7 @@ public class RentalRepositoryDB
 
   @Override
   public List<Rental> findByCustomerId(UUID id) {
-    String sql = "SELECT * FROM RENTALS WHERE customerId = ?";
+    String sql = "SELECT * FROM RENTALS WHERE customer_Id = ?";
     return jdbcTemplate.query(sql, rowMapper(), id.toString());
   }
 
@@ -33,7 +33,7 @@ public class RentalRepositoryDB
       Rental rental = new Rental();
 
       rental.setId(UUID.fromString(rs.getString("id")));
-      rental.setCustomerId(UUID.fromString(rs.getString("customerId")));
+      rental.setCustomerId(UUID.fromString(rs.getString("customer_Id")));
       rental.setBicycleId(UUID.fromString(rs.getString("bicycleId")));
       rental.setStart(rs.getTimestamp("start").toLocalDateTime());
 
@@ -79,7 +79,7 @@ public class RentalRepositoryDB
   @Override
   protected String[] getUpdateColumns() {
     return new String[] {
-        "customerId",
+        "customer_Id",
         "bicycleId",
         "start",
         "endTime",
@@ -91,7 +91,7 @@ public class RentalRepositoryDB
   protected String getCreateTableSQL() {
     return "CREATE TABLE IF NOT EXISTS RENTALS (" +
         "id VARCHAR(36) PRIMARY KEY," +
-        "customerId VARCHAR(36) NOT NULL," +
+        "customer_Id VARCHAR(36) NOT NULL," +
         "bicycleId VARCHAR(36) NOT NULL," +
         "start TIMESTAMP NOT NULL," +
         "endTime TIMESTAMP," +

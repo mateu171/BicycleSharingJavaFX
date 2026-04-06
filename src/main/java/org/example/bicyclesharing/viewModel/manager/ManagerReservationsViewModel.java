@@ -10,11 +10,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Customer;
+import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
+import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.CustomerService;
+import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.services.ReservationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.BaseViewModel;
@@ -22,6 +25,7 @@ import org.example.bicyclesharing.viewModel.BaseViewModel;
 public class ManagerReservationsViewModel extends BaseViewModel {
 
   private final ReservationService reservationService;
+  private final RentalService rentalService;
   private final CustomerService customerService;
   private final BicycleService bicycleService;
 
@@ -46,11 +50,12 @@ public class ManagerReservationsViewModel extends BaseViewModel {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
   public ManagerReservationsViewModel(User currentUser,
-      ReservationService reservationService,
+      ReservationService reservationService, RentalService rentalService,
       CustomerService customerService,
       BicycleService bicycleService) {
     super(currentUser);
     this.reservationService = reservationService;
+    this.rentalService = rentalService;
     this.customerService = customerService;
     this.bicycleService = bicycleService;
     loadReservations();
@@ -131,6 +136,30 @@ public class ManagerReservationsViewModel extends BaseViewModel {
 
     reservation.setStatus(ReservationStatus.CANCELLED);
     reservationService.update(reservation);
+    applyFilters();
+  }
+  public void issueReservation(Reservation reservation) {
+    if (reservation == null) {
+      return;
+    }
+
+    Bicycle currentBicycle = bicycleService.getById(reservation.getBicycleId()).orElse(null);
+    Customer currentCustomer = customerService.getById(reservation.getCustomerId()).orElse(null);
+
+    if (currentBicycle == null || currentCustomer == null) {
+      return;
+    }
+
+    Rental rental = new Rental(reservation.getCustomerId(), reservation.getBicycleId());
+    reservation.setStatus(ReservationStatus.ISSUED);
+    currentBicycle.setState(StateBicycle.RENTED);
+    currentCustomer.setActiveRent(rental.getId());
+
+    rentalService.add(rental);
+    bicycleService.update(currentBicycle);
+    customerService.update(currentCustomer);
+    reservationService.update(reservation);
+
     applyFilters();
   }
 

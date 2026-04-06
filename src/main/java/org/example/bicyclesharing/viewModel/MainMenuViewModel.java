@@ -23,4 +23,5 @@ public class MainMenuViewModel {
 
   public final StringProperty managerCustomersButtonText = LocalizationManager.getStringProperty("manager.customer");
   public final StringProperty managerReservationsButtonText = LocalizationManager.getStringProperty("menu.reservations");
+  public final StringProperty managerActiveRentalsButtonText = LocalizationManager.getStringProperty("menu.rentals");
 }

@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.repository.db;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.User;
@@ -76,6 +77,28 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
     String sql = "SELECT * FROM USERS WHERE login = ?";
     List<User> users = jdbcTemplate.query(sql, rowMapper(), login);
     return users.isEmpty() ? null : users.get(0);
+  }
+
+  @Override
+  public List<User> findByFilters(String search, Role role) {
+    StringBuilder sql = new StringBuilder("SELECT * FROM USERS WHERE 1=1");
+    List<Object> params = new ArrayList<>();
+
+    if (search != null && !search.isBlank()) {
+      sql.append(" AND (LOWER(login) LIKE LOWER(?) OR LOWER(email) LIKE LOWER(?))");
+      String pattern = "%" + search.trim() + "%";
+      params.add(pattern);
+      params.add(pattern);
+    }
+
+    if (role != null) {
+      sql.append(" AND role = ?");
+      params.add(role.name());
+    }
+
+    sql.append(" ORDER BY login ASC");
+
+    return jdbcTemplate.query(sql.toString(), rowMapper(), params.toArray());
   }
 
   @Override

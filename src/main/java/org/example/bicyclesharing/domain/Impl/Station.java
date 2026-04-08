@@ -11,7 +11,6 @@ public class Station extends BaseEntity {
   private double latitude;
   private double longitude;
   private List<UUID> bicyclesId;
-  private UUID employeeId;
 
   private Station() {
     super();
@@ -33,15 +32,13 @@ public class Station extends BaseEntity {
       String name,
       double latitude,
       double longitude,
-      List<UUID> bicyclesId,
-      UUID employeeId) {
+      List<UUID> bicyclesId) {
     Station station = new Station();
     station.setId(id);
     station.name = name;
     station.latitude = latitude;
     station.longitude = longitude;
     station.bicyclesId = bicyclesId != null ? bicyclesId : new ArrayList<>();
-    station.employeeId = employeeId;
     return station;
   }
 
@@ -123,13 +120,5 @@ public class Station extends BaseEntity {
 
   public void removeBicycleId(UUID bicycleId) {
     bicyclesId.remove(bicycleId);
-  }
-
-  public UUID getEmployeeId() {
-    return employeeId;
-  }
-
-  public void setEmployeeId(UUID employeeId) {
-    this.employeeId = employeeId;
   }
 }

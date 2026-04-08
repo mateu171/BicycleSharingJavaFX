@@ -42,29 +42,24 @@ public class UsersManagementViewModel extends BaseViewModel {
   }
 
   public void applyFilters() {
-    List<User> allUsers = userService.getAll();
+    String search = searchText.get() == null ? "" : searchText.get().trim();
 
-    String search = searchText.get() == null ? "" : searchText.get().trim().toLowerCase(Locale.ROOT);
-    String roleFilter = selectedRoleFilter.get() == null
-        ? LocalizationManager.getStringByKey("all.text")
-        : selectedRoleFilter.get();
+    String roleFilterText = selectedRoleFilter.get();
+    Role roleFilter = null;
 
-    List<User> filtered = allUsers.stream()
-        .filter(user -> {
-          boolean matchesSearch =
-              search.isEmpty()
-                  || user.getLogin().toLowerCase(Locale.ROOT).contains(search)
-                  || user.getEmail().toLowerCase(Locale.ROOT).contains(search);
+    if (roleFilterText != null &&
+        !roleFilterText.equals(LocalizationManager.getStringByKey("all.text"))) {
 
-          boolean matchesRole =
-              roleFilter.equals(LocalizationManager.getStringByKey("all.text"))
-                  || LocalizationManager.getStringByKey(user.getRole().getKey()).equals(roleFilter);
+      for (Role role : Role.values()) {
+        String localizedRole = LocalizationManager.getStringByKey(role.getKey());
+        if (localizedRole.equals(roleFilterText)) {
+          roleFilter = role;
+          break;
+        }
+      }
+    }
 
-          return matchesSearch && matchesRole;
-        })
-        .collect(Collectors.toList());
-
-    users.setAll(filtered);
+    users.setAll(userService.findByFilters(search, roleFilter));
     updateCount();
   }
 

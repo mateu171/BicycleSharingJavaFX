@@ -5,7 +5,6 @@ import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.repository.db.BicycleRepositoryDB;
 import org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB;
 import org.example.bicyclesharing.repository.db.CustomerRepositoryDB;
-import org.example.bicyclesharing.repository.db.EmployeeRepositoryDB;
 import org.example.bicyclesharing.repository.db.MaintenanceRecordRepositoryDB;
 import org.example.bicyclesharing.repository.db.RentalRepositoryDB;
 import org.example.bicyclesharing.repository.db.ReservationRepositoryDB;
@@ -17,7 +16,6 @@ import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.BikeIssueService;
 import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.services.EmailService;
-import org.example.bicyclesharing.services.EmployeeService;
 import org.example.bicyclesharing.services.MaintenanceRecordService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.services.ReservationService;
@@ -46,12 +44,6 @@ public class AppConfig {
     return new BicycleService(
         new BicycleRepositoryDB() {
         }
-    );
-  }
-
-  public static EmployeeService employeeService() {
-    return new EmployeeService(
-        new EmployeeRepositoryDB()
     );
   }
 

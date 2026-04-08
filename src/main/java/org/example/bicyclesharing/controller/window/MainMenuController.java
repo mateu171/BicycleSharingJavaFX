@@ -26,7 +26,6 @@ public class MainMenuController extends BaseWindowController{
   @FXML private Button btnSettings;
 
   @FXML private Button btnUsers;
-  @FXML private Button btnEmployees;
   @FXML private Button btnBicycles;
   @FXML private Button btnStations;
 
@@ -49,7 +48,6 @@ public class MainMenuController extends BaseWindowController{
   @FXML private HBox mechanicRecordContainer;
 
   @FXML private HBox adminUsersContainer;
-  @FXML private HBox adminEmployeesContainer;
   @FXML private HBox adminBicyclesContainer;
   @FXML private HBox adminStationContainer;
 
@@ -94,7 +92,6 @@ public class MainMenuController extends BaseWindowController{
     btnSettings.textProperty().bind(viewModel.settingsButtonText);
     btnTransaction.textProperty().bind(viewModel.transactionButtonText);
     btnUsers.textProperty().bind(viewModel.usersButtonText);
-    btnEmployees.textProperty().bind(viewModel.employeesButtonText);
     btnBicycles.textProperty().bind(viewModel.bicyclesButtonText);
     btnStations.textProperty().bind(viewModel.stationButtonText);
     btnMechanicIssues.textProperty().bind(viewModel.mechanicIssuesButtonText);
@@ -227,9 +224,6 @@ public class MainMenuController extends BaseWindowController{
     adminUsersContainer.setVisible(isAdmin);
     adminUsersContainer.setManaged(isAdmin);
 
-    adminEmployeesContainer.setVisible(isAdmin);
-    adminEmployeesContainer.setManaged(isAdmin);
-
     adminBicyclesContainer.setVisible(isAdmin);
     adminBicyclesContainer.setManaged(isAdmin);
 
@@ -280,12 +274,6 @@ public class MainMenuController extends BaseWindowController{
   public void onShowUsers() {
     navigationService.load("/org/example/bicyclesharing/presentation/view/admin/UsersManagementView.fxml");
   }
-
-  @FXML
-  public void onShowEmployees() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/admin/EmployeeManagementView.fxml");
-  }
-
   @FXML
   public void onShowBicycles() {
     navigationService.load("/org/example/bicyclesharing/presentation/view/admin/BicyclesManagementView.fxml");

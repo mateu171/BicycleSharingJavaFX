@@ -31,8 +31,7 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
             name VARCHAR(255) NOT NULL,
             latitude DOUBLE NOT NULL,
             longitude DOUBLE NOT NULL,
-            bicycles_id TEXT,
-            employee_id VARCHAR(36)
+            bicycles_id TEXT
         )
         """;
   }
@@ -58,19 +57,12 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
       String bicyclesRaw = rs.getString("bicycles_id");
       List<UUID> bicyclesId = parseUuidList(bicyclesRaw);
 
-      String employeeRaw = rs.getString("employee_id");
-      UUID employeeId = employeeRaw != null && !employeeRaw.isBlank()
-          ? UUID.fromString(employeeRaw)
-          : null;
-
       return Station.fromDatabase(
           id,
           name,
           latitude,
           longitude,
-          bicyclesId,
-          employeeId
-      );
+          bicyclesId);
     };
   }
 
@@ -81,9 +73,7 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
         entity.getName(),
         entity.getLatitude(),
         entity.getLongitude(),
-        toCsv(entity.getBicyclesId()),
-        entity.getEmployeeId() != null ? entity.getEmployeeId().toString() : null
-    };
+        toCsv(entity.getBicyclesId())};
   }
 
   @Override
@@ -93,7 +83,6 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
         entity.getLatitude(),
         entity.getLongitude(),
         toCsv(entity.getBicyclesId()),
-        entity.getEmployeeId() != null ? entity.getEmployeeId().toString() : null,
         entity.getId().toString()
     };
   }
@@ -104,8 +93,7 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
         "name",
         "latitude",
         "longitude",
-        "bicycles_id",
-        "employee_id"
+        "bicycles_id"
     };
   }
 

@@ -1,8 +1,10 @@
 package org.example.bicyclesharing.services;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.domain.security.PasswordHasher;
 import org.example.bicyclesharing.repository.Repository;
 import org.example.bicyclesharing.repository.UserRepository;
@@ -35,5 +37,8 @@ public class UserService extends BaseService<User, UUID> {
     return userRepository;
   }
 
+  public List<User> findByFilters(String search, Role role) {
+    return userRepository.findByFilters(search, role);
+  }
 
 }

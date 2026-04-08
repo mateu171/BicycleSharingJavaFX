@@ -24,12 +24,6 @@
       </VBox>
 
       <VBox spacing="4">
-        <Label fx:id="employeeLabel" styleClass="form-label"/>
-        <ComboBox fx:id="employeeComboBox" styleClass="modal-combo"/>
-        <Label fx:id="employeeErrorLabel" styleClass="label-error" wrapText="true"/>
-      </VBox>
-
-      <VBox spacing="4">
         <Label text="Локація" styleClass="form-label"/>
         <Button fx:id="pickOnMapButton"
           onAction="#onPickOnMap"

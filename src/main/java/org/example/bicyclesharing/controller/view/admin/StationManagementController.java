@@ -15,10 +15,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditStationController;
-import org.example.bicyclesharing.domain.Impl.Employee;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.services.EmployeeService;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.StationManagementViewModel;
@@ -32,7 +30,6 @@ public class StationManagementController extends BaseController {
   @FXML private Button addStationButton;
 
   private StationManagementViewModel viewModel;
-  private final EmployeeService employeeService = AppConfig.employeeService();
 
   @Override
   public void setCurrentUser(User currentUser) {
@@ -78,13 +75,6 @@ public class StationManagementController extends BaseController {
         coordsLabel.getStyleClass().add("user-card-subtitle");
 
         String employeeName = "—";
-
-        if (station.getEmployeeId() != null) {
-          Employee employee = employeeService.getById(station.getEmployeeId()).orElse(null);
-          if (employee != null) {
-            employeeName = employee.getName();
-          }
-        }
 
         Label infoLabel = new Label(
             LocalizationManager.getStringByKey("admin.stations.employee") + ": "

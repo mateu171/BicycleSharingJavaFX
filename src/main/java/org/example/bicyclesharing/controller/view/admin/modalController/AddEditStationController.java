@@ -11,7 +11,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.example.bicyclesharing.domain.Impl.Employee;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditStationViewModel;
@@ -20,14 +19,11 @@ public class AddEditStationController {
 
   @FXML private Label titleLabel;
   @FXML private Label nameLabel;
-  @FXML private Label employeeLabel;
 
   @FXML private TextField nameField;
-  @FXML private ComboBox<Employee> employeeComboBox;
 
   @FXML private Label nameErrorLabel;
   @FXML private Label latitudeErrorLabel;
-  @FXML private Label employeeErrorLabel;
 
   @FXML private Button cancelButton;
   @FXML private Button saveButton;
@@ -41,33 +37,10 @@ public class AddEditStationController {
     this.onSaved = onSaved;
     this.viewModel = new AddEditStationViewModel(
         AppConfig.stationService(),
-        AppConfig.employeeService(),
         station
     );
 
     bind();
-
-    employeeComboBox.setItems(viewModel.employees);
-
-    if (!viewModel.employees.isEmpty()) {
-      employeeComboBox.setValue(viewModel.selectedEmployee);
-    }
-
-    employeeComboBox.setCellFactory(cb -> new ListCell<>() {
-      @Override
-      protected void updateItem(Employee item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null : item.getName());
-      }
-    });
-
-    employeeComboBox.setButtonCell(new ListCell<>() {
-      @Override
-      protected void updateItem(Employee item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null : item.getName());
-      }
-    });
 
     if (viewModel.isEditMode()) {
       nameField.setPromptText(station.getName());
@@ -77,7 +50,6 @@ public class AddEditStationController {
   private void bind() {
     titleLabel.textProperty().bind(viewModel.titleText);
     nameLabel.textProperty().bind(viewModel.nameLabelText);
-    employeeLabel.textProperty().bind(viewModel.employeeLabelText);
 
     cancelButton.textProperty().bind(viewModel.cancelButtonText);
     saveButton.textProperty().bind(viewModel.saveButtonText);
@@ -88,11 +60,9 @@ public class AddEditStationController {
 
     nameErrorLabel.textProperty().bind(viewModel.nameError);
     latitudeErrorLabel.textProperty().bind(viewModel.latitudeError);
-    employeeErrorLabel.textProperty().bind(viewModel.employeeError);
 
     bindErrorVisibility(nameErrorLabel);
     bindErrorVisibility(latitudeErrorLabel);
-    bindErrorVisibility(employeeErrorLabel);
     bindErrorVisibility(locationInfoLabel);
   }
 
@@ -103,7 +73,6 @@ public class AddEditStationController {
 
   @FXML
   private void onSave() {
-    viewModel.selectedEmployee = employeeComboBox.getValue();
 
     if (viewModel.save()) {
       if (onSaved != null) {

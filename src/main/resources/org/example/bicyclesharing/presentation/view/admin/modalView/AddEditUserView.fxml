@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="org.example.bicyclesharing.controller.view.admin.modalController.AddEditUserController"
+  styleClass="modal-root">
+
+  <VBox styleClass="modal-card" maxWidth="460" prefWidth="460">
+
+    <HBox alignment="CENTER_LEFT" styleClass="modal-header">
+      <Label fx:id="titleLabel" styleClass="modal-title"/>
+      <Pane HBox.hgrow="ALWAYS"/>
+    </HBox>
+
+    <VBox styleClass="modal-body" spacing="10">
+
+      <VBox fx:id="userFormBlock" spacing="10">
+
+        <VBox spacing="4">
+          <Label fx:id="loginLabel" styleClass="form-label"/>
+          <TextField fx:id="loginField" styleClass="modal-text-field"/>
+          <Label fx:id="loginErrorLabel" styleClass="label-error" wrapText="true"/>
+        </VBox>
+
+        <VBox spacing="4">
+          <Label fx:id="passwordLabel" styleClass="form-label"/>
+          <PasswordField fx:id="passwordField" styleClass="modal-text-field"/>
+          <Label fx:id="passwordErrorLabel" styleClass="label-error" wrapText="true"/>
+        </VBox>
+
+        <VBox spacing="4">
+          <Label fx:id="emailLabel" styleClass="form-label"/>
+          <TextField fx:id="emailField" styleClass="modal-text-field"/>
+          <Label fx:id="emailErrorLabel" styleClass="label-error" wrapText="true"/>
+        </VBox>
+
+        <VBox spacing="4">
+          <Label fx:id="roleLabel" styleClass="form-label"/>
+          <ComboBox fx:id="roleComboBox" styleClass="modal-combo"/>
+          <Label fx:id="roleErrorLabel" styleClass="label-error" wrapText="true"/>
+        </VBox>
+      </VBox>
+
+      <VBox fx:id="codeFormBlock" spacing="10">
+        <Label fx:id="codeInfoLabel" wrapText="true"/>
+
+        <VBox spacing="4">
+          <Label fx:id="codeLabel" styleClass="form-label"/>
+          <TextField fx:id="codeField" styleClass="modal-text-field"/>
+          <Label fx:id="codeErrorLabel" styleClass="label-error" wrapText="true"/>
+        </VBox>
+      </VBox>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="modal-footer">
+      <Button fx:id="backButton"
+        onAction="#onBack"
+        styleClass="button-secondary-outline"/>
+      <Button fx:id="cancelButton"
+        onAction="#onClose"
+        styleClass="button-secondary-outline"/>
+      <Button fx:id="sendCodeButton"
+        onAction="#onSendCode"
+        styleClass="button-secondary-outline"/>
+      <Button fx:id="saveButton"
+        onAction="#onSave"
+        styleClass="button-primary"/>
+    </HBox>
+  </VBox>
+
+  <padding>
+    <Insets top="20" right="20" bottom="20" left="20"/>
+  </padding>
+</StackPane>

@@ -18,10 +18,9 @@ public class UsersManagementViewModel extends BaseViewModel {
   private final UserService userService;
   private final ObservableList<User> users = FXCollections.observableArrayList();
 
-  public final StringProperty titleText =
-      LocalizationManager.getStringProperty("admin.users.title");
-  public final StringProperty searchPromptText =
-      LocalizationManager.getStringProperty("admin.users.search");
+  public final StringProperty titleText = LocalizationManager.getStringProperty("admin.users.title");
+  public final StringProperty searchPromptText = LocalizationManager.getStringProperty("admin.users.search");
+  public final StringProperty addButtonText = LocalizationManager.getStringProperty("admin.users.add");
   public final StringProperty countText = new SimpleStringProperty("");
 
   public final StringProperty searchText = new SimpleStringProperty("");

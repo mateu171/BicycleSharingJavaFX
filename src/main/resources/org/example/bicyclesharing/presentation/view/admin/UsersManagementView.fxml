@@ -31,6 +31,10 @@
         styleClass="settings-combo"/>
 
       <Pane HBox.hgrow="ALWAYS"/>
+
+      <Button fx:id="addUserButton"
+      styleClass="button-primary"
+      onAction="#onAddUser"/>
     </HBox>
 
     <HBox spacing="15" alignment="CENTER_LEFT" styleClass="users-stats">

@@ -2,12 +2,20 @@ package org.example.bicyclesharing.controller.view.admin;
 
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
+import org.example.bicyclesharing.controller.view.admin.modalController.AddEditUserController;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.util.AppConfig;
@@ -21,6 +29,7 @@ public class UsersManagementController extends BaseController {
   @FXML private TextField searchField;
   @FXML private ComboBox<String> roleFilterComboBox;
   @FXML private ListView<User> usersListView;
+  @FXML private Button addUserButton;
 
   private UsersManagementViewModel viewModel;
 
@@ -36,6 +45,7 @@ public class UsersManagementController extends BaseController {
     titleLabel.textProperty().bind(viewModel.titleText);
     countLabel.textProperty().bind(viewModel.countText);
     searchField.promptTextProperty().bind(viewModel.searchPromptText);
+    addUserButton.textProperty().bind(viewModel.addButtonText);
 
     searchField.textProperty().bindBidirectional(viewModel.searchText);
     usersListView.setItems(viewModel.getUsers());
@@ -44,14 +54,13 @@ public class UsersManagementController extends BaseController {
   private void setupFilters() {
     roleFilterComboBox.setItems(FXCollections.observableArrayList(
         LocalizationManager.getStringByKey("all.text"),
-        LocalizationManager.getStringByKey(Role.CLIENT.getKey()),
-        LocalizationManager.getStringByKey(Role.ADMIN.getKey())
+        LocalizationManager.getStringByKey(Role.ADMIN.getKey()),
+        LocalizationManager.getStringByKey(Role.MANAGER.getKey()),
+        LocalizationManager.getStringByKey(Role.MECHANIC.getKey())
     ));
     roleFilterComboBox.getSelectionModel().selectFirst();
 
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-      viewModel.applyFilters();
-    });
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFilters());
 
     roleFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
       viewModel.selectedRoleFilter.set(newVal);
@@ -80,11 +89,11 @@ public class UsersManagementController extends BaseController {
         Label emailLabel = new Label(user.getEmail());
         emailLabel.getStyleClass().add("user-card-subtitle");
 
-        Label roleLabel = new Label("Role:");
+        Label roleLabel = new Label(LocalizationManager.getStringByKey("admin.users.role"));
         roleLabel.getStyleClass().add("user-card-role");
 
         ComboBox<Role> roleComboBox = new ComboBox<>();
-        roleComboBox.setItems(FXCollections.observableArrayList(Role.values()));
+        roleComboBox.setItems(FXCollections.observableArrayList(Role.ADMIN, Role.MANAGER, Role.MECHANIC));
         roleComboBox.setValue(user.getRole());
         roleComboBox.getStyleClass().add("settings-combo");
 
@@ -92,11 +101,7 @@ public class UsersManagementController extends BaseController {
           @Override
           protected void updateItem(Role item, boolean empty) {
             super.updateItem(item, empty);
-            if (empty || item == null) {
-              setText(null);
-            } else {
-              setText(LocalizationManager.getStringByKey(item.getKey()));
-            }
+            setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
           }
         });
 
@@ -104,11 +109,7 @@ public class UsersManagementController extends BaseController {
           @Override
           protected void updateItem(Role item, boolean empty) {
             super.updateItem(item, empty);
-            if (empty || item == null) {
-              setText(null);
-            } else {
-              setText(LocalizationManager.getStringByKey(item.getKey()));
-            }
+            setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
           }
         });
 
@@ -119,22 +120,60 @@ public class UsersManagementController extends BaseController {
           }
         });
 
+        Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
+        editButton.getStyleClass().add("button-edit");
+        editButton.setOnAction(e -> openUserDialog(user));
+
         Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
         deleteButton.getStyleClass().add("button-danger");
-        deleteButton.setOnAction(e -> {
-          viewModel.deleteUser(user);
-        });
+        deleteButton.setOnAction(e -> viewModel.deleteUser(user));
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         HBox roleBox = new HBox(8, roleLabel, roleComboBox);
-        HBox actions = new HBox(10, deleteButton);
+        HBox actions = new HBox(10, editButton, deleteButton);
         HBox bottomRow = new HBox(10, roleBox, spacer, actions);
 
         card.getChildren().addAll(loginLabel, emailLabel, bottomRow);
         setGraphic(card);
       }
     });
+  }
+
+  @FXML
+  private void onAddUser() {
+    openUserDialog(null);
+  }
+
+  private void openUserDialog(User user) {
+    try {
+      FXMLLoader loader = new FXMLLoader(
+          getClass().getResource("/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditUserView.fxml")
+      );
+
+      Parent root = loader.load();
+
+      AddEditUserController controller = loader.getController();
+      controller.initData(user, () -> {
+        viewModel.loadUsers();
+        viewModel.applyFilters();
+      });
+
+      Scene scene = new Scene(root);
+      scene.setFill(Color.TRANSPARENT);
+      scene.getStylesheets().add(
+          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
+      );
+
+      Stage stage = new Stage();
+      stage.initModality(Modality.APPLICATION_MODAL);
+      stage.initStyle(StageStyle.TRANSPARENT);
+      stage.setScene(scene);
+      stage.showAndWait();
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

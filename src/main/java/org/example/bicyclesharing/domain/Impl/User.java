@@ -125,6 +125,11 @@ public class User extends BaseEntity {
   }
 
   public void setRole(Role role) {
+    cleanErrors("role");
+    if(role == null)
+    {
+      addError("role", "admin.users.role.empty");
+    }
     this.role = role;
   }
 }

@@ -21,8 +21,7 @@ public class ReservationService extends BaseService<Reservation, UUID>{
     return reservationRepository;
   }
 
-  public List<Reservation> getByReservationStatus(ReservationStatus status)
-  {
-    return reservationRepository.findByReservationStatus(status);
+  public List<Reservation> findByFilters(String search, ReservationStatus status) {
+    return reservationRepository.findByFilters(search, status);
   }
 }

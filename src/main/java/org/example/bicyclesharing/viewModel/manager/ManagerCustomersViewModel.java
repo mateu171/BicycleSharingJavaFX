@@ -50,21 +50,8 @@ public class ManagerCustomersViewModel extends BaseViewModel {
   }
 
   public void applyFilters() {
-    List<Customer> allCustomers = customerService.getAll();
-
-    String search = searchText.get() == null ? "" : searchText.get().trim().toLowerCase(Locale.ROOT);
-
-    List<Customer> filtered = allCustomers.stream()
-        .filter(user -> {
-          boolean matchesSearch =
-              search.isEmpty()
-                  || user.getFullName().toLowerCase(Locale.ROOT).contains(search);
-
-          return matchesSearch;
-        })
-        .collect(Collectors.toList());
-
-    customers.setAll(filtered);
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+    customers.setAll(customerService.findByFilters(search));
     updateCount();
   }
 

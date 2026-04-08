@@ -1,5 +1,7 @@
 package org.example.bicyclesharing.repository.db;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Optional;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.repository.Repository;
@@ -116,5 +118,47 @@ public abstract class BaseRepositoryDB<T, ID> implements Repository<T, ID> {
     String sql = "SELECT COUNT(*) FROM " + getTableName();
     Long result = jdbcTemplate.queryForObject(sql, Long.class);
     return result == null ? 0 : result;
+  }
+
+  protected static class QueryData {
+    private final StringBuilder sql;
+    private final List<Object> params = new ArrayList<>();
+
+    public QueryData(String baseSql) {
+      this.sql = new StringBuilder(baseSql);
+    }
+
+    public void addCondition(String condition, Object... values) {
+      sql.append(" AND ").append(condition);
+      params.addAll(Arrays.asList(values));
+    }
+
+    public void addLikeCondition(String column, String value) {
+      if (value != null && !value.isBlank()) {
+        sql.append(" AND LOWER(").append(column).append(") LIKE LOWER(?)");
+        params.add("%" + value.trim() + "%");
+      }
+    }
+
+    public void addEqualsCondition(String column, Object value) {
+      if (value != null) {
+        sql.append(" AND ").append(column).append(" = ?");
+        params.add(value);
+      }
+    }
+
+    public void addOrderBy(String orderBy) {
+      if (orderBy != null && !orderBy.isBlank()) {
+        sql.append(" ORDER BY ").append(orderBy);
+      }
+    }
+
+    public String getSql() {
+      return sql.toString();
+    }
+
+    public Object[] getParams() {
+      return params.toArray();
+    }
   }
 }

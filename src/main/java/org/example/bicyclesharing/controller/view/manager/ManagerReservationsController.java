@@ -161,15 +161,6 @@ public class ManagerReservationsController extends BaseController {
     openReservationDialog(null);
   }
 
-  private void issueReservation(Reservation reservation) {
-    System.out.println("Issue reservation: " + reservation.getId());
-    // далі тут буде логіка:
-    // 1. створити Rental
-    // 2. status = ISSUED
-    // 3. bicycle -> RENTED
-    // 4. customer.activeRent -> rentalId
-  }
-
   private void openReservationDialog(Reservation reservation) {
     try {
       FXMLLoader loader = new FXMLLoader(

@@ -98,4 +98,27 @@ public class RentalRepositoryDB
         "totalCost DOUBLE" +
         ")";
   }
+
+  @Override
+  public List<Rental> findActiveByFilters(String search) {
+    QueryData query = new QueryData("""
+        SELECT r.*
+        FROM RENTALS r
+        JOIN CUSTOMERS c ON c.id = r.customer_Id
+        JOIN BICYCLES b ON b.id = r.bicycleId
+        WHERE r.endTime IS NULL
+        """);
+
+    if (search != null && !search.isBlank()) {
+      String pattern = "%" + search.trim() + "%";
+      query.addCondition(
+          "(LOWER(c.full_name) LIKE LOWER(?) OR LOWER(b.model) LIKE LOWER(?))",
+          pattern, pattern
+      );
+    }
+
+    query.addOrderBy("r.start DESC");
+
+    return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
+  }
 }

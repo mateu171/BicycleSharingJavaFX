@@ -24,8 +24,7 @@ public class StationService extends BaseService<Station, UUID>{
     return repository.getById(id);
   }
 
-  public List<Station> getByName(String name)
-  {
-    return repository.getByName(name);
+  public List<Station> findByFilters(String search) {
+    return repository.findByFilters(search);
   }
 }

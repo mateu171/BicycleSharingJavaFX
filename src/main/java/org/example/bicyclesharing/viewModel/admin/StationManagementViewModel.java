@@ -44,14 +44,8 @@ public class StationManagementViewModel extends BaseViewModel {
   }
 
   public void applyFilters() {
-    String search = searchText.get() == null ? "" : searchText.get().trim().toLowerCase(Locale.ROOT);
-
-    List<Station> filtered = stationService.getAll().stream()
-        .filter(station -> search.isEmpty()
-            || station.getName().toLowerCase(Locale.ROOT).contains(search))
-        .collect(Collectors.toList());
-
-    stations.setAll(filtered);
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+    stations.setAll(stationService.findByFilters(search));
     updateCount();
   }
 

@@ -50,35 +50,24 @@ public class BicyclesManagementViewModel extends BaseViewModel {
   }
 
   public void applyFilters() {
-    List<Bicycle> allBicycles = bicycleService.getAll();
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+    StateBicycle stateFilter = resolveSelectedState();
 
-    String search = searchText.get() == null ? "" : searchText.get().trim().toLowerCase(Locale.ROOT);
-    String stateFilter = selectedStateFilter.get() == null ? "ALL" : selectedStateFilter.get();
-
-    List<Bicycle> filtered = allBicycles.stream()
-        .filter(bike -> {
-          boolean matchesSearch =
-              search.isEmpty()
-                  || bike.getModel().toLowerCase(Locale.ROOT).contains(search);
-
-          boolean matchesState =
-              stateFilter.equals("ALL")
-                  ||  LocalizationManager.getStringByKey(bike.getState().getKey()).equals(stateFilter);;
-
-          return matchesSearch && matchesState;
-        })
-        .collect(Collectors.toList());
-
-    bicycles.setAll(filtered);
+    bicycles.setAll(bicycleService.getByFilters(search, stateFilter));
     updateCount();
   }
 
   public void deleteBicycle(Bicycle bicycle) {
     if (bicycle == null) return;
 
-    Station station = stationService.getById(bicycle.getStationId());
-    station.removeBicycleId(bicycle.getId());
-    stationService.update(station);
+    if (bicycle.getStationId() != null) {
+      Station station = stationService.getById(bicycle.getStationId());
+      if (station != null) {
+        station.removeBicycleId(bicycle.getId());
+        stationService.update(station);
+      }
+    }
+
     bicycleService.deleteById(bicycle.getId());
     applyFilters();
   }
@@ -87,5 +76,22 @@ public class BicyclesManagementViewModel extends BaseViewModel {
     countText.set(
         LocalizationManager.getStringByKey("admin.bicycles.count") + ": " + bicycles.size()
     );
+  }
+
+  private StateBicycle resolveSelectedState() {
+    String stateFilterText = selectedStateFilter.get();
+
+    if (stateFilterText == null || stateFilterText.equals("ALL")) {
+      return null;
+    }
+
+    for (StateBicycle state : StateBicycle.values()) {
+      String localizedState = LocalizationManager.getStringByKey(state.getKey());
+      if (localizedState.equals(stateFilterText)) {
+        return state;
+      }
+    }
+
+    return null;
   }
 }

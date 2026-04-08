@@ -53,29 +53,13 @@ public class ManagerActiveRentalsViewModel extends BaseViewModel {
   }
 
   public void loadRentals() {
-    rentals.setAll(
-        rentalService.getAll().stream()
-            .filter(r -> r.getEnd() == null)
-            .collect(Collectors.toList())
-    );
+    rentals.setAll(rentalService.findActiveByFilters(""));
     updateCount();
   }
 
   public void applyFilters() {
-    List<Rental> filtered = rentalService.getAll().stream()
-        .filter(r -> r.getEnd() == null)
-        .filter(r -> {
-          String search = searchText.get() == null ? "" : searchText.get().trim().toLowerCase(Locale.ROOT);
-          if (search.isEmpty()) {
-            return true;
-          }
-
-          return getCustomerName(r).toLowerCase(Locale.ROOT).contains(search)
-              || getBicycleModel(r).toLowerCase(Locale.ROOT).contains(search);
-        })
-        .collect(Collectors.toList());
-
-    rentals.setAll(filtered);
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+    rentals.setAll(rentalService.findActiveByFilters(search));
     updateCount();
   }
 

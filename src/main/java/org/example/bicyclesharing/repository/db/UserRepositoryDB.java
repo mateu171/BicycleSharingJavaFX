@@ -81,24 +81,21 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
 
   @Override
   public List<User> findByFilters(String search, Role role) {
-    StringBuilder sql = new StringBuilder("SELECT * FROM USERS WHERE 1=1");
-    List<Object> params = new ArrayList<>();
+    QueryData query = new QueryData("SELECT * FROM USERS WHERE 1=1");
 
     if (search != null && !search.isBlank()) {
-      sql.append(" AND (LOWER(login) LIKE LOWER(?) OR LOWER(email) LIKE LOWER(?))");
       String pattern = "%" + search.trim() + "%";
-      params.add(pattern);
-      params.add(pattern);
+      query.addCondition("(LOWER(login) LIKE LOWER(?) OR LOWER(email) LIKE LOWER(?))",
+          pattern, pattern);
     }
 
     if (role != null) {
-      sql.append(" AND role = ?");
-      params.add(role.name());
+      query.addEqualsCondition("role", role.name());
     }
 
-    sql.append(" ORDER BY login ASC");
+    query.addOrderBy("login ASC");
 
-    return jdbcTemplate.query(sql.toString(), rowMapper(), params.toArray());
+    return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
 
   @Override

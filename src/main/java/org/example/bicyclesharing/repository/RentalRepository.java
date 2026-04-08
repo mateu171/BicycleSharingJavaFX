@@ -7,4 +7,5 @@ import org.example.bicyclesharing.domain.Impl.Rental;
 public interface RentalRepository extends Repository<Rental, UUID> {
 
   List<Rental> findByCustomerId(UUID id);
+  List<Rental> findActiveByFilters(String search);
 }

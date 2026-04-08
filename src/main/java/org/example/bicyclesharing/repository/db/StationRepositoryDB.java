@@ -12,12 +12,6 @@ import org.springframework.jdbc.core.RowMapper;
 public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> implements StationRepository {
 
   @Override
-  public List<Station> getByName(String name) {
-    String sql = "SELECT * FROM STATIONS WHERE LOWER(name) LIKE LOWER(?)";
-    return jdbcTemplate.query(sql, rowMapper(), "%" + name + "%");
-  }
-
-  @Override
   public Station getById(UUID id) {
     String sql = "SELECT * FROM STATIONS WHERE id = ?";
     return jdbcTemplate.queryForObject(sql, rowMapper(), id.toString());
@@ -122,5 +116,15 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
         .filter(s -> !s.isEmpty())
         .map(UUID::fromString)
         .collect(Collectors.toList());
+  }
+
+  @Override
+  public List<Station> findByFilters(String search) {
+    QueryData query = new QueryData("SELECT * FROM STATIONS WHERE 1=1");
+
+    query.addLikeCondition("name", search);
+    query.addOrderBy("name ASC");
+
+    return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
 }

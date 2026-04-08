@@ -21,13 +21,12 @@ public class CustomerService extends BaseService<Customer, UUID>{
     return repository;
   }
 
-  public List<Customer> getByName(String name)
-  {
-    return repository.findByName(name);
-  }
 
   public Optional<Customer> getById(UUID id) {
     return repository.findById(id);
   }
 
+  public List<Customer> findByFilters(String search) {
+    return repository.findByFilters(search);
+  }
 }

@@ -117,8 +117,25 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
   }
 
   @Override
-  public List<Reservation> findByReservationStatus(ReservationStatus status) {
-    String sql = "SELECT * FROM RESERVATIONS WHERE status = ?";
-    return jdbcTemplate.query(sql, rowMapper(), status.name());
+  public List<Reservation> findByFilters(String search, ReservationStatus status) {
+    QueryData query = new QueryData("""
+        SELECT r.*
+        FROM RESERVATIONS r
+        JOIN CUSTOMERS c ON c.id = r.customer_id
+        WHERE 1=1
+        """);
+
+    if (search != null && !search.isBlank()) {
+      String pattern = "%" + search.trim() + "%";
+      query.addCondition("LOWER(c.full_name) LIKE LOWER(?)", pattern);
+    }
+
+    if (status != null) {
+      query.addEqualsCondition("r.status", status.name());
+    }
+
+    query.addOrderBy("r.start_time DESC");
+
+    return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
 }

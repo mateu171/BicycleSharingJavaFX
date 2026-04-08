@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.repository.db;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
@@ -11,12 +12,6 @@ import org.springframework.jdbc.core.RowMapper;
 public class BicycleRepositoryDB
     extends BaseRepositoryDB<Bicycle, UUID>
     implements BicycleRepository {
-
-  @Override
-  public List<Bicycle> findByState(StateBicycle stateBicycle) {
-    String sql = "SELECT * FROM BICYCLES WHERE state = ?";
-    return jdbcTemplate.query(sql, rowMapper(), stateBicycle.name());
-  }
 
   @Override
   protected String getTableName() {
@@ -97,5 +92,20 @@ public class BicycleRepositoryDB
         "price_per_minute DOUBLE NOT NULL, " +
         "station_id VARCHAR(36)" +
         ")";
+  }
+
+  @Override
+  public List<Bicycle> findByFilters(String search, StateBicycle state) {
+    QueryData query = new QueryData("SELECT * FROM BICYCLES WHERE 1=1");
+
+    query.addLikeCondition("model", search);
+
+    if (state != null) {
+      query.addEqualsCondition("state", state.name());
+    }
+
+    query.addOrderBy("model ASC");
+
+    return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
 }

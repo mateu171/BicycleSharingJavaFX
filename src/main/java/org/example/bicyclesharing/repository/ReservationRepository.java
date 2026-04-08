@@ -7,6 +7,6 @@ import org.example.bicyclesharing.domain.enums.ReservationStatus;
 
 public interface ReservationRepository extends Repository<Reservation, UUID>{
 
-  List<Reservation> findByReservationStatus(ReservationStatus status);
+  List<Reservation> findByFilters(String search, ReservationStatus status);
 
 }

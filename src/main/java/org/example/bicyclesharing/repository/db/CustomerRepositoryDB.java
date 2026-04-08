@@ -10,12 +10,6 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
     CustomerRepository {
 
   @Override
-  public List<Customer> findByName(String name) {
-    String sql = "SELECT * FROM CUSTOMERS WHERE LOWER(full_name) LIKE LOWER(?)";
-    return jdbcTemplate.query(sql, rowMapper(), "%" + name + "%");
-  }
-
-  @Override
   protected String getCreateTableSQL() {
     return "CREATE TABLE IF NOT EXISTS CUSTOMERS (" +
         "id VARCHAR(36) PRIMARY KEY," +
@@ -82,5 +76,15 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
   @Override
   protected String getIdColumn() {
     return "id";
+  }
+
+  @Override
+  public List<Customer> findByFilters(String search) {
+    QueryData query = new QueryData("SELECT * FROM CUSTOMERS WHERE 1=1");
+
+    query.addLikeCondition("full_name", search);
+    query.addOrderBy("full_name ASC");
+
+    return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
 }

@@ -66,31 +66,15 @@ public class ManagerReservationsViewModel extends BaseViewModel {
   }
 
   public void loadReservations() {
-    reservations.setAll(reservationService.getAll());
+    reservations.setAll(reservationService.findByFilters("", null));
     updateCount();
   }
 
   public void applyFilters() {
-    List<Reservation> allReservations = reservationService.getAll();
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+    ReservationStatus status = resolveSelectedStatus();
 
-    String search = searchText.get() == null ? "" : searchText.get().trim().toLowerCase(Locale.ROOT);
-    String status = statusFilterText.get();
-
-    List<Reservation> filtered = allReservations.stream()
-        .filter(reservation -> {
-          boolean matchesSearch =
-              search.isEmpty()
-                  || getCustomerName(reservation).toLowerCase(Locale.ROOT).contains(search);
-          boolean matchesStatus =
-              status == null
-                  || status.equals(LocalizationManager.getStringByKey("manager.reservations.filter.all"))
-                  || getStatusText(reservation).equals(status);
-
-          return matchesSearch && matchesStatus;
-        })
-        .collect(Collectors.toList());
-
-    reservations.setAll(filtered);
+    reservations.setAll(reservationService.findByFilters(search, status));
     updateCount();
   }
 
@@ -172,5 +156,22 @@ public class ManagerReservationsViewModel extends BaseViewModel {
     return reservation != null
         && reservation.getStatus() != ReservationStatus.CANCELLED
         && reservation.getStatus() != ReservationStatus.ISSUED;
+  }
+  private ReservationStatus resolveSelectedStatus() {
+    String statusText = statusFilterText.get();
+
+    if (statusText == null
+        || statusText.equals(LocalizationManager.getStringByKey("manager.reservations.filter.all"))) {
+      return null;
+    }
+
+    for (ReservationStatus status : ReservationStatus.values()) {
+      String localized = LocalizationManager.getStringByKey(status.getKey());
+      if (localized.equals(statusText)) {
+        return status;
+      }
+    }
+
+    return null;
   }
 }

@@ -7,5 +7,5 @@ import org.example.bicyclesharing.domain.Impl.Customer;
 
 public interface CustomerRepository extends Repository<Customer, UUID> {
 
-  List<Customer> findByName(String name);
+  List<Customer> findByFilters(String search);
 }

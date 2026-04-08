@@ -55,7 +55,10 @@ public class BicyclesManagementController extends BaseController {
     stateFilterComboBox.setItems(FXCollections.observableArrayList(
         "ALL",
         LocalizationManager.getStringByKey(StateBicycle.AVAILABLE.getKey()),
-        LocalizationManager.getStringByKey(StateBicycle.RENTED.getKey())
+        LocalizationManager.getStringByKey(StateBicycle.RENTED.getKey()),
+        LocalizationManager.getStringByKey(StateBicycle.UNAVAILABLE.getKey()),
+        LocalizationManager.getStringByKey(StateBicycle.NEEDS_INSPECTION.getKey()),
+        LocalizationManager.getStringByKey(StateBicycle.ON_MAINTENANCE.getKey())
     ));
     stateFilterComboBox.getSelectionModel().selectFirst();
 

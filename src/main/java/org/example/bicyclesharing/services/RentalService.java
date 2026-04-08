@@ -79,4 +79,8 @@ public class RentalService extends BaseService<Rental, UUID> {
     return repository.findById(id).orElse(null);
   }
 
+  public List<Rental> findActiveByFilters(String search) {
+    return repository.findActiveByFilters(search);
+  }
+
 }

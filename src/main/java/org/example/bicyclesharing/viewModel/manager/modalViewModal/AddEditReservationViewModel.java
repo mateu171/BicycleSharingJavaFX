@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.viewModel.manager.modalViewModal;
 
+import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -10,6 +11,7 @@ import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.DocumentType;
+import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.CustomerService;
@@ -80,11 +82,11 @@ public class AddEditReservationViewModel {
     this.bicycleService = bicycleService;
     this.editingReservation = editingReservation;
 
-    customers.setAll(customerService.getAll());
-    bicycles.setAll(bicycleService.getAll()
-        .stream()
-        .filter(b -> b.getState() != null)
+    customers.setAll(customerService.getAll().stream()
+        .filter(c -> c.getActiveRent() == null)
         .collect(Collectors.toList()));
+
+    bicycles.setAll(bicycleService.getAvailable());
     documentTypes.setAll(DocumentType.values());
 
     if (editingReservation == null) {
@@ -158,6 +160,16 @@ public class AddEditReservationViewModel {
         );
         reservationService.add(reservation);
       } else {
+
+        List<Bicycle> available = bicycleService.getAvailable();
+
+        if (editingReservation != null) {
+          Bicycle current = bicycleService.getById(editingReservation.getBicycleId()).orElse(null);
+          if (current != null && !available.contains(current)) {
+            available.add(current);
+          }
+        }
+        bicycles.setAll(available);
         Reservation validated = new Reservation(
             selectedCustomer.getId(),
             selectedBicycle.getId(),

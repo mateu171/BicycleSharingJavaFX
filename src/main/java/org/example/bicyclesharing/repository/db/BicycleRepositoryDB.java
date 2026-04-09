@@ -108,4 +108,10 @@ public class BicycleRepositoryDB
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
+
+  @Override
+  public List<Bicycle> findByState(StateBicycle stateBicycle) {
+    String sql = "SELECT * FROM BICYCLES WHERE state = ?";
+    return jdbcTemplate.query(sql, rowMapper(), stateBicycle.name());
+  }
 }

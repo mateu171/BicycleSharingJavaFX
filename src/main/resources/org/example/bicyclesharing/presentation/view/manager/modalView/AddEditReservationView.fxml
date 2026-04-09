@@ -10,6 +10,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.control.DatePicker?>
 <StackPane xmlns="http://javafx.com/javafx/25"
   xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="org.example.bicyclesharing.controller.view.manager.modalController.AddEditReservationController"
@@ -43,13 +44,19 @@
 
       <VBox spacing="2">
         <Label fx:id="startTimeLabel" styleClass="form-label"/>
-        <TextField fx:id="startTimeField" styleClass="modal-text-field"/>
+        <HBox spacing="8">
+          <DatePicker fx:id="startDatePicker" HBox.hgrow="ALWAYS" styleClass="modal-date-picker"/>
+          <TextField fx:id="startTimeField" promptText="10:00" styleClass="modal-text-field"/>
+        </HBox>
         <Label fx:id="startTimeErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>
 
       <VBox spacing="2">
         <Label fx:id="endTimeLabel" styleClass="form-label"/>
-        <TextField fx:id="endTimeField" styleClass="modal-text-field"/>
+        <HBox spacing="8">
+          <DatePicker fx:id="endDatePicker" HBox.hgrow="ALWAYS" styleClass="modal-date-picker"/>
+          <TextField fx:id="endTimeField" promptText="12:00" styleClass="modal-text-field"/>
+        </HBox>
         <Label fx:id="endTimeErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>
 

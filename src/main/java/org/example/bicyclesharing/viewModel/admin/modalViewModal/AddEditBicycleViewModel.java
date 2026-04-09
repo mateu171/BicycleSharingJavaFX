@@ -84,31 +84,23 @@ public class AddEditBicycleViewModel {
   public boolean save() {
     clearErrors();
 
-    if (selectedType == null) {
-      typeError.set(LocalizationManager.getStringByKey("bicycle.type.empty"));
-      return false;
-    }
-
-    if (selectedStation == null) {
-      stationError.set(LocalizationManager.getStringByKey("bicycle.station.empty"));
-      return false;
-    }
-
     try {
       if (editingBicycle == null) {
         Bicycle bicycle = new Bicycle(
             model.get(),
             selectedType,
             price.get(),
-            selectedStation.getId()
+            selectedStation == null ? null : selectedStation.getId()
         );
 
-        selectedStation.addBicycleId(bicycle.getId());
-        stationService.update(selectedStation);
+        if(selectedStation != null) {
+          selectedStation.addBicycleId(bicycle.getId());
+          stationService.update(selectedStation);
+        }
         bicycleService.add(bicycle);
       } else {
-        UUID oldStationId = editingBicycle.getStationId();
-        UUID newStationId = selectedStation.getId();
+        UUID oldStationId = editingBicycle.getStationId() == null ? null : editingBicycle.getStationId();
+        UUID newStationId = selectedStation == null ? null : selectedStation.getId();
 
         String modelValue = isBlank(model.get())
             ? editingBicycle.getModel()
@@ -180,7 +172,6 @@ public class AddEditBicycleViewModel {
           case "model" -> modelError.set(text);
           case "typeBicycle" -> typeError.set(text);
           case "pricePerMinute" -> priceError.set(text);
-          case "stationId" -> stationError.set(text);
         }
       });
       return false;

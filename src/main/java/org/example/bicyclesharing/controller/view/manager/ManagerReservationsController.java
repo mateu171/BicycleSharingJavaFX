@@ -130,6 +130,12 @@ public class ManagerReservationsController extends BaseController {
         issueCardButton.setDisable(!viewModel.canIssue(reservation));
         issueCardButton.setOnAction(e -> viewModel.issueReservation(reservation));
 
+        Button editCardButton = new Button();
+        editCardButton.textProperty().bind(viewModel.edittButtonText);
+        editCardButton.getStyleClass().add("button-edit");
+        editCardButton.setDisable(!viewModel.canIssue(reservation));
+        editCardButton.setOnAction(e -> openReservationDialog(reservation));
+
         Button cancelCardButton = new Button();
         cancelCardButton.textProperty().bind(viewModel.cancelButtonText);
         cancelCardButton.getStyleClass().add("button-danger");
@@ -139,7 +145,7 @@ public class ManagerReservationsController extends BaseController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox actions = new HBox(10, issueCardButton, cancelCardButton);
+        HBox actions = new HBox(10, issueCardButton,editCardButton, cancelCardButton);
         HBox bottomRow = new HBox(10, statusLabel, spacer, actions);
 
         card.getChildren().addAll(

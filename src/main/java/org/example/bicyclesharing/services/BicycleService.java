@@ -29,5 +29,9 @@ public class BicycleService extends BaseService<Bicycle, UUID> {
   {
     return repository.findByFilters(search,stateBicycle);
   }
+
+  public List<Bicycle> getAvailable() {
+    return repository.findByState(StateBicycle.AVAILABLE);
+  }
 }
 

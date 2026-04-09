@@ -1,8 +1,11 @@
 package org.example.bicyclesharing.controller.view.manager.modalController;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -47,6 +50,9 @@ public class AddEditReservationController {
   @FXML private Button cancelButton;
   @FXML private Button saveButton;
 
+  @FXML private DatePicker startDatePicker;
+  @FXML private DatePicker endDatePicker;
+
   private Runnable onSaved;
   private AddEditReservationViewModel viewModel;
 
@@ -61,6 +67,7 @@ public class AddEditReservationController {
     this.onSaved = onSaved;
     bind();
     setupCombos();
+    fillDateTimeFields();
   }
 
   private void bind() {
@@ -74,8 +81,6 @@ public class AddEditReservationController {
     documentNumberLabel.textProperty().bind(viewModel.documentNumberLabelText);
     depositAmountLabel.textProperty().bind(viewModel.depositAmountLabelText);
 
-    startTimeField.textProperty().bindBidirectional(viewModel.startTime);
-    endTimeField.textProperty().bindBidirectional(viewModel.endTime);
     documentNumberField.textProperty().bindBidirectional(viewModel.documentNumber);
     depositAmountField.textProperty().bindBidirectional(viewModel.depositAmount);
 
@@ -89,9 +94,6 @@ public class AddEditReservationController {
 
     saveButton.textProperty().bind(viewModel.saveButtonText);
     cancelButton.textProperty().bind(viewModel.cancelButtonText);
-
-    startTimeField.setPromptText("2026-04-04T10:00");
-    endTimeField.setPromptText("2026-04-04T12:00");
   }
 
   private void setupCombos() {
@@ -151,6 +153,8 @@ public class AddEditReservationController {
 
   @FXML
   private void onSave() {
+    viewModel.startTime.set(buildDateTimeString(startDatePicker, startTimeField));
+    viewModel.endTime.set(buildDateTimeString(endDatePicker, endTimeField));
     if (viewModel.save()) {
       if (onSaved != null) {
         onSaved.run();
@@ -166,5 +170,30 @@ public class AddEditReservationController {
 
   private void close() {
     ((Stage) saveButton.getScene().getWindow()).close();
+  }
+
+  private String buildDateTimeString(DatePicker datePicker, TextField timeField) {
+    LocalDate date = datePicker.getValue();
+    String timeText = timeField.getText() == null ? "" : timeField.getText().trim();
+
+    if (date == null || timeText.isBlank()) {
+      return "";
+    }
+
+    return date + "T" + timeText;
+  }
+
+  private void fillDateTimeFields() {
+    if (viewModel.startTime.get() != null && !viewModel.startTime.get().isBlank()) {
+      LocalDateTime start = LocalDateTime.parse(viewModel.startTime.get());
+      startDatePicker.setValue(start.toLocalDate());
+      startTimeField.setText(start.toLocalTime().toString());
+    }
+
+    if (viewModel.endTime.get() != null && !viewModel.endTime.get().isBlank()) {
+      LocalDateTime end = LocalDateTime.parse(viewModel.endTime.get());
+      endDatePicker.setValue(end.toLocalDate());
+      endTimeField.setText(end.toLocalTime().toString());
+    }
   }
 }

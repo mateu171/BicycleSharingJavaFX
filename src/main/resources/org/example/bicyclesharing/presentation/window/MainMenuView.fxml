@@ -35,7 +35,7 @@
 
     <HBox AnchorPane.topAnchor="40"
       AnchorPane.bottomAnchor="0"
-      AnchorPane.leftAnchor="-5"
+      AnchorPane.leftAnchor="0"
       AnchorPane.rightAnchor="0">
 
       <VBox fx:id="sidebar" styleClass="sidebar">
@@ -156,30 +156,30 @@
           alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../../art/icon/addRecord.png" />
+              <Image url="@../../art/icon/customer.png" />
             </image>
           </ImageView>
           <Button fx:id="btnManagerCustomers" styleClass="menu-button" onAction="#onShowCustomerManager"/>
-        </HBox>
-
-        <HBox fx:id="managerAcitveRentalsContainer" styleClass="menu-container" spacing="10"
-          alignment="CENTER_LEFT" visible="false" managed="false">
-          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
-            <image>
-              <Image url="@../../art/icon/addRecord.png" />
-            </image>
-          </ImageView>
-          <Button fx:id="btnManagerActiveRentals" styleClass="menu-button" onAction="#onShowActiveRentals"/>
         </HBox>
 
         <HBox fx:id="managerReservationContainer" styleClass="menu-container" spacing="10"
           alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
             <image>
-              <Image url="@../../art/icon/addRecord.png" />
+              <Image url="@../../art/icon/booking.png" />
             </image>
           </ImageView>
           <Button fx:id="btnManagerReservation" styleClass="menu-button" onAction="#onShowReservation"/>
+        </HBox>
+
+        <HBox fx:id="managerAcitveRentalsContainer" styleClass="menu-container" spacing="10"
+          alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/rent.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnManagerActiveRentals" styleClass="menu-button" onAction="#onShowActiveRentals"/>
         </HBox>
 
         <HBox fx:id="settingsContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">

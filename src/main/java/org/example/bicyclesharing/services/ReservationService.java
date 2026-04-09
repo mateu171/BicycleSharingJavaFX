@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Reservation;
@@ -23,5 +24,15 @@ public class ReservationService extends BaseService<Reservation, UUID>{
 
   public List<Reservation> findByFilters(String search, ReservationStatus status) {
     return reservationRepository.findByFilters(search, status);
+  }
+
+  public void updateStatuses() {
+    List<Reservation> toUpdate =
+        reservationRepository.findNotIssuedButStarted(LocalDateTime.now());
+
+    for (Reservation r : toUpdate) {
+      r.setStatus(ReservationStatus.ISSUED);
+      reservationRepository.update(r);
+    }
   }
 }

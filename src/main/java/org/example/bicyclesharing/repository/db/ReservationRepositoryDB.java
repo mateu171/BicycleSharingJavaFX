@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.repository.db;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Reservation;
@@ -137,5 +138,15 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
     query.addOrderBy("r.start_time DESC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
+  }
+
+  public List<Reservation> findNotIssuedButStarted(LocalDateTime now) {
+    String sql = """
+      SELECT * FROM RESERVATIONS
+      WHERE status = 'NEW'
+      AND start_time <= ?
+      """;
+
+    return jdbcTemplate.query(sql, rowMapper(), Timestamp.valueOf(now));
   }
 }

@@ -261,7 +261,7 @@ public class MainMenuController extends BaseWindowController{
     managerCustomersContainer.setManaged(isManager);
 
     managerReservationContainer.setVisible(isManager);
-    managerReservationContainer.setManaged(isMechanic);
+    managerReservationContainer.setManaged(isManager);
 
     managerAcitveRentalsContainer.setVisible(isManager);
     managerAcitveRentalsContainer.setManaged(isManager);

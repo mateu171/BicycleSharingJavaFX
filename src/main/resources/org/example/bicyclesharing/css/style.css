@@ -76,7 +76,7 @@
 .sidebar {
   -fx-background-color: rgba(255,255,255,0.6);
   -fx-background-radius: 0 20 20 0;
-  -fx-pref-width: 60;
+  -fx-pref-width: 220;
   -fx-spacing: 10;
   -fx-padding: 15 5 15 5;
 }
@@ -111,9 +111,10 @@
 }
 
 
-.sidebar:hover .menu-button-text {
-  -fx-opacity: 1;
-}
+/*.sidebar:hover {*/
+/*  -fx-opacity: 1;*/
+/*  -fx-pref-width: 200;*/
+/*}*/
 
 .balance-circle {
   -fx-background-color: #FFE600;
@@ -629,4 +630,79 @@
 .modal-text-area:focused {
   -fx-border-color: #ffe600;
   -fx-border-width: 2;
+}
+
+.modal-date-picker {
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 12;
+  -fx-border-radius: 12;
+  -fx-border-color: #d7dee8;
+  -fx-padding: 4 8 4 8;
+  -fx-font-size: 14px;
+}
+
+.modal-date-picker:focused {
+  -fx-border-color: #ffe600;
+  -fx-border-width: 2;
+}
+
+.modal-date-picker .text-field {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+}
+
+.modal-date-picker .arrow-button {
+  -fx-background-color: transparent;
+  -fx-background-radius: 10;
+}
+
+.modal-date-picker .arrow-button .arrow {
+  -fx-background-color: #364153;
+}
+
+.modal-date-picker:hover {
+  -fx-border-color: #ffe600;
+}
+
+.date-picker-popup {
+  -fx-background-color: white;
+  -fx-background-radius: 12;
+  -fx-border-radius: 12;
+  -fx-border-color: #ffe600;
+  -fx-padding: 10;
+}
+
+.date-picker-popup .month-year-pane {
+  -fx-background-color: transparent;
+}
+
+.date-picker-popup .label {
+  -fx-text-fill: #364153;
+  -fx-font-weight: bold;
+}
+
+.date-picker-popup .button {
+  -fx-background-color: transparent;
+  -fx-text-fill: #364153;
+}
+
+.date-picker-popup .button:hover {
+  -fx-background-color: #ffe600;
+  -fx-text-fill: black;
+}
+
+.date-picker-popup .day-cell {
+  -fx-background-color: transparent;
+  -fx-text-fill: #364153;
+  -fx-background-radius: 8;
+}
+
+.date-picker-popup .day-cell:hover {
+  -fx-background-color: #fff3a0;
+}
+
+.date-picker-popup .day-cell:selected {
+  -fx-background-color: #ffe600;
+  -fx-text-fill: black;
+  -fx-font-weight: bold;
 }

@@ -8,6 +8,6 @@ import org.example.bicyclesharing.domain.enums.StateBicycle;
 
 public interface BicycleRepository extends Repository<Bicycle, UUID> {
 
-
   List<Bicycle> findByFilters(String search, StateBicycle state);
+  List<Bicycle> findByState(StateBicycle state);
 }

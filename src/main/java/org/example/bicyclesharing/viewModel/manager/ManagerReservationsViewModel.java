@@ -31,16 +31,12 @@ public class ManagerReservationsViewModel extends BaseViewModel {
 
   private final ObservableList<Reservation> reservations = FXCollections.observableArrayList();
 
-  public final StringProperty titleText =
-      LocalizationManager.getStringProperty("manager.reservations.title");
-  public final StringProperty searchPromptText =
-      LocalizationManager.getStringProperty("manager.reservations.search");
-  public final StringProperty addButtonText =
-      LocalizationManager.getStringProperty("manager.reservations.add");
-  public final StringProperty issueButtonText =
-      LocalizationManager.getStringProperty("manager.reservations.issue");
-  public final StringProperty cancelButtonText =
-      LocalizationManager.getStringProperty("manager.reservations.cancel");
+  public final StringProperty titleText = LocalizationManager.getStringProperty("manager.reservations.title");
+  public final StringProperty searchPromptText = LocalizationManager.getStringProperty("manager.reservations.search");
+  public final StringProperty addButtonText = LocalizationManager.getStringProperty("manager.reservations.add");
+  public final StringProperty issueButtonText = LocalizationManager.getStringProperty("manager.reservations.issue");
+  public final StringProperty cancelButtonText = LocalizationManager.getStringProperty("manager.reservations.cancel");
+  public final StringProperty edittButtonText = LocalizationManager.getStringProperty("edit.button");
   public final StringProperty countText = new SimpleStringProperty("");
   public final StringProperty searchText = new SimpleStringProperty("");
   public final StringProperty statusFilterText = new SimpleStringProperty(
@@ -66,6 +62,7 @@ public class ManagerReservationsViewModel extends BaseViewModel {
   }
 
   public void loadReservations() {
+    reservationService.updateStatuses();
     reservations.setAll(reservationService.findByFilters("", null));
     updateCount();
   }

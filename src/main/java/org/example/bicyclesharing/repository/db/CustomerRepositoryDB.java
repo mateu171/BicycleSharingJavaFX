@@ -44,11 +44,11 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
   @Override
   protected Object[] getInsertValues(Customer entity) {
     return new Object[] {
+        entity.getId().toString(),
         entity.getFullName(),
         entity.getPhoneNumber(),
         entity.getDocumentNumber(),
-        entity.getActiveRent() != null ? entity.getActiveRent().toString() : null,
-        entity.getId().toString()
+        entity.getActiveRent() != null ? entity.getActiveRent().toString() : null
     };
   }
 

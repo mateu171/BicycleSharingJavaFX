@@ -127,15 +127,26 @@ public class Reservation extends BaseEntity {
 
   public void setStartTime(String startTime) {
     cleanErrors("startTime");
-    if (startTime == null) {
+
+    if (startTime == null || startTime.trim().isEmpty()) {
       addError("startTime", "reservation.start.empty");
+      this.startTime = null;
+      return;
     }
-    LocalDateTime parsedStart = null;
-      try {
-        parsedStart = LocalDateTime.parse(startTime.trim());
-      } catch (DateTimeParseException e) {
-        addError("startTime","reservation.start.invalid");
-      }
+
+    LocalDateTime parsedStart;
+    try {
+      parsedStart = LocalDateTime.parse(startTime.trim());
+    } catch (DateTimeParseException e) {
+      addError("startTime", "reservation.start.invalid");
+      this.startTime = null;
+      return;
+    }
+
+    if (parsedStart.isBefore(LocalDateTime.now())) {
+      addError("startTime", "reservation.start.past");
+    }
+
     this.startTime = parsedStart;
   }
 
@@ -164,6 +175,9 @@ public class Reservation extends BaseEntity {
       addError("endTime", "reservation.end.invalid");
     }
 
+    if (parsedEnd.isBefore(LocalDateTime.now())) {
+      addError("endTime", "reservation.end.past");
+    }
     this.endTime = parsedEnd;
   }
 

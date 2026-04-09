@@ -44,10 +44,6 @@
         <Label fx:id="errorMessage" maxWidth="250" styleClass="label-error" textFill="red" wrapText="true" />
       </VBox>
 
-      <VBox alignment="CENTER">
-        <Button fx:id="registerButton" onAction="#openRegisterWindow" prefHeight="25.0" prefWidth="150.0" styleClass="button-secondary" />
-      </VBox>
-
       <Button fx:id="loginButton" onAction="#onLogin" prefHeight="25.0" prefWidth="100.0" styleClass="button-primary"/>
 
     </VBox>

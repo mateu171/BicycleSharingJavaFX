@@ -1,6 +1,5 @@
 package org.example.bicyclesharing.repository.db;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.User;
@@ -32,8 +31,7 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         rs.getString("login"),
         rs.getString("password"),
         rs.getString("email"),
-        Role.valueOf(rs.getString("role")),
-        rs.getDouble("balance")
+        Role.valueOf(rs.getString("role"))
     );
   }
 
@@ -45,7 +43,6 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         entity.getHashedPassword(),
         entity.getEmail(),
         entity.getRole().name(),
-        entity.getBalance()
     };
   }
 
@@ -56,7 +53,6 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         entity.getHashedPassword(),
         entity.getEmail(),
         entity.getRole().name(),
-        entity.getBalance(),
         entity.getId().toString()
     };
   }
@@ -67,8 +63,7 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         "login",
         "password",
         "email",
-        "role",
-        "balance"
+        "role"
     };
   }
 
@@ -105,8 +100,6 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         "login VARCHAR(255) NOT NULL UNIQUE," +
         "password VARCHAR(255) NOT NULL," +
         "email VARCHAR(255) NOT NULL," +
-        "role VARCHAR(50) NOT NULL," +
-        "balance DOUBLE DEFAULT 0" +
-        ")";
+        "role VARCHAR(50) NOT NULL" + ")";
   }
 }

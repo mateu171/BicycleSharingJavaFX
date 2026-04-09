@@ -1,15 +1,10 @@
 package org.example.bicyclesharing.services;
 
 import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Rental;
-import org.example.bicyclesharing.domain.Impl.Transaction;
-import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.domain.enums.StateBicycle;
-import org.example.bicyclesharing.domain.enums.TransactionType;
 import org.example.bicyclesharing.repository.RentalRepository;
 import org.example.bicyclesharing.repository.Repository;
 
@@ -17,17 +12,14 @@ public class RentalService extends BaseService<Rental, UUID> {
 
   private final RentalRepository repository;
   private final BicycleService bicycleService;
-  private final UserService userService;
-  private final TransactionService transactionService;
+  private final CustomerService customerService;
 
   public RentalService(
       RentalRepository repository,
-      BicycleService bicycleService, UserService userService, TransactionService transactionService
-  ) {
+      BicycleService bicycleService, CustomerService customerService) {
     this.repository = repository;
     this.bicycleService = bicycleService;
-    this.userService = userService;
-    this.transactionService = transactionService;
+    this.customerService = customerService;
   }
 
   @Override
@@ -37,32 +29,6 @@ public class RentalService extends BaseService<Rental, UUID> {
 
   public List<Rental> getByCustomerId(UUID id) {
     return repository.findByCustomerId(id);
-  }
-
-  public void finishRental(Rental rental) {
-    Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
-
-    rental.setEnd(LocalDateTime.now());
-
-    calculateCost(rental, bicycle);
-
-    bicycle.setState(StateBicycle.AVAILABLE);
-    bicycleService.update(bicycle);
-
-    User user = userService.getById(rental.getCustomerId()).orElse(null);
-    user.setBalance(user.getBalance() - rental.getTotalCost());
-    userService.update(user);
-
-    Transaction transaction = new Transaction(
-        user.getId(),
-        rental.getTotalCost(),
-        TransactionType.RENTAL_FEE,
-        "transaction.rental_fee"
-    );
-    transactionService.add(transaction);
-
-    repository.update(rental);
-
   }
 
   private void calculateCost(Rental rental, Bicycle bicycle) {

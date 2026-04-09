@@ -18,11 +18,6 @@ import org.example.bicyclesharing.viewModel.MainMenuViewModel;
 public class MainMenuController extends BaseWindowController{
 
   @FXML private VBox sidebar;
-  @FXML private Button btnMap;
-  @FXML private Button btnProfile;
-  @FXML private Button btnBalance;
-  @FXML private Button btnHistory;
-  @FXML private Button btnTransaction;
   @FXML private Button btnSettings;
 
   @FXML private Button btnUsers;
@@ -51,11 +46,6 @@ public class MainMenuController extends BaseWindowController{
   @FXML private HBox adminBicyclesContainer;
   @FXML private HBox adminStationContainer;
 
-  @FXML private HBox mapContainer;
-  @FXML private HBox profileContainer;
-  @FXML private HBox balanceContainer;
-  @FXML private HBox historyContainer;
-  @FXML private HBox transactionContainer;
   @FXML private HBox settingsContainer;
 
   private double xOffset = 0;
@@ -71,8 +61,6 @@ public class MainMenuController extends BaseWindowController{
       onShowUsers();
     } else if (currentUser.getRole() == Role.MECHANIC) {
       onShowMechanicIssues();
-    } else if(currentUser.getRole() == Role.CLIENT){
-      onShowProfile();
     } else if (currentUser.getRole() == Role.MANAGER) {
       onShowCustomerManager();
     }
@@ -85,12 +73,7 @@ public class MainMenuController extends BaseWindowController{
     SidebarAnimation.applyHoverAnimation(sidebar, 180, 60);
 
     viewModel = new MainMenuViewModel();
-    btnProfile.textProperty().bind(viewModel.profileButtonText);
-    btnBalance.textProperty().bind(viewModel.balanceButtonText);
-    btnHistory.textProperty().bind(viewModel.historyButtonText);
-    btnMap.textProperty().bind(viewModel.mapButtonText);
     btnSettings.textProperty().bind(viewModel.settingsButtonText);
-    btnTransaction.textProperty().bind(viewModel.transactionButtonText);
     btnUsers.textProperty().bind(viewModel.usersButtonText);
     btnBicycles.textProperty().bind(viewModel.bicyclesButtonText);
     btnStations.textProperty().bind(viewModel.stationButtonText);
@@ -132,35 +115,8 @@ public class MainMenuController extends BaseWindowController{
   }
 
   @FXML
-  public void onShowProfile() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/user/ProfileView.fxml");
-  }
-
-  @FXML
-  public void onShowBalance() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/user/BalanceView.fxml");
-  }
-
-  @FXML
-  public void onShowRideHistory() {
-    navigationService.load(
-        "/org/example/bicyclesharing/presentation/view/user/RideHistoryView.fxml");
-  }
-
-  @FXML
-  public void onShowTransactions() {
-    navigationService.load(
-        "/org/example/bicyclesharing/presentation/view/user/TransactionView.fxml");
-  }
-
-  @FXML
   public void onShowSettings() {
     navigationService.load("/org/example/bicyclesharing/presentation/view/SettingsView.fxml");
-  }
-
-  @FXML
-  public void onShowMap() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/user/MapView.fxml");
   }
 
   @FXML
@@ -218,7 +174,6 @@ public class MainMenuController extends BaseWindowController{
   private void configureMenuByRole(User currentUser) {
     boolean isAdmin = currentUser != null && currentUser.getRole() == Role.ADMIN;
     boolean isMechanic = currentUser != null && currentUser.getRole() == Role.MECHANIC;
-    boolean isClient = currentUser != null && currentUser.getRole() == Role.CLIENT;
     boolean isManager = currentUser != null && currentUser.getRole() == Role.MANAGER;
 
     adminUsersContainer.setVisible(isAdmin);
@@ -241,21 +196,6 @@ public class MainMenuController extends BaseWindowController{
 
     mechanicRecordContainer.setVisible(isMechanic);
     mechanicRecordContainer.setManaged(isMechanic);
-
-    mapContainer.setVisible(isClient);
-    mapContainer.setManaged(isClient);
-
-    balanceContainer.setVisible(isClient);
-    balanceContainer.setManaged(isClient);
-
-    historyContainer.setVisible(isClient);
-    historyContainer.setManaged(isClient);
-
-    transactionContainer.setVisible(isClient);
-    transactionContainer.setManaged(isClient);
-
-    profileContainer.setVisible(isClient);
-    profileContainer.setManaged(isClient);
 
     managerCustomersContainer.setVisible(isManager);
     managerCustomersContainer.setManaged(isManager);

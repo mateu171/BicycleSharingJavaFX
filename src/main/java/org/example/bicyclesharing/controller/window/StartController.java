@@ -5,8 +5,8 @@ import javafx.fxml.FXML;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class StartController extends BaseWindowController{
-  private void showRegister() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/RegisterView.fxml");
+  private void showLogin() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/LoginView.fxml");
   }
 
   @Override
@@ -14,7 +14,7 @@ public class StartController extends BaseWindowController{
   protected void initialize()
   {
     super.initialize();
-    showRegister();
+    showLogin();
   }
 
   public void closeWindow()

@@ -21,7 +21,6 @@ public class LoginViewModel {
   public final StringProperty loginPromptText = LocalizationManager.getStringProperty("login.login");
   public final StringProperty passwordPromptText = LocalizationManager.getStringProperty("login.password");
   public final StringProperty signInButtonText = LocalizationManager.getStringProperty("login.signIn");
-  public final StringProperty registerButtonText = LocalizationManager.getStringProperty("login.noAccount");
 
   private final AuthService authService;
   private User currentUser;

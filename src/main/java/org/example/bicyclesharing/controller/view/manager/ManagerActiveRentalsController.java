@@ -106,15 +106,6 @@ public class ManagerActiveRentalsController extends BaseController {
     });
   }
 
-  @FXML
-  private void onFinishRental() {
-    Rental selected = rentalsListView.getSelectionModel().getSelectedItem();
-    if (selected == null) {
-      return;
-    }
-    openFinishDialog(selected);
-  }
-
   private void openFinishDialog(Rental rental) {
     try {
       FXMLLoader loader = new FXMLLoader(

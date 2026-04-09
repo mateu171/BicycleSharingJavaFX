@@ -85,7 +85,6 @@ public class FinishRentalDialogViewModel {
     clearErrors();
 
     Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
-
     Customer customer = customerService.getById(rental.getCustomerId()).orElse(null);
 
     if (bicycle == null || customer == null) {

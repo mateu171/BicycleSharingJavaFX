@@ -40,50 +40,6 @@
 
       <VBox fx:id="sidebar" styleClass="sidebar">
 
-        <HBox fx:id="mapContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
-          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
-            <image>
-              <Image url="@../../art/icon/map.png" />
-            </image>
-          </ImageView>
-          <Button fx:id="btnMap" styleClass="menu-button" onAction="#onShowMap"/>
-        </HBox>
-
-        <HBox fx:id="profileContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
-          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
-            <image>
-              <Image url="@../../art/icon/anotheruser.png" />
-            </image>
-          </ImageView>
-          <Button fx:id="btnProfile" styleClass="menu-button" onAction="#onShowProfile"/>
-        </HBox>
-
-        <HBox fx:id="balanceContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
-          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
-            <image>
-              <Image url="@../../art/icon/balance.png" />
-            </image>
-          </ImageView>
-          <Button fx:id="btnBalance" styleClass="menu-button" onAction="#onShowBalance"/>
-        </HBox>
-
-        <HBox fx:id="historyContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
-          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
-            <image>
-              <Image url="@../../art/icon/bicycle.png" />
-            </image>
-          </ImageView>
-          <Button fx:id="btnHistory" styleClass="menu-button" onAction="#onShowRideHistory"/>
-        </HBox>
-
-        <HBox fx:id="transactionContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
-          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
-            <image>
-              <Image url="@../../art/icon/transaction.png" />
-            </image>
-          </ImageView>
-          <Button fx:id="btnTransaction" styleClass="menu-button"   onAction="#onShowTransactions"/>
-        </HBox>
 
         <HBox fx:id="adminUsersContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">

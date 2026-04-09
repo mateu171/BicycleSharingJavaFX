@@ -17,7 +17,6 @@ public class LoginController implements Navigable {
   @FXML private PasswordField passwordField;
   @FXML private Label errorMessage;
   @FXML private Label title;
-  @FXML private Button registerButton;
   @FXML private Button loginButton;
 
   private LoginViewModel viewModel;
@@ -31,7 +30,6 @@ public class LoginController implements Navigable {
     title.textProperty().bind(viewModel.titleText);
     loginField.promptTextProperty().bind(viewModel.loginPromptText);
     passwordField.promptTextProperty().bind(viewModel.passwordPromptText);
-    registerButton.textProperty().bind(viewModel.registerButtonText);
     loginButton.textProperty().bind(viewModel.signInButtonText);
 
     passwordField.textProperty().bindBidirectional(viewModel.password);
@@ -68,10 +66,6 @@ public class LoginController implements Navigable {
     viewModel.login();
   }
 
-  @FXML
-  private void openRegisterWindow() {
-    navigation.load("/org/example/bicyclesharing/presentation/view/RegisterView.fxml");
-  }
   private  void openMainMenu()
   {
     navigation.openWindow("/org/example/bicyclesharing/presentation/window/MainMenuView.fxml",viewModel.getCurrentUser());

@@ -31,7 +31,8 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         rs.getString("login"),
         rs.getString("password"),
         rs.getString("email"),
-        Role.valueOf(rs.getString("role"))
+        Role.valueOf(rs.getString("role")),
+        rs.getString("image_path")
     );
   }
 
@@ -43,6 +44,7 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         entity.getHashedPassword(),
         entity.getEmail(),
         entity.getRole().name(),
+        entity.getImagePath()
     };
   }
 
@@ -53,6 +55,7 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         entity.getHashedPassword(),
         entity.getEmail(),
         entity.getRole().name(),
+        entity.getImagePath(),
         entity.getId().toString()
     };
   }
@@ -63,7 +66,8 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         "login",
         "password",
         "email",
-        "role"
+        "role",
+        "image_path"
     };
   }
 
@@ -100,6 +104,7 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
         "login VARCHAR(255) NOT NULL UNIQUE," +
         "password VARCHAR(255) NOT NULL," +
         "email VARCHAR(255) NOT NULL," +
-        "role VARCHAR(50) NOT NULL" + ")";
+        "role VARCHAR(50) NOT NULL," +
+        "image_path VARCHAR(255)" + ")";
   }
 }

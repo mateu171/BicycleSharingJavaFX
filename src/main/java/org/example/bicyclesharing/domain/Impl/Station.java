@@ -64,7 +64,7 @@ public class Station extends BaseEntity {
     cleanErrors("latitude");
 
     if (value == null || value.trim().isEmpty()) {
-      addError("latitude", "station.latitude.empty");
+      addError("latitude", "station.location.empty");
       return;
     }
 
@@ -90,7 +90,7 @@ public class Station extends BaseEntity {
     cleanErrors("longitude");
 
     if (value == null || value.trim().isEmpty()) {
-      addError("longitude", "station.longitude.empty");
+      addError("longitude", "station.location.empty");
       return;
     }
 

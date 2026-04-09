@@ -20,25 +20,20 @@ public class AddEditUserViewModel {
 
   public final StringProperty titleText = new SimpleStringProperty();
 
-  public final StringProperty saveButtonText =
-      LocalizationManager.getStringProperty("save.button");
-  public final StringProperty cancelButtonText =
-      LocalizationManager.getStringProperty("cancel.button");
-
+  public final StringProperty saveButtonText = LocalizationManager.getStringProperty("save.button");
+  public final StringProperty cancelButtonText = LocalizationManager.getStringProperty("cancel.button");
+  public final StringProperty uploadButtonText = LocalizationManager.getStringProperty("uploadPhoto.button.text");
   public final StringProperty sendCodeButtonText = LocalizationManager.getStringProperty("button.send.code");
   public final StringProperty backButtonText = LocalizationManager.getStringProperty("button.back");
   public final StringProperty codeInfoText = LocalizationManager.getStringProperty("verification.code.info");
 
-  public final StringProperty loginLabelText =
-      LocalizationManager.getStringProperty("register.login");
-  public final StringProperty passwordLabelText =
-      LocalizationManager.getStringProperty("register.password");
-  public final StringProperty emailLabelText =
-      LocalizationManager.getStringProperty("register.email");
-  public final StringProperty roleLabelText =
-      LocalizationManager.getStringProperty("admin.users.role");
-  public final StringProperty codeLabelText =
-      LocalizationManager.getStringProperty("register.code");
+  public final StringProperty loginLabelText = LocalizationManager.getStringProperty("register.login");
+  public final StringProperty passwordLabelText = LocalizationManager.getStringProperty("register.password");
+  public final StringProperty emailLabelText = LocalizationManager.getStringProperty("register.email");
+  public final StringProperty roleLabelText = LocalizationManager.getStringProperty("admin.users.role");
+  public final StringProperty codeLabelText = LocalizationManager.getStringProperty("register.code");
+  public final StringProperty photoLabelText = LocalizationManager.getStringProperty("admin.users.photo");
+  public final StringProperty photoFileNameText = LocalizationManager.getStringProperty("file.not.selected");
 
   public final StringProperty login = new SimpleStringProperty("");
   public final StringProperty password = new SimpleStringProperty("");
@@ -50,12 +45,14 @@ public class AddEditUserViewModel {
   public final StringProperty emailError = new SimpleStringProperty("");
   public final StringProperty roleError = new SimpleStringProperty("");
   public final StringProperty codeError = new SimpleStringProperty("");
+  public final StringProperty photoError = new SimpleStringProperty("");
 
   public final BooleanProperty codeStep = new SimpleBooleanProperty(false);
 
   private Role selectedRole;
   private int sentCode;
   private User pendingUser;
+  private String imagePath;
 
   public AddEditUserViewModel(
       UserService userService,
@@ -94,6 +91,14 @@ public class AddEditUserViewModel {
     codeStep.set(false);
   }
 
+  public void setImagePath(String imagePath) {
+    this.imagePath = imagePath;
+  }
+
+  public void setPhotoError(String message) {
+    photoError.set(message);
+  }
+
   public boolean sendCode() {
     clearErrors();
 
@@ -112,9 +117,8 @@ public class AddEditUserViewModel {
 
       int code = verificationService.sendVerificationCode(validatedUser.getEmail());
 
-      this.sentCode = code;
-      this.pendingUser = validatedUser;
-
+      sentCode = code;
+      pendingUser = validatedUser;
       return true;
 
     } catch (CustomEntityValidationExeption e) {
@@ -132,7 +136,7 @@ public class AddEditUserViewModel {
     try {
       if (editingUser == null) {
         if (pendingUser == null) {
-          codeError.set("Спочатку заповніть дані та надішліть код.");
+          codeError.set(LocalizationManager.getStringByKey("admin.users.send.code.first"));
           return false;
         }
 
@@ -146,28 +150,32 @@ public class AddEditUserViewModel {
           return false;
         }
 
+        pendingUser.setImagePath(imagePath);
+
+        if (!pendingUser.isValid()) {
+          throw new CustomEntityValidationExeption(pendingUser.getErrors());
+        }
+
         userService.add(pendingUser);
+
       } else {
         String loginValue = isBlank(login.get()) ? editingUser.getLogin() : login.get().trim();
         String emailValue = isBlank(email.get()) ? editingUser.getEmail() : email.get().trim();
         Role roleValue = selectedRole != null ? selectedRole : editingUser.getRole();
         String passwordValue = isBlank(password.get()) ? null : password.get().trim();
+        String finalImagePath = (imagePath != null && !imagePath.isBlank())
+            ? imagePath
+            : editingUser.getImagePath();
 
         if (!loginValue.equals(editingUser.getLogin()) && userService.existsByLogin(loginValue)) {
           loginError.set(LocalizationManager.getStringByKey("error.login.exists"));
           return false;
         }
 
-        editingUser.setLogin(loginValue);
-        editingUser.setEmail(emailValue);
-        editingUser.setRole(roleValue);
+        editingUser.updateProfile(loginValue, emailValue, roleValue, finalImagePath);
 
         if (passwordValue != null) {
           editingUser.changePassword(passwordValue);
-        }
-
-        if (!editingUser.isValid()) {
-          throw new CustomEntityValidationExeption(editingUser.getErrors());
         }
 
         userService.update(editingUser);
@@ -180,7 +188,7 @@ public class AddEditUserViewModel {
       return false;
     } catch (Exception e) {
       e.printStackTrace();
-      codeError.set(LocalizationManager.getStringByKey("error.email.send_failed"));
+      codeError.set(LocalizationManager.getStringByKey("error.save.failed"));
       return false;
     }
   }
@@ -197,6 +205,7 @@ public class AddEditUserViewModel {
         case "email" -> emailError.set(text);
         case "role" -> roleError.set(text);
         case "code" -> codeError.set(text);
+        case "imagePath" -> photoError.set(text);
       }
     });
   }
@@ -211,5 +220,6 @@ public class AddEditUserViewModel {
     emailError.set("");
     roleError.set("");
     codeError.set("");
+    photoError.set("");
   }
 }

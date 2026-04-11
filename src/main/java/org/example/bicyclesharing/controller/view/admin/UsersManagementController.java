@@ -1,11 +1,14 @@
 package org.example.bicyclesharing.controller.view.admin;
 
+import java.io.File;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -19,6 +22,7 @@ import org.example.bicyclesharing.controller.view.admin.modalController.AddEditU
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.UsersManagementViewModel;
 
@@ -83,42 +87,20 @@ public class UsersManagementController extends BaseController {
         VBox card = new VBox(8);
         card.getStyleClass().add("user-card");
 
+        ImageView avatar = ImageStorageUtil.createImageView(user.getImagePath(),60,60);
+        avatar.getStyleClass().add("avatar");
+
         Label loginLabel = new Label(user.getLogin());
         loginLabel.getStyleClass().add("user-card-title");
 
         Label emailLabel = new Label(user.getEmail());
         emailLabel.getStyleClass().add("user-card-subtitle");
 
-        Label roleLabel = new Label(LocalizationManager.getStringByKey("admin.users.role"));
-        roleLabel.getStyleClass().add("user-card-role");
+        Label roleLabelText = new Label(LocalizationManager.getStringByKey("admin.users.role"));
+        roleLabelText.getStyleClass().add("user-card-subtitle");
 
-        ComboBox<Role> roleComboBox = new ComboBox<>();
-        roleComboBox.setItems(FXCollections.observableArrayList(Role.ADMIN, Role.MANAGER, Role.MECHANIC));
-        roleComboBox.setValue(user.getRole());
-        roleComboBox.getStyleClass().add("settings-combo");
-
-        roleComboBox.setCellFactory(cb -> new ListCell<>() {
-          @Override
-          protected void updateItem(Role item, boolean empty) {
-            super.updateItem(item, empty);
-            setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
-          }
-        });
-
-        roleComboBox.setButtonCell(new ListCell<>() {
-          @Override
-          protected void updateItem(Role item, boolean empty) {
-            super.updateItem(item, empty);
-            setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
-          }
-        });
-
-        roleComboBox.setOnAction(e -> {
-          Role selectedRole = roleComboBox.getValue();
-          if (selectedRole != null && selectedRole != user.getRole()) {
-            viewModel.changeRole(user, selectedRole);
-          }
-        });
+        Label roleLabel = new Label(LocalizationManager.getStringByKey(user.getRole().getKey()));
+        roleLabel.getStyleClass().add("user-card-subtitle");
 
         Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
         editButton.getStyleClass().add("button-edit");
@@ -131,11 +113,13 @@ public class UsersManagementController extends BaseController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox roleBox = new HBox(8, roleLabel, roleComboBox);
+        VBox infoBox = new VBox(5,loginLabel,emailLabel);
+
+        HBox roleBox = new HBox(8, roleLabelText, roleLabel);
         HBox actions = new HBox(10, editButton, deleteButton);
         HBox bottomRow = new HBox(10, roleBox, spacer, actions);
 
-        card.getChildren().addAll(loginLabel, emailLabel, bottomRow);
+        card.getChildren().addAll(avatar,infoBox, bottomRow);
         setGraphic(card);
       }
     });

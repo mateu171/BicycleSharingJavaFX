@@ -706,3 +706,8 @@
   -fx-text-fill: black;
   -fx-font-weight: bold;
 }
+
+.avatar {
+  -fx-background-radius: 30;
+  -fx-border-radius: 30;
+}

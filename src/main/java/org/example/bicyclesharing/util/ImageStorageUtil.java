@@ -63,23 +63,27 @@ public final class ImageStorageUtil {
     return targetPath.toString().replace("\\", "/");
   }
 
-  public static Image loadImageOrDefault(String path, String defaultResourcePath, double w, double h) {
-    try {
-      if (path != null && !path.isBlank()) {
-        File file = new File(path);
-        if (file.exists()) {
-          return new Image(file.toURI().toString(), w, h, true, true);
-        }
+  public static ImageView createImageView(String imagePath, double width, double height) {
+    ImageView imageView = new ImageView();
+    imageView.setFitWidth(width);
+    imageView.setFitHeight(height);
+    imageView.setPreserveRatio(true);
+
+    var defaultImageUrl = ImageStorageUtil.class.getResource(
+        "/org/example/bicyclesharing/art/image/defaultImg.jpg"
+    );
+
+    Image image = new Image(defaultImageUrl.toExternalForm());
+
+    if (imagePath != null && !imagePath.isBlank()) {
+      File file = new File(imagePath);
+      if (file.exists()) {
+        image = new Image(file.toURI().toString());
       }
-
-      return new Image(
-          ImageStorageUtil.class.getResource(defaultResourcePath).toExternalForm(),
-          w, h, true, true
-      );
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
     }
+
+    imageView.setImage(image);
+
+    return imageView;
   }
 }

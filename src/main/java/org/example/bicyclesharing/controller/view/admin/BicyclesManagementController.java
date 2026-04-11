@@ -1,11 +1,14 @@
 package org.example.bicyclesharing.controller.view.admin;
 
+import java.io.File;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -19,6 +22,7 @@ import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.BicyclesManagementViewModel;
 
@@ -115,6 +119,9 @@ public class BicyclesManagementController extends BaseController {
         VBox card = new VBox(8);
         card.getStyleClass().add("user-card");
 
+        ImageView avatar = ImageStorageUtil.createImageView(bicycle.getImagePath(),60,60);
+        avatar.getStyleClass().add("avatar");
+
         Label modelLabel = new Label(bicycle.getModel());
         modelLabel.getStyleClass().add("user-card-title");
 
@@ -145,7 +152,7 @@ public class BicyclesManagementController extends BaseController {
         HBox actions = new HBox(10, editButton, deleteButton);
         HBox bottomRow = new HBox(10, stateBox, spacer, actions);
 
-        card.getChildren().addAll(modelLabel, infoLabel, bottomRow);
+        card.getChildren().addAll(avatar,modelLabel, infoLabel, bottomRow);
         setGraphic(card);
       }
     });

@@ -37,7 +37,8 @@ public class BicycleRepositoryDB
           TypeBicycle.valueOf(rs.getString("type_bicycle")),
           StateBicycle.valueOf(rs.getString("state")),
           rs.getDouble("price_per_minute"),
-          stationId
+          stationId,
+          rs.getString("image_path")
       );
     };
   }
@@ -50,7 +51,8 @@ public class BicycleRepositoryDB
         entity.getTypeBicycle().name(),
         entity.getState().name(),
         entity.getPricePerMinute(),
-        entity.getStationId() != null ? entity.getStationId().toString() : null
+        entity.getStationId() != null ? entity.getStationId().toString() : null,
+        entity.getImagePath()
     };
   }
 
@@ -62,6 +64,7 @@ public class BicycleRepositoryDB
         entity.getState().name(),
         entity.getPricePerMinute(),
         entity.getStationId() != null ? entity.getStationId().toString() : null,
+        entity.getImagePath(),
         entity.getId().toString()
     };
   }
@@ -78,7 +81,8 @@ public class BicycleRepositoryDB
         "type_bicycle",
         "state",
         "price_per_minute",
-        "station_id"
+        "station_id",
+        "image_path"
     };
   }
 
@@ -90,8 +94,8 @@ public class BicycleRepositoryDB
         "type_bicycle VARCHAR(50) NOT NULL, " +
         "state VARCHAR(50) NOT NULL, " +
         "price_per_minute DOUBLE NOT NULL, " +
-        "station_id VARCHAR(36)" +
-        ")";
+        "station_id VARCHAR(36)," +
+        "image_path VARCHAR(255)" + ")";
   }
 
   @Override

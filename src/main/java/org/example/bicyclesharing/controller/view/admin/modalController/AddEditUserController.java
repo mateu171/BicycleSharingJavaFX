@@ -81,10 +81,6 @@ public class AddEditUserController {
 
     var defaultImageUrl = getClass().getResource("/org/example/bicyclesharing/art/image/defaultImg.jpg");
 
-    if (defaultImageUrl == null) {
-      throw new IllegalStateException("Default image not found: /art/image/defaultImg.jpg");
-    }
-
     Image image = new Image(defaultImageUrl.toExternalForm());
 
     if (user != null && user.getImagePath() != null) {

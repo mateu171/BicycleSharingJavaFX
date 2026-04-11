@@ -4,6 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
 <StackPane xmlns="http://javafx.com/javafx/25"
   xmlns:fx="http://javafx.com/fxml/1"
   fx:controller="org.example.bicyclesharing.controller.view.admin.modalController.AddEditBicycleController"
@@ -70,6 +71,28 @@
         <Label fx:id="stationErrorLabel"
           styleClass="label-error"
           wrapText="true"/>
+      </VBox>
+
+      <VBox spacing="4">
+        <Label fx:id="photoLabel" styleClass="form-label"/>
+
+        <HBox spacing="10" alignment="CENTER_LEFT">
+          <ImageView fx:id="photoPreview"
+            fitWidth="90"
+            fitHeight="90"
+            preserveRatio="true"
+            pickOnBounds="true"/>
+
+          <VBox spacing="6">
+            <Button fx:id="uploadPhotoButton"
+              onAction="#onUploadPhoto"
+              styleClass="button-secondary-outline"/>
+
+            <Label fx:id="photoFileNameLabel"
+              wrapText="true"/>
+          </VBox>
+        </HBox>
+        <Label fx:id="photoErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>
 
     </VBox>

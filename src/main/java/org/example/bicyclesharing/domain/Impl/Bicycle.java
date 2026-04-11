@@ -12,6 +12,7 @@ public class Bicycle extends BaseEntity {
   private StateBicycle state;
   private double pricePerMinute;
   private UUID stationId;
+  private String imagePath;
 
   private Bicycle() {
     super();
@@ -38,7 +39,8 @@ public class Bicycle extends BaseEntity {
       TypeBicycle typeBicycle,
       StateBicycle state,
       double pricePerMinute,
-      UUID stationId) {
+      UUID stationId,
+      String imagePath) {
     Bicycle bicycle = new Bicycle();
     bicycle.setId(id);
     bicycle.model = model;
@@ -46,6 +48,7 @@ public class Bicycle extends BaseEntity {
     bicycle.state = state;
     bicycle.pricePerMinute = pricePerMinute;
     bicycle.stationId = stationId;
+    bicycle.imagePath = imagePath;
     return bicycle;
   }
 
@@ -113,5 +116,21 @@ public class Bicycle extends BaseEntity {
 
   public void setStationId(UUID stationId) {
     this.stationId = stationId;
+  }
+
+  public String getImagePath() {
+    return imagePath;
+  }
+
+  public void setImagePath(String imagePath) {
+    cleanErrors("imagePath");
+
+    String value = imagePath == null ? null : imagePath.trim();
+
+    if (value != null && value.length() > 255) {
+      addError("imagePath", "error.image.path.length");
+    }
+
+    this.imagePath = (value == null || value.isEmpty()) ? null : value;
   }
 }

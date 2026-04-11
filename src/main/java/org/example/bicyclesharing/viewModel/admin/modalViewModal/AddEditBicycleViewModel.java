@@ -21,19 +21,16 @@ public class AddEditBicycleViewModel {
   private final Bicycle editingBicycle;
 
   public final StringProperty titleText = new SimpleStringProperty();
-  public final StringProperty saveButtonText =
-      LocalizationManager.getStringProperty("save.button");
-  public final StringProperty cancelButtonText =
-      LocalizationManager.getStringProperty("cancel.button");
+  public final StringProperty saveButtonText = LocalizationManager.getStringProperty("save.button");
+  public final StringProperty cancelButtonText = LocalizationManager.getStringProperty("cancel.button");
+  public final StringProperty uploadButtonText = LocalizationManager.getStringProperty("uploadPhoto.button.text");
 
-  public final StringProperty modelLabelText =
-      LocalizationManager.getStringProperty("admin.bicycles.model");
-  public final StringProperty typeLabelText =
-      LocalizationManager.getStringProperty("admin.bicycles.type");
-  public final StringProperty priceLabelText =
-      LocalizationManager.getStringProperty("admin.bicycles.price");
-  public final StringProperty stationLabelText =
-      LocalizationManager.getStringProperty("admin.bicycles.station");
+  public final StringProperty modelLabelText = LocalizationManager.getStringProperty("admin.bicycles.model");
+  public final StringProperty typeLabelText = LocalizationManager.getStringProperty("admin.bicycles.type");
+  public final StringProperty priceLabelText = LocalizationManager.getStringProperty("admin.bicycles.price");
+  public final StringProperty stationLabelText = LocalizationManager.getStringProperty("admin.bicycles.station");
+  public final StringProperty photoLabelText = LocalizationManager.getStringProperty("admin.users.photo");
+  public final StringProperty photoFileNameText = LocalizationManager.getStringProperty("file.not.selected");
 
   public final StringProperty model = new SimpleStringProperty("");
   public final StringProperty price = new SimpleStringProperty("");
@@ -42,11 +39,13 @@ public class AddEditBicycleViewModel {
   public final StringProperty typeError = new SimpleStringProperty("");
   public final StringProperty priceError = new SimpleStringProperty("");
   public final StringProperty stationError = new SimpleStringProperty("");
+  public final StringProperty photoError = new SimpleStringProperty("");
 
   public final ObservableList<Station> stations = FXCollections.observableArrayList();
 
   public TypeBicycle selectedType;
   public Station selectedStation;
+  private String imagePath;
 
   public AddEditBicycleViewModel(
       BicycleService bicycleService,
@@ -97,9 +96,10 @@ public class AddEditBicycleViewModel {
           selectedStation.addBicycleId(bicycle.getId());
           stationService.update(selectedStation);
         }
+        bicycle.setImagePath(imagePath);
         bicycleService.add(bicycle);
       } else {
-        UUID oldStationId = editingBicycle.getStationId() == null ? null : editingBicycle.getStationId();
+        UUID oldStationId = editingBicycle.getStationId();
         UUID newStationId = selectedStation == null ? null : selectedStation.getId();
 
         String modelValue = isBlank(model.get())
@@ -114,6 +114,10 @@ public class AddEditBicycleViewModel {
             ? editingBicycle.getTypeBicycle()
             : selectedType;
 
+        String finalImagePath = (imagePath != null && !imagePath.trim().isEmpty())
+            ? imagePath
+            : editingBicycle.getImagePath();
+
         Bicycle validated = new Bicycle(
             modelValue,
             typeValue,
@@ -125,10 +129,7 @@ public class AddEditBicycleViewModel {
         editingBicycle.setTypeBicycle(typeValue);
         editingBicycle.setPricePerMinute(String.valueOf(validated.getPricePerMinute()));
         editingBicycle.setStationId(newStationId);
-
-        if (!editingBicycle.isValid()) {
-          throw new CustomEntityValidationExeption(editingBicycle.getErrors());
-        }
+        editingBicycle.setImagePath(finalImagePath);
 
         if (oldStationId != null && newStationId != null) {
 
@@ -172,6 +173,7 @@ public class AddEditBicycleViewModel {
           case "model" -> modelError.set(text);
           case "typeBicycle" -> typeError.set(text);
           case "pricePerMinute" -> priceError.set(text);
+          case "image_path" -> photoError.set(text);
         }
       });
       return false;
@@ -187,5 +189,13 @@ public class AddEditBicycleViewModel {
     typeError.set("");
     priceError.set("");
     stationError.set("");
+  }
+
+  public void setImagePath(String imagePath) {
+    this.imagePath = imagePath;
+  }
+
+  public void setPhotoError(String message) {
+    photoError.set(message);
   }
 }

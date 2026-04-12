@@ -1,8 +1,5 @@
 package org.example.bicyclesharing.viewModel.admin;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -11,8 +8,10 @@ import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.StationService;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.BaseViewModel;
 
@@ -33,7 +32,11 @@ public class BicyclesManagementViewModel extends BaseViewModel {
   public final StringProperty searchText = new SimpleStringProperty("");
   public final StringProperty selectedStateFilter = new SimpleStringProperty("ALL");
 
-  public BicyclesManagementViewModel(User currentUser, BicycleService bicycleService,StationService stationService) {
+  public BicyclesManagementViewModel(
+      User currentUser,
+      BicycleService bicycleService,
+      StationService stationService
+  ) {
     super(currentUser);
     this.bicycleService = bicycleService;
     this.stationService = stationService;
@@ -58,7 +61,11 @@ public class BicyclesManagementViewModel extends BaseViewModel {
   }
 
   public void deleteBicycle(Bicycle bicycle) {
-    if (bicycle == null) return;
+    if (bicycle == null) {
+      return;
+    }
+
+    bicycleService.validateCanDelete(bicycle);
 
     if (bicycle.getStationId() != null) {
       Station station = stationService.getById(bicycle.getStationId());

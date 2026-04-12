@@ -8,6 +8,7 @@ import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 public class BikeIssue extends BaseEntity {
 
   private UUID rentalId;
+  private UUID bicycleId;
   private String problemType;
   private String comment;
   private boolean technicalProblem;
@@ -20,12 +21,14 @@ public class BikeIssue extends BaseEntity {
 
   public BikeIssue(
       UUID rentalId,
+      UUID bicycleId,
       String problemType,
       String comment,
       boolean technicalProblem
   ) {
     this();
     setRentalId(rentalId);
+    setBicycleId(bicycleId);
     setProblemType(problemType);
     setComment(comment);
     this.technicalProblem = technicalProblem;
@@ -40,6 +43,7 @@ public class BikeIssue extends BaseEntity {
   public static BikeIssue fromDatabase(
       UUID id,
       UUID rentalId,
+      UUID bicycleId,
       String problemType,
       String comment,
       boolean technicalProblem,
@@ -49,6 +53,7 @@ public class BikeIssue extends BaseEntity {
     BikeIssue issue = new BikeIssue();
     issue.setId(id);
     issue.rentalId = rentalId;
+    issue.bicycleId = bicycleId;
     issue.problemType = problemType;
     issue.comment = comment;
     issue.technicalProblem = technicalProblem;
@@ -125,5 +130,18 @@ public class BikeIssue extends BaseEntity {
       addError("status", "bikeIssue.status.empty");
     }
     this.status = status;
+  }
+
+  public void setBicycleId(UUID bicycleId) {
+    cleanErrors("bicycleId");
+    if (bicycleId == null) {
+      addError("bicycleId", "bikeIssue.bicycle.empty");
+    }
+    this.bicycleId = bicycleId;
+  }
+
+
+  public UUID getBicycleId() {
+    return bicycleId;
   }
 }

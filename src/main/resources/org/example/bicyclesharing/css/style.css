@@ -711,3 +711,9 @@
   -fx-background-radius: 30;
   -fx-border-radius: 30;
 }
+
+.modal-message {
+  -fx-text-fill: red;
+  -fx-font-size: 14px;
+  -fx-line-spacing: 2px;
+}

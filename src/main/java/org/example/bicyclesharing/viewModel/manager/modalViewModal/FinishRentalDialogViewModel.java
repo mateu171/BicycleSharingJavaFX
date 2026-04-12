@@ -116,6 +116,7 @@ public class FinishRentalDialogViewModel {
       try {
         BikeIssue issue = new BikeIssue(
             rental.getId(),
+            bicycle.getId(),
             selectedProblemType.get(),
             comment.get(),
             technicalProblem.get()

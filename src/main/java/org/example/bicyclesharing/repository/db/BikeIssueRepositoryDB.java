@@ -29,6 +29,7 @@ public class BikeIssueRepositoryDB
     return "CREATE TABLE IF NOT EXISTS BIKE_ISSUES (" +
         "id VARCHAR(36) PRIMARY KEY," +
         "rental_id VARCHAR(36) NOT NULL," +
+        "bicycle_id VARCHAR(36) NOT NULL," +
         "problem_type VARCHAR(100) NOT NULL," +
         "comment VARCHAR(500)," +
         "technical_problem BOOLEAN NOT NULL," +
@@ -52,6 +53,7 @@ public class BikeIssueRepositoryDB
     return (rs, rowNum) -> BikeIssue.fromDatabase(
         UUID.fromString(rs.getString("id")),
         UUID.fromString(rs.getString("rental_id")),
+        UUID.fromString(rs.getString("bicycle_id")),
         rs.getString("problem_type"),
         rs.getString("comment"),
         rs.getBoolean("technical_problem"),
@@ -65,6 +67,7 @@ public class BikeIssueRepositoryDB
     return new Object[] {
         entity.getId().toString(),
         entity.getRentalId().toString(),
+        entity.getBicycleId(),toString(),
         entity.getProblemType(),
         entity.getComment(),
         entity.isTechnicalProblem(),
@@ -77,6 +80,7 @@ public class BikeIssueRepositoryDB
   protected Object[] getUpdateValues(BikeIssue entity) {
     return new Object[] {
         entity.getRentalId().toString(),
+        entity.getBicycleId().toString(),
         entity.getProblemType(),
         entity.getComment(),
         entity.isTechnicalProblem(),
@@ -90,6 +94,7 @@ public class BikeIssueRepositoryDB
   protected String[] getUpdateColumns() {
     return new String[] {
         "rental_id",
+        "bicycle_id",
         "problem_type",
         "comment",
         "technical_problem",

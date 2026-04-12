@@ -21,7 +21,9 @@ import org.example.bicyclesharing.controller.view.admin.modalController.AddEditB
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.BicyclesManagementViewModel;
@@ -143,7 +145,15 @@ public class BicyclesManagementController extends BaseController {
 
         Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
         deleteButton.getStyleClass().add("button-danger");
-        deleteButton.setOnAction(e -> viewModel.deleteBicycle(bicycle));
+        deleteButton.setOnAction(e -> {
+          try {
+            viewModel.deleteBicycle(bicycle);
+          } catch (BusinessException ex) {
+            DialogUtil.showError(ex.getMessage());
+          } catch (Exception ex) {
+            DialogUtil.showError(LocalizationManager.getStringByKey("error.delete.failed"));
+          }
+        });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -163,8 +173,13 @@ public class BicyclesManagementController extends BaseController {
    openBikeDialog(null);
   }
 
+
   private void openBikeDialog(Bicycle bicycle) {
     try {
+      if (bicycle != null) {
+        AppConfig.bicycleService().validateCanEdit(bicycle);
+      }
+
       FXMLLoader loader = new FXMLLoader(
           getClass().getResource(
               "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditBicycleView.fxml")
@@ -190,8 +205,10 @@ public class BicyclesManagementController extends BaseController {
       stage.setScene(scene);
       stage.showAndWait();
 
+    } catch (BusinessException e) {
+      DialogUtil.showError(e.getMessage());
     } catch (Exception e) {
-      e.printStackTrace();
+      DialogUtil.showError("error.operation.failed");
     }
   }
 }

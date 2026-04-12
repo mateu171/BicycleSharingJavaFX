@@ -14,7 +14,9 @@ import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditBicycleViewModel;
@@ -154,8 +156,10 @@ public class AddEditBicycleController {
         }
         close();
       }
+    } catch (BusinessException e) {
+      DialogUtil.showError(e.getMessage());
     } catch (Exception e) {
-      e.printStackTrace();
+      DialogUtil.showError("error.save.failed");
     }
   }
 

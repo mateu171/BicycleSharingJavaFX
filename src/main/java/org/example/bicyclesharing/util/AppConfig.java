@@ -40,8 +40,10 @@ public class AppConfig {
 
   public static BicycleService bicycleService() {
     return new BicycleService(
-        new BicycleRepositoryDB() {
-        }
+        new BicycleRepositoryDB(),
+        reservationService(),
+        bikeIssueService(),
+        maintenanceRecordService()
     );
   }
 

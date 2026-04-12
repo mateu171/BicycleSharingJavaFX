@@ -92,13 +92,18 @@ public class AddEditBicycleViewModel {
             selectedStation == null ? null : selectedStation.getId()
         );
 
-        if(selectedStation != null) {
+        bicycle.setImagePath(imagePath);
+
+        if (selectedStation != null) {
           selectedStation.addBicycleId(bicycle.getId());
           stationService.update(selectedStation);
         }
-        bicycle.setImagePath(imagePath);
+
         bicycleService.add(bicycle);
+
       } else {
+        bicycleService.validateCanEdit(editingBicycle);
+
         UUID oldStationId = editingBicycle.getStationId();
         UUID newStationId = selectedStation == null ? null : selectedStation.getId();
 
@@ -126,15 +131,13 @@ public class AddEditBicycleViewModel {
         );
 
         editingBicycle.setModel(validated.getModel());
-        editingBicycle.setTypeBicycle(typeValue);
+        editingBicycle.setTypeBicycle(validated.getTypeBicycle());
         editingBicycle.setPricePerMinute(String.valueOf(validated.getPricePerMinute()));
         editingBicycle.setStationId(newStationId);
         editingBicycle.setImagePath(finalImagePath);
 
         if (oldStationId != null && newStationId != null) {
-
           if (!oldStationId.equals(newStationId)) {
-
             Station oldStation = stationService.getById(oldStationId);
             Station newStation = stationService.getById(newStationId);
 
@@ -148,14 +151,19 @@ public class AddEditBicycleViewModel {
               stationService.update(newStation);
             }
           }
-
         } else if (oldStationId == null && newStationId != null) {
-
           Station newStation = stationService.getById(newStationId);
 
           if (newStation != null) {
             newStation.addBicycleId(editingBicycle.getId());
             stationService.update(newStation);
+          }
+        } else if (oldStationId != null && newStationId == null) {
+          Station oldStation = stationService.getById(oldStationId);
+
+          if (oldStation != null) {
+            oldStation.removeBicycleId(editingBicycle.getId());
+            stationService.update(oldStation);
           }
         }
 
@@ -163,6 +171,7 @@ public class AddEditBicycleViewModel {
       }
 
       return true;
+
     } catch (CustomEntityValidationExeption e) {
       e.getErrors().forEach((field, messages) -> {
         String text = messages.stream()
@@ -173,7 +182,8 @@ public class AddEditBicycleViewModel {
           case "model" -> modelError.set(text);
           case "typeBicycle" -> typeError.set(text);
           case "pricePerMinute" -> priceError.set(text);
-          case "image_path" -> photoError.set(text);
+          case "stationId" -> stationError.set(text);
+          case "imagePath" -> photoError.set(text);
         }
       });
       return false;
@@ -189,6 +199,7 @@ public class AddEditBicycleViewModel {
     typeError.set("");
     priceError.set("");
     stationError.set("");
+    photoError.set("");
   }
 
   public void setImagePath(String imagePath) {

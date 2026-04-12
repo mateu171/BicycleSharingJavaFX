@@ -1,9 +1,6 @@
 package org.example.bicyclesharing.viewModel.manager;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -36,7 +33,7 @@ public class ManagerReservationsViewModel extends BaseViewModel {
   public final StringProperty addButtonText = LocalizationManager.getStringProperty("manager.reservations.add");
   public final StringProperty issueButtonText = LocalizationManager.getStringProperty("manager.reservations.issue");
   public final StringProperty cancelButtonText = LocalizationManager.getStringProperty("manager.reservations.cancel");
-  public final StringProperty edittButtonText = LocalizationManager.getStringProperty("edit.button");
+  public final StringProperty editButtonText = LocalizationManager.getStringProperty("edit.button");
   public final StringProperty countText = new SimpleStringProperty("");
   public final StringProperty searchText = new SimpleStringProperty("");
   public final StringProperty statusFilterText = new SimpleStringProperty(
@@ -116,6 +113,12 @@ public class ManagerReservationsViewModel extends BaseViewModel {
     }
 
     reservation.setStatus(ReservationStatus.CANCELLED);
+    Customer customer = customerService.getById(reservation.getCustomerId()).orElse(null);
+    if(customer != null)
+    {
+      customer.setActiveReservation(null);
+      customerService.update(customer);
+    }
     reservationService.update(reservation);
     applyFilters();
   }
@@ -135,6 +138,7 @@ public class ManagerReservationsViewModel extends BaseViewModel {
     reservation.setStatus(ReservationStatus.ISSUED);
     currentBicycle.setState(StateBicycle.RENTED);
     currentCustomer.setActiveRent(rental.getId());
+    currentCustomer.setActiveReservation(null);
 
     rentalService.add(rental);
     bicycleService.update(currentBicycle);

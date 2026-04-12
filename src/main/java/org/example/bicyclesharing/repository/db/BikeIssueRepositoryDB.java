@@ -67,7 +67,7 @@ public class BikeIssueRepositoryDB
     return new Object[] {
         entity.getId().toString(),
         entity.getRentalId().toString(),
-        entity.getBicycleId(),toString(),
+        entity.getBicycleId().toString(),
         entity.getProblemType(),
         entity.getComment(),
         entity.isTechnicalProblem(),

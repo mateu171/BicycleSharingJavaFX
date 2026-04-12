@@ -7,9 +7,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.services.VerificationService;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class AddEditUserViewModel {
@@ -172,6 +174,8 @@ public class AddEditUserViewModel {
           return false;
         }
 
+        userService.validateRoleChange(editingUser,roleValue);
+
         editingUser.updateProfile(loginValue, emailValue, roleValue, finalImagePath);
 
         if (passwordValue != null) {
@@ -186,9 +190,8 @@ public class AddEditUserViewModel {
     } catch (CustomEntityValidationExeption e) {
       applyValidationErrors(e);
       return false;
-    } catch (Exception e) {
-      e.printStackTrace();
-      codeError.set(LocalizationManager.getStringByKey("error.save.failed"));
+    }  catch (BusinessException e) {
+      roleError.set(LocalizationManager.getStringByKey(e.getMessage()));
       return false;
     }
   }

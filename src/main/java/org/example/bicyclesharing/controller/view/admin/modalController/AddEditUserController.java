@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditUserViewModel;
@@ -210,7 +211,7 @@ public class AddEditUserController {
         close();
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      DialogUtil.showError("error.save.failed");
     }
   }
 

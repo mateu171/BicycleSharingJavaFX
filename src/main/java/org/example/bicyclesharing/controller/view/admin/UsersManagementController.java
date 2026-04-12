@@ -21,7 +21,9 @@ import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditUserController;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.UsersManagementViewModel;
@@ -108,7 +110,15 @@ public class UsersManagementController extends BaseController {
 
         Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
         deleteButton.getStyleClass().add("button-danger");
-        deleteButton.setOnAction(e -> viewModel.deleteUser(user));
+        deleteButton.setOnAction(e ->
+        {
+          try {
+            viewModel.deleteUser(user);
+          }catch (BusinessException ex)
+          {
+            DialogUtil.showError(ex.getMessage());
+          }
+        });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

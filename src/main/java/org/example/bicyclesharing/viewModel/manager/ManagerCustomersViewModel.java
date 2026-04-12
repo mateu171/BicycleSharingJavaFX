@@ -57,6 +57,7 @@ public class ManagerCustomersViewModel extends BaseViewModel {
 
   public void deleteCustomer(Customer customer)
   {
+    customerService.validateCanDelete(customer);
     customerService.deleteById(customer.getId());
     applyFilters();
   }

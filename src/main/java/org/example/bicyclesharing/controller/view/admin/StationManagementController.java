@@ -17,7 +17,9 @@ import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditStationController;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.StationManagementViewModel;
 
@@ -74,12 +76,9 @@ public class StationManagementController extends BaseController {
         );
         coordsLabel.getStyleClass().add("user-card-subtitle");
 
-        String employeeName = "—";
 
         Label infoLabel = new Label(
-            LocalizationManager.getStringByKey("admin.stations.employee") + ": "
-                + employeeName + " | "
-                + LocalizationManager.getStringByKey("admin.stations.bicycles") + ": "
+            LocalizationManager.getStringByKey("admin.stations.bicycles") + ": "
                 + station.getBicyclesId().size()
         );
         infoLabel.getStyleClass().add("user-card-role");
@@ -90,7 +89,18 @@ public class StationManagementController extends BaseController {
 
         Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
         deleteButton.getStyleClass().add("button-danger");
-        deleteButton.setOnAction(e -> viewModel.delete(station));
+        deleteButton.setOnAction(e ->
+        {
+          try {
+            viewModel.delete(station);
+          }catch (BusinessException ex)
+          {
+            DialogUtil.showError(ex.getMessage());
+          }catch (Exception ex)
+          {
+            DialogUtil.showError("error.delete.failed");
+          }
+        });
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);

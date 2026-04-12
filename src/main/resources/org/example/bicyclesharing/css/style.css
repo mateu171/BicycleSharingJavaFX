@@ -110,12 +110,6 @@
   -fx-text-fill: black;
 }
 
-
-/*.sidebar:hover {*/
-/*  -fx-opacity: 1;*/
-/*  -fx-pref-width: 200;*/
-/*}*/
-
 .balance-circle {
   -fx-background-color: #FFE600;
   -fx-background-radius: 200;

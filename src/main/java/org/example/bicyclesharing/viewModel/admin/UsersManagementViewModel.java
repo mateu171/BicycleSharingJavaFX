@@ -65,6 +65,8 @@ public class UsersManagementViewModel extends BaseViewModel {
 
   public void deleteUser(User user) {
     if (user == null) return;
+
+    userService.validateCanDelete(user,currentUser);
     userService.deleteById(user.getId());
     applyFilters();
   }
@@ -73,13 +75,5 @@ public class UsersManagementViewModel extends BaseViewModel {
     countText.set(
         LocalizationManager.getStringByKey("admin.users.count") + ": " + users.size()
     );
-  }
-
-  public void changeRole(User user, Role newRole) {
-    if (user == null || newRole == null) return;
-
-    user.setRole(newRole);
-    userService.update(user);
-    applyFilters();
   }
 }

@@ -16,7 +16,8 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
         "full_name VARCHAR(255) NOT NULL," +
         "phone_number VARCHAR(50) NOT NULL," +
         "document_number VARCHAR(36)," +
-        "active_rent VARCHAR(36)" +
+        "active_rent VARCHAR(36)," +
+        "active_reservation VARCHAR(36)" +
         ")";
   }
 
@@ -37,7 +38,8 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
         rs.getString("full_name"),
         rs.getString("phone_number"),
         rs.getString("document_number"),
-        rs.getString("active_rent") == null ? null : UUID.fromString(rs.getString("active_rent"))
+        rs.getString("active_rent") == null ? null : UUID.fromString(rs.getString("active_rent")),
+        rs.getString("active_reservation") == null ? null : UUID.fromString(rs.getString("active_reservation"))
     );
   }
 
@@ -48,7 +50,8 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
         entity.getFullName(),
         entity.getPhoneNumber(),
         entity.getDocumentNumber(),
-        entity.getActiveRent() != null ? entity.getActiveRent().toString() : null
+        entity.getActiveRent() != null ? entity.getActiveRent().toString() : null,
+        entity.getActiveReservation() != null ? entity.getActiveReservation().toString() : null
     };
   }
 
@@ -59,6 +62,7 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
         entity.getPhoneNumber(),
         entity.getDocumentNumber(),
         entity.getActiveRent() != null ? entity.getActiveRent().toString() : null,
+        entity.getActiveReservation() != null ? entity.getActiveReservation().toString() : null,
         entity.getId().toString()
     };
   }
@@ -69,7 +73,8 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
         "full_name",
         "phone_number",
         "document_number",
-        "active_rent"
+        "active_rent",
+        "active_reservation"
     };
   }
 

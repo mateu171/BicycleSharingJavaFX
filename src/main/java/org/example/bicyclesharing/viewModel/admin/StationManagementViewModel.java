@@ -51,7 +51,7 @@ public class StationManagementViewModel extends BaseViewModel {
 
   public void delete(Station station) {
     if (station == null) return;
-    stationService.deleteById(station.getId());
+    stationService.deleteStation(station);
     applyFilters();
   }
 

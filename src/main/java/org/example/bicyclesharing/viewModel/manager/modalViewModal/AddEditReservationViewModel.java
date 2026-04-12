@@ -158,7 +158,9 @@ public class AddEditReservationViewModel {
             documentNumber.get(),
             depositAmount.get()
         );
+        selectedCustomer.setActiveReservation(reservation.getId());
         reservationService.add(reservation);
+        customerService.update(selectedCustomer);
       } else {
 
         List<Bicycle> available = bicycleService.getAvailable();

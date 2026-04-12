@@ -49,7 +49,7 @@ public class AppConfig {
 
   public static StationService stationService()
   {
-    return new StationService(new StationRepositoryDB());
+    return new StationService(new StationRepositoryDB(), bicycleService());
   }
 
 

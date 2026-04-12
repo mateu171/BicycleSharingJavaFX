@@ -9,6 +9,7 @@ public class Customer extends BaseEntity {
   private String phoneNumber;
   private String documentNumber;
   private UUID activeRent;
+  private UUID activeReservation;
 
   private Customer() {
     super();
@@ -20,6 +21,7 @@ public class Customer extends BaseEntity {
     setPhoneNumber(phoneNumber);
     setDocumentNumber(documentNumber);
     this.activeRent = null;
+    this.activeReservation = null;
 
     if (!isValid()) {
       throw new CustomEntityValidationExeption(getErrors());
@@ -30,7 +32,8 @@ public class Customer extends BaseEntity {
       String fullName,
       String phoneNumber,
       String documentNumber,
-      UUID activeRent) {
+      UUID activeRent,
+      UUID activeReservation) {
 
     Customer customer = new Customer();
     customer.setId(id);
@@ -38,6 +41,7 @@ public class Customer extends BaseEntity {
     customer.phoneNumber = phoneNumber;
     customer.documentNumber = documentNumber;
     customer.activeRent = activeRent;
+    customer.activeReservation = activeReservation;
     return customer;
   }
 
@@ -100,5 +104,13 @@ public class Customer extends BaseEntity {
 
   public void setActiveRent(UUID activeRent) {
     this.activeRent = activeRent;
+  }
+
+  public UUID getActiveReservation() {
+    return activeReservation;
+  }
+
+  public void setActiveReservation(UUID activeReservation) {
+    this.activeReservation = activeReservation;
   }
 }

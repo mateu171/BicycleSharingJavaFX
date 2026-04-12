@@ -131,7 +131,7 @@ public class ManagerReservationsController extends BaseController {
         issueCardButton.setOnAction(e -> viewModel.issueReservation(reservation));
 
         Button editCardButton = new Button();
-        editCardButton.textProperty().bind(viewModel.edittButtonText);
+        editCardButton.textProperty().bind(viewModel.editButtonText);
         editCardButton.getStyleClass().add("button-edit");
         editCardButton.setDisable(!viewModel.canIssue(reservation));
         editCardButton.setOnAction(e -> openReservationDialog(reservation));

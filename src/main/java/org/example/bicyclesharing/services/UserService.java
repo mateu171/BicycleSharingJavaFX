@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.domain.security.PasswordHasher;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.repository.Repository;
 import org.example.bicyclesharing.repository.UserRepository;
 
@@ -23,11 +24,6 @@ public class UserService extends BaseService<User, UUID> {
     return userRepository.findByLogin(login) != null;
   }
 
-  public boolean existsByLoginExcept(String login, UUID currentUserId) {
-    User user = userRepository.findByLogin(login);
-    return user != null && !user.getId().equals(currentUserId);
-  }
-
   public Optional<User> getById(UUID id) {
     return userRepository.findById(id);
   }
@@ -39,6 +35,42 @@ public class UserService extends BaseService<User, UUID> {
 
   public List<User> findByFilters(String search, Role role) {
     return userRepository.findByFilters(search, role);
+  }
+
+  public void validateCanDelete(User user, User currentUser) {
+    if (user == null) {
+      throw new BusinessException("error.user.not_found");
+    }
+
+    if (currentUser != null && user.getId().equals(currentUser.getId())) {
+      throw new BusinessException("error.user.delete.self");
+    }
+
+    if (user.getRole() == Role.ADMIN) {
+      long adminCount = getAll().stream()
+          .filter(u -> u.getRole() == Role.ADMIN)
+          .count();
+
+      if (adminCount <= 1) {
+        throw new BusinessException("error.user.delete.last_admin");
+      }
+    }
+  }
+
+  public void validateRoleChange(User editingUser, Role newRole) {
+    if (editingUser == null) {
+      throw new BusinessException("error.user.not_found");
+    }
+
+    if (editingUser.getRole() == Role.ADMIN && newRole != Role.ADMIN) {
+      long adminCount = getAll().stream()
+          .filter(u -> u.getRole() == Role.ADMIN)
+          .count();
+
+      if (adminCount <= 1) {
+        throw new BusinessException("error.user.edit.last_admin_role");
+      }
+    }
   }
 
 }

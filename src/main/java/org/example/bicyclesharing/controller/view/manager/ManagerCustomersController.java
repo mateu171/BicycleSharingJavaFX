@@ -20,7 +20,9 @@ import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.manager.modalController.AddEditCustomerController;
 import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.viewModel.manager.ManagerCustomersViewModel;
 
 public class ManagerCustomersController extends BaseController {
@@ -92,7 +94,14 @@ public class ManagerCustomersController extends BaseController {
         deleteButton.textProperty().bind(viewModel.deleteButtonText);
         deleteButton.getStyleClass().add("button-danger");
         deleteButton.setOnAction(e -> {
-          viewModel.deleteCustomer(customer);
+          try {
+            viewModel.deleteCustomer(customer);
+          }catch (BusinessException ex)
+          {
+            DialogUtil.showError(ex.getMessage());
+          }catch (Exception ex) {
+            DialogUtil.showError("error.delete.failed");
+          }
         });
 
         Region spacer = new Region();

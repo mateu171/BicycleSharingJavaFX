@@ -134,10 +134,10 @@ public class BicyclesManagementController extends BaseController {
         infoLabel.getStyleClass().add("user-card-subtitle");
 
         Label stateLabel = new Label(LocalizationManager.getStringByKey("admin.bicycles.state"));
-        stateLabel.getStyleClass().add("user-card-role");
+        stateLabel.getStyleClass().add("user-card-subtitle");
 
         Label stateLabelInfo = new Label(LocalizationManager.getStringByKey(bicycle.getState().getKey()));
-        stateLabelInfo.getStyleClass().add("user-card.subtitle");
+        stateLabelInfo.getStyleClass().add("user-card-subtitle");
 
         Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
         editButton.getStyleClass().add("button-edit");

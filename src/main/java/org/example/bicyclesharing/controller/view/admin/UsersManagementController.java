@@ -150,6 +150,7 @@ public class UsersManagementController extends BaseController {
             viewModel.applyFilters();
           })
       );
+
     } catch (Exception e) {
       e.printStackTrace();
     }

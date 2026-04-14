@@ -116,6 +116,7 @@ public class ManagerActiveRentalsController extends BaseController {
             viewModel.applyFilters();
           })
       );
+
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -14,6 +14,7 @@ import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.BikeIssueService;
@@ -57,13 +58,16 @@ public class FinishRentalDialogViewModel {
   public final StringProperty problemTypeError = new SimpleStringProperty("");
   public final StringProperty commentError = new SimpleStringProperty("");
 
+  private double finalPrice;
+
   public FinishRentalDialogViewModel(
       User currentUser,
       Rental rental,
       RentalService rentalService,
       CustomerService customerService,
       BicycleService bicycleService,
-      BikeIssueService bikeIssueService) {
+      BikeIssueService bikeIssueService
+  ) {
     this.currentUser = currentUser;
     this.rental = rental;
     this.rentalService = rentalService;
@@ -81,47 +85,44 @@ public class FinishRentalDialogViewModel {
     );
   }
 
+  public double getFinalPrice() {
+    return finalPrice;
+  }
+
   public boolean finishRental() {
     clearErrors();
 
     Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
     Customer customer = customerService.getById(rental.getCustomerId()).orElse(null);
 
-    if (bicycle == null || customer == null) {
-      return false;
+    if (bicycle == null) {
+      throw new BusinessException("error.bicycle.not_found");
     }
 
-    rental.setEnd(LocalDateTime.now());
-
-    long minutes = Duration.between(rental.getStart(), rental.getEnd()).toMinutes();
-    if (minutes <= 0) {
-      minutes = 1;
+    if (customer == null) {
+      throw new BusinessException("error.customer.not_found");
     }
 
-    rental.setTotalCost(minutes * bicycle.getPricePerMinute());
-    rentalService.update(rental);
-
-    customer.setActiveRent(null);
-    customerService.update(customer);
+    if (rental.getEnd() != null) {
+      throw new BusinessException("error.rental.already_finished");
+    }
 
     if (hasProblem.get()) {
       if (selectedProblemType.get() == null || selectedProblemType.get().trim().isEmpty()) {
-        problemTypeError.set(LocalizationManager.getStringByKey("ride.problem.validation.type.required"));
+        problemTypeError.set(
+            LocalizationManager.getStringByKey("ride.problem.validation.type.required")
+        );
         return false;
       }
 
-      bicycle.setState(StateBicycle.NEEDS_INSPECTION);
-      bicycleService.update(bicycle);
-
       try {
-        BikeIssue issue = new BikeIssue(
+        new BikeIssue(
             rental.getId(),
             bicycle.getId(),
             selectedProblemType.get(),
             comment.get(),
             technicalProblem.get()
         );
-        bikeIssueService.add(issue);
       } catch (CustomEntityValidationExeption e) {
         e.getErrors().forEach((field, messages) -> {
           String text = messages.stream()
@@ -135,12 +136,41 @@ public class FinishRentalDialogViewModel {
         });
         return false;
       }
+    }
 
+    LocalDateTime endTime = LocalDateTime.now();
+    long minutes = Duration.between(rental.getStart(), endTime).toMinutes();
+    if (minutes <= 0) {
+      minutes = 1;
+    }
+
+    double totalCost = minutes * bicycle.getPricePerMinute();
+
+    rental.setEnd(endTime);
+    rental.setTotalCost(totalCost);
+    rentalService.update(rental);
+
+    customer.setActiveRent(null);
+    customerService.update(customer);
+
+    if (hasProblem.get()) {
+      bicycle.setState(StateBicycle.NEEDS_INSPECTION);
+      bicycleService.update(bicycle);
+
+      BikeIssue issue = new BikeIssue(
+          rental.getId(),
+          bicycle.getId(),
+          selectedProblemType.get(),
+          comment.get(),
+          technicalProblem.get()
+      );
+      bikeIssueService.add(issue);
     } else {
       bicycle.setState(StateBicycle.AVAILABLE);
       bicycleService.update(bicycle);
     }
 
+    finalPrice = rental.getTotalCost();
     return true;
   }
 

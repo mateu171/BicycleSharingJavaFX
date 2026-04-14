@@ -26,6 +26,7 @@ import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.admin.UsersManagementViewModel;
 
 public class UsersManagementController extends BaseController {
@@ -142,30 +143,13 @@ public class UsersManagementController extends BaseController {
 
   private void openUserDialog(User user) {
     try {
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getResource("/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditUserView.fxml")
+      WindowUtil.openModal(
+          "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditUserView.fxml",
+          (AddEditUserController controller) -> controller.initData(user, () -> {
+            viewModel.loadUsers();
+            viewModel.applyFilters();
+          })
       );
-
-      Parent root = loader.load();
-
-      AddEditUserController controller = loader.getController();
-      controller.initData(user, () -> {
-        viewModel.loadUsers();
-        viewModel.applyFilters();
-      });
-
-      Scene scene = new Scene(root);
-      scene.setFill(Color.TRANSPARENT);
-      scene.getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
-      );
-
-      Stage stage = new Stage();
-      stage.initModality(Modality.APPLICATION_MODAL);
-      stage.initStyle(StageStyle.TRANSPARENT);
-      stage.setScene(scene);
-      stage.showAndWait();
-
     } catch (Exception e) {
       e.printStackTrace();
     }

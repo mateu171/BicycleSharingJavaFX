@@ -22,6 +22,7 @@ import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.manager.ManagerActiveRentalsViewModel;
 
 public class ManagerActiveRentalsController extends BaseController {
@@ -108,31 +109,13 @@ public class ManagerActiveRentalsController extends BaseController {
 
   private void openFinishDialog(Rental rental) {
     try {
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getResource(
-              "/org/example/bicyclesharing/presentation/view/manager/modalView/FinishRentalDialog.fxml")
+      WindowUtil.openModal(
+          "/org/example/bicyclesharing/presentation/view/manager/modalView/FinishRentalDialog.fxml",
+          (FinishRentalDialogController controller) -> controller.initData(currentUser, rental, () -> {
+            viewModel.loadRentals();
+            viewModel.applyFilters();
+          })
       );
-
-      Parent root = loader.load();
-
-      FinishRentalDialogController controller = loader.getController();
-      controller.initData(currentUser, rental, () -> {
-        viewModel.loadRentals();
-        viewModel.applyFilters();
-      });
-
-      Scene scene = new Scene(root);
-      scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-      scene.getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
-      );
-
-      Stage stage = new Stage();
-      stage.initModality(Modality.APPLICATION_MODAL);
-      stage.initStyle(StageStyle.TRANSPARENT);
-      stage.setScene(scene);
-      stage.showAndWait();
-
     } catch (Exception e) {
       e.printStackTrace();
     }

@@ -23,6 +23,7 @@ import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.manager.ManagerReservationsViewModel;
 
 public class ManagerReservationsController extends BaseController {
@@ -169,31 +170,13 @@ public class ManagerReservationsController extends BaseController {
 
   private void openReservationDialog(Reservation reservation) {
     try {
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getResource(
-              "/org/example/bicyclesharing/presentation/view/manager/modalView/AddEditReservationView.fxml")
+      WindowUtil.openModal(
+          "/org/example/bicyclesharing/presentation/view/manager/modalView/AddEditReservationView.fxml",
+          (AddEditReservationController controller) -> controller.initData(currentUser, reservation, () -> {
+            viewModel.loadReservations();
+            viewModel.applyFilters();
+          })
       );
-
-      Parent root = loader.load();
-
-      AddEditReservationController controller = loader.getController();
-      controller.initData(currentUser, reservation, () -> {
-        viewModel.loadReservations();
-        viewModel.applyFilters();
-      });
-
-      Scene scene = new Scene(root);
-      scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-      scene.getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
-      );
-
-      Stage stage = new Stage();
-      stage.initModality(Modality.APPLICATION_MODAL);
-      stage.initStyle(StageStyle.TRANSPARENT);
-      stage.setScene(scene);
-      stage.showAndWait();
-
     } catch (Exception e) {
       e.printStackTrace();
     }

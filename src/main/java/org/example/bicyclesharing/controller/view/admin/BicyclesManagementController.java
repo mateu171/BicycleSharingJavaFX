@@ -26,6 +26,7 @@ import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.admin.BicyclesManagementViewModel;
 
 public class BicyclesManagementController extends BaseController {
@@ -180,30 +181,13 @@ public class BicyclesManagementController extends BaseController {
         AppConfig.bicycleService().validateCanEdit(bicycle);
       }
 
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getResource(
-              "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditBicycleView.fxml")
+      WindowUtil.openModal(
+          "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditBicycleView.fxml",
+          (AddEditBicycleController controller) -> controller.initData(bicycle, () -> {
+            viewModel.loadBicycles();
+            viewModel.applyFilters();
+          })
       );
-
-      Parent root = loader.load();
-
-      AddEditBicycleController controller = loader.getController();
-      controller.initData(bicycle, () -> {
-        viewModel.loadBicycles();
-        viewModel.applyFilters();
-      });
-
-      Scene scene = new Scene(root);
-      scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-      scene.getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
-      );
-
-      Stage stage = new Stage();
-      stage.initModality(Modality.APPLICATION_MODAL);
-      stage.initStyle(StageStyle.TRANSPARENT);
-      stage.setScene(scene);
-      stage.showAndWait();
 
     } catch (BusinessException e) {
       DialogUtil.showError(e.getMessage());

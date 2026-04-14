@@ -49,7 +49,7 @@ public class WindowUtil {
     Scene scene = new Scene(root);
     scene.setFill(Color.TRANSPARENT);
     scene.getStylesheets().add(
-        WindowUtil.class.getResource("/org/example/bicyclesharing/css/style.css")
+        WindowUtil.class.getResource(ThemeManager.getSavedTheme())
             .toExternalForm()
     );
 

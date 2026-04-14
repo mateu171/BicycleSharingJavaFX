@@ -145,13 +145,6 @@ public class AddEditUserController {
       saveButton.visibleProperty().bind(viewModel.codeStep);
       saveButton.managedProperty().bind(saveButton.visibleProperty());
     }
-
-    bindErrorVisibility(loginErrorLabel);
-    bindErrorVisibility(passwordErrorLabel);
-    bindErrorVisibility(emailErrorLabel);
-    bindErrorVisibility(roleErrorLabel);
-    bindErrorVisibility(codeErrorLabel);
-    bindErrorVisibility(photoErrorLabel);
   }
 
   private void setupRoleCombo() {
@@ -179,11 +172,6 @@ public class AddEditUserController {
 
     roleComboBox.valueProperty().addListener((obs, oldVal, newVal) ->
         viewModel.setSelectedRole(newVal));
-  }
-
-  private void bindErrorVisibility(Label label) {
-    label.visibleProperty().bind(label.textProperty().isNotEmpty());
-    label.managedProperty().bind(label.visibleProperty());
   }
 
   @FXML

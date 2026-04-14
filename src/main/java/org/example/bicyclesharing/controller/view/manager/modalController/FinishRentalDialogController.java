@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.controller.view.manager.modalController;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -9,7 +10,10 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.manager.modalViewModal.FinishRentalDialogViewModel;
 
 public class FinishRentalDialogController {
@@ -102,12 +106,32 @@ public class FinishRentalDialogController {
 
   @FXML
   private void onFinish() {
-    if (viewModel.finishRental()) {
-      if (onSaved != null) {
-        onSaved.run();
+    try {
+      if (viewModel.finishRental()) {
+        if (onSaved != null) {
+          onSaved.run();
+        }
+
+        showFinalPrice(viewModel.getFinalPrice());
+        close();
       }
-      close();
+    } catch (BusinessException e) {
+      DialogUtil.showError(e.getMessage());
+    } catch (Exception e) {
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.rental.finish.failed"));
     }
+  }
+
+  private void showFinalPrice(double finalPrice) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle(LocalizationManager.getStringByKey("manager.rentals.finish.success.title"));
+    alert.setHeaderText(LocalizationManager.getStringByKey("manager.rentals.finish.success.header"));
+    alert.setContentText(
+        LocalizationManager.getStringByKey("manager.rentals.finish.success.price")
+            + ": " + String.format("%.2f", finalPrice) + " "
+            + LocalizationManager.getStringByKey("label.currency")
+    );
+    alert.showAndWait();
   }
 
   @FXML

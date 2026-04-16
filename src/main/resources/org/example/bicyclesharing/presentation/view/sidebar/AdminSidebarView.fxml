@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="org.example.bicyclesharing.controller.view.sidebar.Impl.AdminSidebarController"
+  spacing="6">
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/anotheruser.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnUsers" styleClass="menu-button" onAction="#onShowUsers"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/bicycle.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnBicycles" styleClass="menu-button" onAction="#onShowBicycles"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/bicycleStation.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnStations" styleClass="menu-button" onAction="#onShowStations"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/dashboard.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnDashboardAdmin" styleClass="menu-button" onAction="#onShowDashboard"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/settings.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnSettings" styleClass="menu-button" onAction="#onShowSettings"/>
+  </HBox>
+
+</VBox>

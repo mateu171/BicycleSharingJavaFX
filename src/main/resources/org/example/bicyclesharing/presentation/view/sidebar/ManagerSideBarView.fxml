@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="org.example.bicyclesharing.controller.view.sidebar.Impl.ManagerSidebarController"
+  spacing="6">
+
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/customer.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnManagerCustomers" styleClass="menu-button" onAction="#onShowCustomers"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/booking.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnManagerReservation" styleClass="menu-button" onAction="#onShowReservations"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/rent.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnManagerActiveRentals" styleClass="menu-button" onAction="#onShowActiveRentals"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/dashboard.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnDashBoardManager" styleClass="menu-button" onAction="#onShowDashboard"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/settings.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnSettings" styleClass="menu-button" onAction="#onShowSettings"/>
+  </HBox>
+</VBox>

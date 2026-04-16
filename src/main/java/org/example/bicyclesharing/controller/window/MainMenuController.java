@@ -1,6 +1,8 @@
 package org.example.bicyclesharing.controller.window;
 
+import java.io.IOException;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
@@ -8,6 +10,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.example.bicyclesharing.controller.view.sidebar.Interface.SidebarController;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.util.SidebarAnimation;
@@ -18,57 +21,23 @@ import org.example.bicyclesharing.viewModel.MainMenuViewModel;
 public class MainMenuController extends BaseWindowController{
 
   @FXML private VBox sidebar;
-  @FXML private Button btnSettings;
-
-  @FXML private Button btnUsers;
-  @FXML private Button btnBicycles;
-  @FXML private Button btnStations;
-  @FXML private Button btnDashbordAdmin;
-
-  @FXML private Button btnManagerCustomers;
-  @FXML private Button btnManagerReservation;
-  @FXML private Button btnManagerActiveRentals;
-  @FXML private Button btnDashBoardManager;
-
-  @FXML private Button btnMechanicIssues;
-  @FXML private Button btnMechanicService;
-  @FXML private Button btnMechanicHistory;
-  @FXML private Button btnMechanicRecord;
-  @FXML private Button btnDashboardMechanic;
-
-  @FXML private HBox managerCustomersContainer;
-  @FXML private HBox managerReservationContainer;
-  @FXML private HBox managerAcitveRentalsContainer;
-  @FXML private HBox managerDashboardContainer;
-
-  @FXML private HBox mechanicIssuesContainer;
-  @FXML private HBox mechanicServiceContainer;
-  @FXML private HBox mechanicHistoryContainer;
-  @FXML private HBox mechanicRecordContainer;
-  @FXML private HBox mechanicDashboardContainer;
-
-  @FXML private HBox adminUsersContainer;
-  @FXML private HBox adminBicyclesContainer;
-  @FXML private HBox adminStationContainer;
-  @FXML private HBox adminDashboardContainer;
-
-  @FXML private HBox settingsContainer;
+  @FXML private VBox menuContent;
 
   private double xOffset = 0;
   private double yOffset = 0;
 
   private MainMenuViewModel viewModel;
 
-  public void setCurrentUser(User currentUser) {
+  public void setCurrentUser(User currentUser) throws IOException {
     navigationService.setCurrentUser(currentUser);
-    configureMenuByRole(currentUser);
+    loadMenuByRole(currentUser);
 
     if (currentUser.getRole() == Role.ADMIN) {
       onShowAdminDashboard();
     } else if (currentUser.getRole() == Role.MECHANIC) {
       onShowMechanicDashboard();
     } else if (currentUser.getRole() == Role.MANAGER) {
-      onShowCustomerManager();
+      onShowManagerDashboard();
     }
   }
 
@@ -77,22 +46,7 @@ public class MainMenuController extends BaseWindowController{
   protected void initialize() {
     super.initialize();
     SidebarAnimation.applyHoverAnimation(sidebar, 180, 60);
-
     viewModel = new MainMenuViewModel();
-    btnSettings.textProperty().bind(viewModel.settingsButtonText);
-    btnUsers.textProperty().bind(viewModel.usersButtonText);
-    btnBicycles.textProperty().bind(viewModel.bicyclesButtonText);
-    btnStations.textProperty().bind(viewModel.stationButtonText);
-    btnMechanicIssues.textProperty().bind(viewModel.mechanicIssuesButtonText);
-    btnMechanicService.textProperty().bind(viewModel.mechanicServiceButtonText);
-    btnMechanicHistory.textProperty().bind(viewModel.mechanicHistoryButtonText);
-    btnMechanicRecord.textProperty().bind(viewModel.mechanicRecordButtonText);
-    btnManagerCustomers.textProperty().bind(viewModel.managerCustomersButtonText);
-    btnManagerReservation.textProperty().bind(viewModel.managerReservationsButtonText);
-    btnManagerActiveRentals.textProperty().bind(viewModel.managerActiveRentalsButtonText);
-    btnDashboardMechanic.textProperty().bind(viewModel.dashboardButtonText);
-    btnDashbordAdmin.textProperty().bind(viewModel.dashboardButtonText);
-    btnDashBoardManager.textProperty().bind(viewModel.dashboardButtonText);
   }
 
   @Override
@@ -195,52 +149,26 @@ public class MainMenuController extends BaseWindowController{
     stage.setY(event.getScreenY() - yOffset);
   }
 
-  private void configureMenuByRole(User currentUser) {
-    boolean isAdmin = currentUser != null && currentUser.getRole() == Role.ADMIN;
-    boolean isMechanic = currentUser != null && currentUser.getRole() == Role.MECHANIC;
-    boolean isManager = currentUser != null && currentUser.getRole() == Role.MANAGER;
+  private void loadMenuByRole(User currentUser) throws IOException {
+    String fxml;
 
-    adminUsersContainer.setVisible(isAdmin);
-    adminUsersContainer.setManaged(isAdmin);
+    if (currentUser.getRole() == Role.ADMIN) {
+      fxml = "/org/example/bicyclesharing/presentation/view/sidebar/AdminSidebarView.fxml";
+    } else if (currentUser.getRole() == Role.MECHANIC) {
+      fxml = "/org/example/bicyclesharing/presentation/view/sidebar/MechanicSidebarView.fxml";
+    } else {
+      fxml = "/org/example/bicyclesharing/presentation/view/sidebar/ManagerSidebarView.fxml";
+    }
 
-    adminBicyclesContainer.setVisible(isAdmin);
-    adminBicyclesContainer.setManaged(isAdmin);
+      FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+      VBox menu = loader.load();
 
-    adminStationContainer.setVisible(isAdmin);
-    adminStationContainer.setManaged(isAdmin);
+      Object controller = loader.getController();
+      if (controller instanceof SidebarController sidebarController) {
+        sidebarController.setMainMenuController(this,viewModel);
+      }
 
-    adminDashboardContainer.setVisible(isAdmin);
-    adminDashboardContainer.setManaged(isAdmin);
-
-    mechanicIssuesContainer.setVisible(isMechanic);
-    mechanicIssuesContainer.setManaged(isMechanic);
-
-    mechanicServiceContainer.setVisible(isMechanic);
-    mechanicServiceContainer.setManaged(isMechanic);
-
-    mechanicHistoryContainer.setVisible(isMechanic);
-    mechanicHistoryContainer.setManaged(isMechanic);
-
-    mechanicRecordContainer.setVisible(isMechanic);
-    mechanicRecordContainer.setManaged(isMechanic);
-
-    mechanicDashboardContainer.setManaged(isMechanic);
-    mechanicDashboardContainer.setVisible(isMechanic);
-
-    managerCustomersContainer.setVisible(isManager);
-    managerCustomersContainer.setManaged(isManager);
-
-    managerReservationContainer.setVisible(isManager);
-    managerReservationContainer.setManaged(isManager);
-
-    managerAcitveRentalsContainer.setVisible(isManager);
-    managerAcitveRentalsContainer.setManaged(isManager);
-
-    managerDashboardContainer.setVisible(isManager);
-    managerDashboardContainer.setManaged(isManager);
-
-    settingsContainer.setVisible(true);
-    settingsContainer.setManaged(true);
+      menuContent.getChildren().setAll(menu);
   }
 
   @FXML

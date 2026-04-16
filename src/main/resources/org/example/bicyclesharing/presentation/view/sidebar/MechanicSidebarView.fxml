@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<VBox xmlns="http://javafx.com/javafx"
+  xmlns:fx="http://javafx.com/fxml"
+  fx:controller="org.example.bicyclesharing.controller.view.sidebar.Impl.MechanicSidebarController"
+  spacing="6">
+
+
+  <HBox styleClass="menu-container" spacing="10"
+    alignment="CENTER_LEFT" visible="false" managed="false">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/issue.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnMechanicIssues" styleClass="menu-button" onAction="#onShowIssues"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/maintenance.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnMechanicService" styleClass="menu-button" onAction="#onShowService"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10"
+    alignment="CENTER_LEFT" visible="false" managed="false">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/history.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnMechanicHistory" styleClass="menu-button" onAction="#onShowHistory"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/addRecord.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnMechanicRecord" styleClass="menu-button" onAction="#onShowAddRecord"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/dashboard.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnDashboardMechanic" styleClass="menu-button" onAction="#onShowDashboard"/>
+  </HBox>
+
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
+    <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+      <image>
+        <Image url="@../../../art/icon/settings.png" />
+      </image>
+    </ImageView>
+    <Button fx:id="btnSettings" styleClass="menu-button" onAction="#onShowSettings"/>
+  </HBox>
+</VBox>

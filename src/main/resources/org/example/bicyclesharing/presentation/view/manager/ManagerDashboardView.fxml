@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.manager.ManagerDashboardController"
+  fitToWidth="true"
+  hbarPolicy="NEVER"
+  styleClass="dashboard-scroll">
+
+  <content>
+    <VBox spacing="18" styleClass="users-page">
+      <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+      </padding>
+
+      <VBox spacing="6">
+        <Label fx:id="titleLabel" styleClass="settings-title"/>
+        <Label fx:id="subtitleLabel" styleClass="dashboard-subtitle"/>
+      </VBox>
+
+      <FlowPane hgap="16" vgap="16" prefWrapLength="950">
+        <VBox spacing="8" styleClass="dashboard-kpi-card">
+          <Label fx:id="activeRentalsValueLabel" styleClass="dashboard-kpi-value"/>
+          <Label fx:id="activeRentalsTitleLabel" styleClass="dashboard-kpi-title"/>
+        </VBox>
+
+        <VBox spacing="8" styleClass="dashboard-kpi-card">
+          <Label fx:id="activeReservationsValueLabel" styleClass="dashboard-kpi-value"/>
+          <Label fx:id="activeReservationsTitleLabel" styleClass="dashboard-kpi-title"/>
+        </VBox>
+
+        <VBox spacing="8" styleClass="dashboard-kpi-card">
+          <Label fx:id="totalCustomersValueLabel" styleClass="dashboard-kpi-value"/>
+          <Label fx:id="totalCustomersTitleLabel" styleClass="dashboard-kpi-title"/>
+        </VBox>
+
+        <VBox spacing="8" styleClass="dashboard-kpi-card">
+          <Label fx:id="availableBicyclesValueLabel" styleClass="dashboard-kpi-value"/>
+          <Label fx:id="availableBicyclesTitleLabel" styleClass="dashboard-kpi-title"/>
+        </VBox>
+      </FlowPane>
+
+      <HBox spacing="18">
+        <VBox spacing="14" styleClass="settings-card" HBox.hgrow="ALWAYS">
+          <Label fx:id="attentionTitleLabel" styleClass="settings-section-title"/>
+
+          <Label fx:id="issuedReservationsLabel" styleClass="dashboard-info-text"/>
+          <Label fx:id="newReservationsLabel" styleClass="dashboard-info-text"/>
+          <Label fx:id="rentedBicyclesLabel" styleClass="dashboard-info-text"/>
+          <Label fx:id="unavailableBicyclesLabel" styleClass="dashboard-info-text"/>
+          <Label fx:id="totalBicyclesLabel" styleClass="dashboard-info-text"/>
+        </VBox>
+
+        <VBox spacing="14" styleClass="settings-card" HBox.hgrow="ALWAYS">
+          <Label fx:id="latestActivityTitleLabel" styleClass="settings-section-title"/>
+
+          <Label fx:id="latestRentalLabel" styleClass="dashboard-info-text" wrapText="true"/>
+          <Label fx:id="latestReservationLabel" styleClass="dashboard-info-text" wrapText="true"/>
+          <Label fx:id="latestCustomerLabel" styleClass="dashboard-info-text" wrapText="true"/>
+        </VBox>
+      </HBox>
+
+      <VBox spacing="14" styleClass="settings-card">
+        <Label fx:id="quickActionsTitleLabel" styleClass="settings-section-title"/>
+
+        <HBox spacing="12">
+          <Button fx:id="openCustomersButton"
+            onAction="#onOpenCustomers"
+            styleClass="button-primary"/>
+
+          <Button fx:id="openRentalsButton"
+            onAction="#onOpenRentals"
+            styleClass="button-primary"/>
+
+          <Button fx:id="openReservationsButton"
+            onAction="#onOpenReservations"
+            styleClass="button-primary"/>
+
+          <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
+      </VBox>
+    </VBox>
+  </content>
+</ScrollPane>

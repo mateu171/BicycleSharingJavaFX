@@ -68,6 +68,15 @@
           <Button fx:id="btnStations" styleClass="menu-button" onAction="#onShowStations"/>
         </HBox>
 
+        <HBox fx:id="adminDashboardContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/dashboard.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnDashbordAdmin" styleClass="menu-button" onAction="#onShowAdminDashboard"/>
+        </HBox>
+
         <HBox fx:id="mechanicIssuesContainer" styleClass="menu-container" spacing="10"
           alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
@@ -108,6 +117,15 @@
           <Button fx:id="btnMechanicRecord" styleClass="menu-button" onAction="#onShowMechanicAddRecord"/>
         </HBox>
 
+        <HBox fx:id="mechanicDashboardContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/dashboard.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnDashboardMechanic" styleClass="menu-button" onAction="#onShowMechanicDashboard"/>
+        </HBox>
+
         <HBox fx:id="managerCustomersContainer" styleClass="menu-container" spacing="10"
           alignment="CENTER_LEFT" visible="false" managed="false">
           <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
@@ -136,6 +154,16 @@
             </image>
           </ImageView>
           <Button fx:id="btnManagerActiveRentals" styleClass="menu-button" onAction="#onShowActiveRentals"/>
+        </HBox>
+
+        <HBox fx:id="managerDashboardContainer" styleClass="menu-container" spacing="10"
+          alignment="CENTER_LEFT" visible="false" managed="false">
+          <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
+            <image>
+              <Image url="@../../art/icon/dashboard.png" />
+            </image>
+          </ImageView>
+          <Button fx:id="btnDashBoardManager" styleClass="menu-button" onAction="#onShowManagerDashboard"/>
         </HBox>
 
         <HBox fx:id="settingsContainer" styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">

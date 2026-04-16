@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/25"
+  xmlns:fx="http://javafx.com/fxml/1"
+  fx:controller="org.example.bicyclesharing.controller.view.mechanic.MechanicDashboardController"
+  fitToWidth="true"
+  hbarPolicy="NEVER"
+  styleClass="dashboard-scroll">
+
+  <content>
+    <VBox spacing="18" styleClass="users-page">
+      <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+      </padding>
+
+      <VBox spacing="6">
+        <Label fx:id="titleLabel" styleClass="settings-title"/>
+        <Label fx:id="subtitleLabel" styleClass="dashboard-subtitle"/>
+      </VBox>
+
+      <FlowPane hgap="16" vgap="16" prefWrapLength="950">
+        <VBox spacing="8" styleClass="dashboard-kpi-card">
+          <Label fx:id="newIssuesValueLabel" styleClass="dashboard-kpi-value"/>
+          <Label fx:id="newIssuesTitleLabel" styleClass="dashboard-kpi-title"/>
+        </VBox>
+
+        <VBox spacing="8" styleClass="dashboard-kpi-card">
+          <Label fx:id="inProgressIssuesValueLabel" styleClass="dashboard-kpi-value"/>
+          <Label fx:id="inProgressIssuesTitleLabel" styleClass="dashboard-kpi-title"/>
+        </VBox>
+
+        <VBox spacing="8" styleClass="dashboard-kpi-card">
+          <Label fx:id="onMaintenanceValueLabel" styleClass="dashboard-kpi-value"/>
+          <Label fx:id="onMaintenanceTitleLabel" styleClass="dashboard-kpi-title"/>
+        </VBox>
+
+        <VBox spacing="8" styleClass="dashboard-kpi-card">
+          <Label fx:id="needsInspectionValueLabel" styleClass="dashboard-kpi-value"/>
+          <Label fx:id="needsInspectionTitleLabel" styleClass="dashboard-kpi-title"/>
+        </VBox>
+      </FlowPane>
+
+      <HBox spacing="18">
+        <VBox spacing="14" styleClass="settings-card" HBox.hgrow="ALWAYS">
+          <Label fx:id="attentionTitleLabel" styleClass="settings-section-title"/>
+
+          <Label fx:id="attentionNewIssuesLabel" styleClass="dashboard-info-text"/>
+          <Label fx:id="attentionTechnicalIssuesLabel" styleClass="dashboard-info-text"/>
+          <Label fx:id="attentionResolvedIssuesLabel" styleClass="dashboard-info-text"/>
+          <Label fx:id="attentionMaintenanceRecordsLabel" styleClass="dashboard-info-text"/>
+          <Label fx:id="attentionUnavailableBicyclesLabel" styleClass="dashboard-info-text"/>
+        </VBox>
+
+        <VBox spacing="14" styleClass="settings-card" HBox.hgrow="ALWAYS">
+          <Label fx:id="latestActivityTitleLabel" styleClass="settings-section-title"/>
+
+          <Label fx:id="latestIssueLabel" styleClass="dashboard-info-text" wrapText="true"/>
+          <Label fx:id="latestMaintenanceLabel" styleClass="dashboard-info-text" wrapText="true"/>
+          <Label fx:id="latestInspectionLabel" styleClass="dashboard-info-text" wrapText="true"/>
+        </VBox>
+      </HBox>
+
+      <VBox spacing="14" styleClass="settings-card">
+        <Label fx:id="quickActionsTitleLabel" styleClass="settings-section-title"/>
+
+        <HBox spacing="12">
+          <Button fx:id="openIssuesButton"
+            onAction="#onOpenIssues"
+            styleClass="button-primary"/>
+
+          <Button fx:id="openServiceButton"
+            onAction="#onOpenService"
+            styleClass="button-primary"/>
+
+          <Button fx:id="openHistoryButton"
+            onAction="#onOpenHistory"
+            styleClass="button-primary"/>
+
+          <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
+      </VBox>
+    </VBox>
+  </content>
+</ScrollPane>

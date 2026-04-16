@@ -23,28 +23,34 @@ public class MainMenuController extends BaseWindowController{
   @FXML private Button btnUsers;
   @FXML private Button btnBicycles;
   @FXML private Button btnStations;
+  @FXML private Button btnDashbordAdmin;
 
   @FXML private Button btnManagerCustomers;
   @FXML private Button btnManagerReservation;
   @FXML private Button btnManagerActiveRentals;
+  @FXML private Button btnDashBoardManager;
 
   @FXML private Button btnMechanicIssues;
   @FXML private Button btnMechanicService;
   @FXML private Button btnMechanicHistory;
   @FXML private Button btnMechanicRecord;
+  @FXML private Button btnDashboardMechanic;
 
   @FXML private HBox managerCustomersContainer;
   @FXML private HBox managerReservationContainer;
   @FXML private HBox managerAcitveRentalsContainer;
+  @FXML private HBox managerDashboardContainer;
 
   @FXML private HBox mechanicIssuesContainer;
   @FXML private HBox mechanicServiceContainer;
   @FXML private HBox mechanicHistoryContainer;
   @FXML private HBox mechanicRecordContainer;
+  @FXML private HBox mechanicDashboardContainer;
 
   @FXML private HBox adminUsersContainer;
   @FXML private HBox adminBicyclesContainer;
   @FXML private HBox adminStationContainer;
+  @FXML private HBox adminDashboardContainer;
 
   @FXML private HBox settingsContainer;
 
@@ -58,9 +64,9 @@ public class MainMenuController extends BaseWindowController{
     configureMenuByRole(currentUser);
 
     if (currentUser.getRole() == Role.ADMIN) {
-      onShowUsers();
+      onShowAdminDashboard();
     } else if (currentUser.getRole() == Role.MECHANIC) {
-      onShowMechanicIssues();
+      onShowMechanicDashboard();
     } else if (currentUser.getRole() == Role.MANAGER) {
       onShowCustomerManager();
     }
@@ -84,6 +90,9 @@ public class MainMenuController extends BaseWindowController{
     btnManagerCustomers.textProperty().bind(viewModel.managerCustomersButtonText);
     btnManagerReservation.textProperty().bind(viewModel.managerReservationsButtonText);
     btnManagerActiveRentals.textProperty().bind(viewModel.managerActiveRentalsButtonText);
+    btnDashboardMechanic.textProperty().bind(viewModel.dashboardButtonText);
+    btnDashbordAdmin.textProperty().bind(viewModel.dashboardButtonText);
+    btnDashBoardManager.textProperty().bind(viewModel.dashboardButtonText);
   }
 
   @Override
@@ -153,6 +162,21 @@ public class MainMenuController extends BaseWindowController{
     navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerActiveRentalsView.fxml");
   }
 
+  @FXML
+  public void onShowAdminDashboard() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/admin/AdminDashboardView.fxml");
+  }
+
+  @FXML
+  public void onShowManagerDashboard() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerDashboardView.fxml");
+  }
+
+  @FXML
+  public void onShowMechanicDashboard() {
+    navigationService.load("/org/example/bicyclesharing/presentation/view/mechanic/MechanicDashboardView.fxml");
+  }
+
   private void applyTheme() {
     contentPane.getScene().getRoot().getStylesheets().clear();
     contentPane.getScene().getRoot().getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
@@ -185,6 +209,9 @@ public class MainMenuController extends BaseWindowController{
     adminStationContainer.setVisible(isAdmin);
     adminStationContainer.setManaged(isAdmin);
 
+    adminDashboardContainer.setVisible(isAdmin);
+    adminDashboardContainer.setManaged(isAdmin);
+
     mechanicIssuesContainer.setVisible(isMechanic);
     mechanicIssuesContainer.setManaged(isMechanic);
 
@@ -197,6 +224,9 @@ public class MainMenuController extends BaseWindowController{
     mechanicRecordContainer.setVisible(isMechanic);
     mechanicRecordContainer.setManaged(isMechanic);
 
+    mechanicDashboardContainer.setManaged(isMechanic);
+    mechanicDashboardContainer.setVisible(isMechanic);
+
     managerCustomersContainer.setVisible(isManager);
     managerCustomersContainer.setManaged(isManager);
 
@@ -205,6 +235,9 @@ public class MainMenuController extends BaseWindowController{
 
     managerAcitveRentalsContainer.setVisible(isManager);
     managerAcitveRentalsContainer.setManaged(isManager);
+
+    managerDashboardContainer.setVisible(isManager);
+    managerDashboardContainer.setManaged(isManager);
 
     settingsContainer.setVisible(true);
     settingsContainer.setManaged(true);

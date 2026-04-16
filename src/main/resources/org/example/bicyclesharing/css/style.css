@@ -711,3 +711,86 @@
   -fx-font-size: 14px;
   -fx-line-spacing: 2px;
 }
+
+.dashboard-page {
+  -fx-background-color: transparent;
+}
+
+.dashboard-subtitle {
+  -fx-font-size: 14px;
+  -fx-text-fill: #6b7280;
+}
+
+.dashboard-card {
+  -fx-background-color: white;
+  -fx-background-radius: 16;
+  -fx-padding: 18;
+  -fx-pref-width: 200;
+  -fx-min-width: 200;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);
+}
+
+.dashboard-card:hover {
+  -fx-border-color: #FFE600;
+  -fx-border-radius: 16;
+  -fx-border-width: 2;
+}
+
+.dashboard-card-value {
+  -fx-font-size: 28px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #364153;
+}
+
+.dashboard-card-title {
+  -fx-font-size: 13px;
+  -fx-text-fill: #6b7280;
+  -fx-wrap-text: true;
+}
+
+.dashboard-scroll {
+  -fx-background-color: transparent;
+  -fx-background: transparent;
+  -fx-border-color: transparent;
+}
+
+.dashboard-scroll > .viewport {
+  -fx-background-color: transparent;
+}
+
+.dashboard-subtitle {
+  -fx-font-size: 14px;
+  -fx-text-fill: #6b7280;
+}
+
+.dashboard-kpi-card {
+  -fx-background-color: white;
+  -fx-background-radius: 16;
+  -fx-border-radius: 16;
+  -fx-border-color: #d9e1ea;
+  -fx-padding: 18;
+  -fx-pref-width: 220;
+  -fx-min-width: 220;
+}
+
+.dashboard-kpi-card:hover {
+  -fx-border-color: #FFE600;
+  -fx-cursor: hand;
+}
+
+.dashboard-kpi-value {
+  -fx-font-size: 28px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #1f2937;
+}
+
+.dashboard-kpi-title {
+  -fx-font-size: 13px;
+  -fx-text-fill: #6b7280;
+  -fx-wrap-text: true;
+}
+
+.dashboard-info-text {
+  -fx-font-size: 14px;
+  -fx-text-fill: #364153;
+}

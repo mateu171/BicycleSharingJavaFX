@@ -62,6 +62,7 @@ public class MechanicDashboardController extends BaseController implements Navig
         AppConfig.maintenanceRecordService()
     );
     bind();
+    viewModel.loadAsync();
   }
 
   private void bind() {

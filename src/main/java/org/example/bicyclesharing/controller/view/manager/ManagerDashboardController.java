@@ -63,6 +63,7 @@ public class ManagerDashboardController extends BaseController implements Naviga
         AppConfig.bicycleService()
     );
     bind();
+    viewModel.loadAsync();
   }
 
   private void bind() {

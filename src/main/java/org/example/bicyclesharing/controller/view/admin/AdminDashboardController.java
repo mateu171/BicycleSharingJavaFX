@@ -66,6 +66,7 @@ public class AdminDashboardController extends BaseController implements Navigabl
         AppConfig.customerService()
     );
     bind();
+    viewModel.loadAsync();
   }
 
   private void bind() {

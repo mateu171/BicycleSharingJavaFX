@@ -14,8 +14,7 @@
   spacing="6">
 
 
-  <HBox styleClass="menu-container" spacing="10"
-    alignment="CENTER_LEFT" visible="false" managed="false">
+  <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
     <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
       <image>
         <Image url="@../../../art/icon/issue.png" />

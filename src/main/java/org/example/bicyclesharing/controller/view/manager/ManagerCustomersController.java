@@ -23,6 +23,7 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
+import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.manager.ManagerCustomersViewModel;
 
 public class ManagerCustomersController extends BaseController {
@@ -41,11 +42,12 @@ public class ManagerCustomersController extends BaseController {
     binds();
     setupFilters();
     setupList();
+    viewModel.loadCustomersAsync();
   }
 
   private void setupFilters() {
     searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-      viewModel.applyFilters();
+      viewModel.applyFiltersAsync();
     });
   }
 
@@ -124,33 +126,10 @@ public class ManagerCustomersController extends BaseController {
 
   private void openCustomerDialog(Customer customer) {
     try {
-      FXMLLoader loader = new FXMLLoader(
-          getClass().getResource(
-              "/org/example/bicyclesharing/presentation/view/manager/modalView/AddEditCustomerView.fxml")
-      );
-
-      Parent root = loader.load();
-
-      AddEditCustomerController controller = loader.getController();
-      controller.initData(customer, () -> {
-        viewModel.loadCustomers();
-        viewModel.applyFilters();
-      });
-
-      Scene scene = new Scene(root);
-      scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-      scene.getStylesheets().add(
-          getClass().getResource("/org/example/bicyclesharing/css/style.css").toExternalForm()
-      );
-
-      Stage stage = new Stage();
-      stage.initModality(Modality.APPLICATION_MODAL);
-      stage.initStyle(StageStyle.TRANSPARENT);
-      stage.setScene(scene);
-      stage.showAndWait();
-
+      WindowUtil.openModal("/org/example/bicyclesharing/presentation/view/manager/modalView/AddEditCustomerView.fxml",
+          (AddEditCustomerController controller) -> controller.initData(customer, viewModel::refreshAsync));
     } catch (Exception e) {
-      e.printStackTrace();
+      DialogUtil.showError("error.operation.failed");
     }
   }
 }

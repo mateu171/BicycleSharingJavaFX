@@ -7,45 +7,67 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
+import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.services.BicycleService;
-import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.viewModel.AsyncViewModel;
 
-public class MechanicServiceViewModel {
+public class MechanicServiceViewModel extends AsyncViewModel {
 
-  private final BicycleService bicycleService = AppConfig.bicycleService();
+  private final BicycleService bicycleService;
   private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
 
-  public final StringProperty titleText = LocalizationManager.getStringProperty("mechanic.service.title");
-  public final StringProperty modelColumnText = LocalizationManager.getStringProperty("mechanic.column.model");
-  public final StringProperty priceColumnText = LocalizationManager.getStringProperty("mechanic.column.price");
-  public final StringProperty stateColumnText = LocalizationManager.getStringProperty("mechanic.column.state");
-  public final StringProperty inspectButtonText = LocalizationManager.getStringProperty("mechanic.button.inspect");
-  public final StringProperty maintenanceButtonText = LocalizationManager.getStringProperty("mechanic.button.maintenance");
-  public final StringProperty availableButtonText = LocalizationManager.getStringProperty("mechanic.button.available");
-  public final StringProperty unavailableButtonText = LocalizationManager.getStringProperty("mechanic.button.unavailable");
-  public final StringProperty searchLabelText = LocalizationManager.getStringProperty("mechanic.search");
-  public final StringProperty statusLabelText = LocalizationManager.getStringProperty("mechanic.service.filter.state");
-  public final StringProperty sortLabelText = LocalizationManager.getStringProperty("mechanic.sort");
-  public final StringProperty searchPromText = LocalizationManager.getStringProperty("mechanic.search.prompt");
-  public final StringProperty countText = new SimpleStringProperty();
+  public final StringProperty titleText =
+      LocalizationManager.getStringProperty("mechanic.service.title");
+  public final StringProperty modelColumnText =
+      LocalizationManager.getStringProperty("mechanic.column.model");
+  public final StringProperty priceColumnText =
+      LocalizationManager.getStringProperty("mechanic.column.price");
+  public final StringProperty stateColumnText =
+      LocalizationManager.getStringProperty("mechanic.column.state");
+  public final StringProperty inspectButtonText =
+      LocalizationManager.getStringProperty("mechanic.button.inspect");
+  public final StringProperty maintenanceButtonText =
+      LocalizationManager.getStringProperty("mechanic.button.maintenance");
+  public final StringProperty availableButtonText =
+      LocalizationManager.getStringProperty("mechanic.button.available");
+  public final StringProperty unavailableButtonText =
+      LocalizationManager.getStringProperty("mechanic.button.unavailable");
+  public final StringProperty searchLabelText =
+      LocalizationManager.getStringProperty("mechanic.search");
+  public final StringProperty statusLabelText =
+      LocalizationManager.getStringProperty("mechanic.service.filter.state");
+  public final StringProperty sortLabelText =
+      LocalizationManager.getStringProperty("mechanic.sort");
+  public final StringProperty searchPromText =
+      LocalizationManager.getStringProperty("mechanic.search.prompt");
+  public final StringProperty countText = new SimpleStringProperty("");
 
-  public MechanicServiceViewModel() {
-    loadBicycles();
+
+  public MechanicServiceViewModel(User currentUser, BicycleService bicycleService) {
+    super(currentUser);
+    this.bicycleService = bicycleService;
   }
 
   public ObservableList<Bicycle> getBicycles() {
     return bicycles;
   }
 
-  public void loadBicycles() {
-    bicycles.setAll(bicycleService.getAll());
-    updateCount();
+  public void loadBicyclesAsync() {
+    runAsync(
+        bicycleService::getAll,
+        result -> {
+          bicycles.setAll(result);
+          updateCount();
+        }
+    );
   }
 
   public void updateCount() {
-    countText.set(LocalizationManager.getStringByKey("mechanic.count") + ": " + bicycles.size());
+    countText.set(
+        LocalizationManager.getStringByKey("mechanic.count") + ": " + bicycles.size()
+    );
   }
 
   public String getStateText(Bicycle bicycle) {
@@ -95,7 +117,7 @@ public class MechanicServiceViewModel {
 
     bicycle.setState(state);
     bicycleService.update(bicycle);
-    loadBicycles();
+    loadBicyclesAsync();
   }
 
   private String safe(String value) {

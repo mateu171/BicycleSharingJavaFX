@@ -1,22 +1,13 @@
 package org.example.bicyclesharing.controller.view.admin;
 
-import java.io.File;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditUserController;
 import org.example.bicyclesharing.domain.Impl.User;
@@ -46,6 +37,7 @@ public class UsersManagementController extends BaseController {
     bindFields();
     setupFilters();
     setupList();
+    viewModel.loadUsersAsync();
   }
 
   private void bindFields() {
@@ -67,11 +59,11 @@ public class UsersManagementController extends BaseController {
     ));
     roleFilterComboBox.getSelectionModel().selectFirst();
 
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFilters());
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
 
     roleFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
       viewModel.selectedRoleFilter.set(newVal);
-      viewModel.applyFilters();
+      viewModel.applyFiltersAsync();
     });
   }
 
@@ -115,6 +107,7 @@ public class UsersManagementController extends BaseController {
         {
           try {
             viewModel.deleteUser(user);
+            viewModel.refreshAsync();
           }catch (BusinessException ex)
           {
             DialogUtil.showError(ex.getMessage());
@@ -145,12 +138,8 @@ public class UsersManagementController extends BaseController {
     try {
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditUserView.fxml",
-          (AddEditUserController controller) -> controller.initData(user, () -> {
-            viewModel.loadUsers();
-            viewModel.applyFilters();
-          })
+          (AddEditUserController controller) -> controller.initData(user, viewModel::refreshAsync)
       );
-
     } catch (Exception e) {
       e.printStackTrace();
     }

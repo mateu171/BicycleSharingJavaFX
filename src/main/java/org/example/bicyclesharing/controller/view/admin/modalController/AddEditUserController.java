@@ -1,11 +1,8 @@
 package org.example.bicyclesharing.controller.view.admin.modalController;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -16,7 +13,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
@@ -64,6 +60,7 @@ public class AddEditUserController {
   private Runnable onSaved;
   private AddEditUserViewModel viewModel;
   private File selectedImage;
+  private boolean sendingCode = false;
 
   public void initData(User user, Runnable onSaved) {
     this.onSaved = onSaved;
@@ -80,7 +77,8 @@ public class AddEditUserController {
       roleComboBox.setValue(user.getRole());
     }
 
-    var defaultImageUrl = getClass().getResource("/org/example/bicyclesharing/art/image/defaultImg.jpg");
+    var defaultImageUrl =
+        getClass().getResource("/org/example/bicyclesharing/art/image/defaultImg.jpg");
 
     Image image = new Image(defaultImageUrl.toExternalForm());
 
@@ -176,18 +174,59 @@ public class AddEditUserController {
 
   @FXML
   private void onSendCode() {
-    if (viewModel.sendCode()) {
-      viewModel.goToCodeStep();
+    if (sendingCode) {
+      return;
     }
+
+    if (!viewModel.prepareForCodeSending()) {
+      return;
+    }
+
+    setCodeSendingState(true);
+
+    String email = viewModel.pendingUserEmail();
+
+    Task<Integer> task = new Task<>() {
+      @Override
+      protected Integer call() {
+        return AppConfig.verificationService().sendVerificationCode(email);
+      }
+    };
+
+    task.setOnSucceeded(event -> {
+      viewModel.setSentCode(task.getValue());
+      viewModel.goToCodeStep();
+      setCodeSendingState(false);
+    });
+
+    task.setOnFailed(event -> {
+      Throwable throwable = task.getException();
+      if (throwable != null) {
+        throwable.printStackTrace();
+      }
+      viewModel.handleCodeSendingFailed();
+      setCodeSendingState(false);
+    });
+
+    Thread thread = new Thread(task);
+    thread.setDaemon(true);
+    thread.start();
   }
 
   @FXML
   private void onBack() {
+    if (sendingCode) {
+      return;
+    }
     viewModel.goToFormStep();
   }
 
   @FXML
   private void onSave() {
+    if (sendingCode) {
+      return;
+    }
+
     try {
       String imagePath = ImageStorageUtil.saveImage(selectedImage, "users");
       viewModel.setImagePath(imagePath);
@@ -205,11 +244,18 @@ public class AddEditUserController {
 
   @FXML
   private void onClose() {
+    if (sendingCode) {
+      return;
+    }
     close();
   }
 
   @FXML
   private void onUploadPhoto() {
+    if (sendingCode) {
+      return;
+    }
+
     Stage stage = (Stage) cancelButton.getScene().getWindow();
     File file = ImageStorageUtil.chooseImage(stage);
 
@@ -219,6 +265,22 @@ public class AddEditUserController {
       ImageStorageUtil.showPreview(file, photoPreview, 90, 90);
       viewModel.setPhotoError("");
     }
+  }
+
+  private void setCodeSendingState(boolean sending) {
+    sendingCode = sending;
+
+    loginField.setDisable(sending);
+    passwordField.setDisable(sending);
+    emailField.setDisable(sending);
+    roleComboBox.setDisable(sending);
+    codeField.setDisable(sending);
+
+    sendCodeButton.setDisable(sending);
+    saveButton.setDisable(sending);
+    backButton.setDisable(sending);
+    cancelButton.setDisable(sending);
+    uploadPhotoButton.setDisable(sending);
   }
 
   private void close() {

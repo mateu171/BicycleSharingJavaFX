@@ -1,9 +1,6 @@
 package org.example.bicyclesharing.viewModel.manager;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -16,9 +13,9 @@ import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.LocalizationManager;
-import org.example.bicyclesharing.viewModel.BaseViewModel;
+import org.example.bicyclesharing.viewModel.AsyncViewModel;
 
-public class ManagerActiveRentalsViewModel extends BaseViewModel {
+public class ManagerActiveRentalsViewModel extends AsyncViewModel {
 
   private final RentalService rentalService;
   private final CustomerService customerService;
@@ -37,34 +34,58 @@ public class ManagerActiveRentalsViewModel extends BaseViewModel {
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-  public ManagerActiveRentalsViewModel(User currentUser,
+  public ManagerActiveRentalsViewModel(
+      User currentUser,
       RentalService rentalService,
       CustomerService customerService,
-      BicycleService bicycleService) {
+      BicycleService bicycleService
+  ) {
     super(currentUser);
     this.rentalService = rentalService;
     this.customerService = customerService;
     this.bicycleService = bicycleService;
-    loadRentals();
   }
 
   public ObservableList<Rental> getRentals() {
     return rentals;
   }
 
-  public void loadRentals() {
-    rentals.setAll(rentalService.findActiveByFilters(""));
-    updateCount();
+  public void loadRentalsAsync() {
+    runAsync(
+        () -> rentalService.findActiveByFilters(""),
+        result -> {
+          rentals.setAll(result);
+          updateCount();
+        }
+    );
   }
 
-  public void applyFilters() {
+  public void applyFiltersAsync() {
     String search = searchText.get() == null ? "" : searchText.get().trim();
-    rentals.setAll(rentalService.findActiveByFilters(search));
-    updateCount();
+
+    runAsync(
+        () -> rentalService.findActiveByFilters(search),
+        result -> {
+          rentals.setAll(result);
+          updateCount();
+        }
+    );
+  }
+
+  public void refreshAsync() {
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+
+    if (search.isBlank()) {
+      loadRentalsAsync();
+    } else {
+      applyFiltersAsync();
+    }
   }
 
   private void updateCount() {
-    countText.set(LocalizationManager.getStringByKey("manager.rentals.active.count") + ": " + rentals.size());
+    countText.set(
+        LocalizationManager.getStringByKey("manager.rentals.active.count") + ": " + rentals.size()
+    );
   }
 
   public String getCustomerName(Rental rental) {

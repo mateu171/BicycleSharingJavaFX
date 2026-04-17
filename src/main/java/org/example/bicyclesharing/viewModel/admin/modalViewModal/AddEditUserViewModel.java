@@ -11,7 +11,6 @@ import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.services.VerificationService;
-import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class AddEditUserViewModel {
@@ -22,20 +21,33 @@ public class AddEditUserViewModel {
 
   public final StringProperty titleText = new SimpleStringProperty();
 
-  public final StringProperty saveButtonText = LocalizationManager.getStringProperty("save.button");
-  public final StringProperty cancelButtonText = LocalizationManager.getStringProperty("cancel.button");
-  public final StringProperty uploadButtonText = LocalizationManager.getStringProperty("uploadPhoto.button.text");
-  public final StringProperty sendCodeButtonText = LocalizationManager.getStringProperty("button.send.code");
-  public final StringProperty backButtonText = LocalizationManager.getStringProperty("button.back");
-  public final StringProperty codeInfoText = LocalizationManager.getStringProperty("verification.code.info");
+  public final StringProperty saveButtonText =
+      LocalizationManager.getStringProperty("save.button");
+  public final StringProperty cancelButtonText =
+      LocalizationManager.getStringProperty("cancel.button");
+  public final StringProperty uploadButtonText =
+      LocalizationManager.getStringProperty("uploadPhoto.button.text");
+  public final StringProperty sendCodeButtonText =
+      LocalizationManager.getStringProperty("button.send.code");
+  public final StringProperty backButtonText =
+      LocalizationManager.getStringProperty("button.back");
+  public final StringProperty codeInfoText =
+      LocalizationManager.getStringProperty("verification.code.info");
 
-  public final StringProperty loginLabelText = LocalizationManager.getStringProperty("register.login");
-  public final StringProperty passwordLabelText = LocalizationManager.getStringProperty("register.password");
-  public final StringProperty emailLabelText = LocalizationManager.getStringProperty("register.email");
-  public final StringProperty roleLabelText = LocalizationManager.getStringProperty("admin.users.role");
-  public final StringProperty codeLabelText = LocalizationManager.getStringProperty("register.code");
-  public final StringProperty photoLabelText = LocalizationManager.getStringProperty("admin.users.photo");
-  public final StringProperty photoFileNameText = LocalizationManager.getStringProperty("file.not.selected");
+  public final StringProperty loginLabelText =
+      LocalizationManager.getStringProperty("register.login");
+  public final StringProperty passwordLabelText =
+      LocalizationManager.getStringProperty("register.password");
+  public final StringProperty emailLabelText =
+      LocalizationManager.getStringProperty("register.email");
+  public final StringProperty roleLabelText =
+      LocalizationManager.getStringProperty("admin.users.role");
+  public final StringProperty codeLabelText =
+      LocalizationManager.getStringProperty("register.code");
+  public final StringProperty photoLabelText =
+      LocalizationManager.getStringProperty("admin.users.photo");
+  public final StringProperty photoFileNameText =
+      LocalizationManager.getStringProperty("file.not.selected");
 
   public final StringProperty login = new SimpleStringProperty("");
   public final StringProperty password = new SimpleStringProperty("");
@@ -101,7 +113,7 @@ public class AddEditUserViewModel {
     photoError.set(message);
   }
 
-  public boolean sendCode() {
+  public boolean prepareForCodeSending() {
     clearErrors();
 
     try {
@@ -117,9 +129,6 @@ public class AddEditUserViewModel {
         return false;
       }
 
-      int code = verificationService.sendVerificationCode(validatedUser.getEmail());
-
-      sentCode = code;
       pendingUser = validatedUser;
       return true;
 
@@ -130,6 +139,21 @@ public class AddEditUserViewModel {
       emailError.set(LocalizationManager.getStringByKey("error.email.send_failed"));
       return false;
     }
+  }
+
+  public String pendingUserEmail() {
+    if (pendingUser != null && pendingUser.getEmail() != null && !pendingUser.getEmail().isBlank()) {
+      return pendingUser.getEmail();
+    }
+    return email.get() == null ? "" : email.get().trim();
+  }
+
+  public void setSentCode(int sentCode) {
+    this.sentCode = sentCode;
+  }
+
+  public void handleCodeSendingFailed() {
+    emailError.set(LocalizationManager.getStringByKey("error.email.send_failed"));
   }
 
   public boolean save() {
@@ -174,7 +198,7 @@ public class AddEditUserViewModel {
           return false;
         }
 
-        userService.validateRoleChange(editingUser,roleValue);
+        userService.validateRoleChange(editingUser, roleValue);
 
         editingUser.updateProfile(loginValue, emailValue, roleValue, finalImagePath);
 
@@ -190,7 +214,7 @@ public class AddEditUserViewModel {
     } catch (CustomEntityValidationExeption e) {
       applyValidationErrors(e);
       return false;
-    }  catch (BusinessException e) {
+    } catch (BusinessException e) {
       roleError.set(LocalizationManager.getStringByKey(e.getMessage()));
       return false;
     }

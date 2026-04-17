@@ -22,8 +22,10 @@ import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.mechanic.modalController.MechanicIssueDetailsController;
 import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.mechanic.MechanicIssuesViewModel;
+import org.example.bicyclesharing.viewModel.mechanic.MechanicServiceViewModel;
 
 public class MechanicIssuesController extends BaseController {
 
@@ -51,24 +53,6 @@ public class MechanicIssuesController extends BaseController {
 
   @FXML
   public void initialize() {
-    viewModel = new MechanicIssuesViewModel();
-    titleLabel.textProperty().bind(viewModel.titleText);
-    searchLabel.textProperty().bind(viewModel.searchLabelText);
-    statusFilterLabel.textProperty().bind(viewModel.statusFilterLabelText);
-    technicalFilterLabel.textProperty().bind(viewModel.technicalFilterLabelText);
-    sortLabel.textProperty().bind(viewModel.sortLabelText);
-    detailsButton.textProperty().bind(viewModel.detailsButtonText);
-    takeInWorkButton.textProperty().bind(viewModel.takeInWorkButtonText);
-    resolveButton.textProperty().bind(viewModel.resolveButtonText);
-    bikeColumn.textProperty().bind(viewModel.bikeColumnText);
-    technicalColumn.textProperty().bind(viewModel.technicalColumnText);
-    statusColumn.textProperty().bind(viewModel.statusColumnText);
-    dateColumn.textProperty().bind(viewModel.dateColumnText);
-
-    searchField.promptTextProperty().bind(viewModel.searchPromptText);
-    countLabel.textProperty().bind(viewModel.countText);
-
-
     statusFilterCombo.getItems().addAll(
         LocalizationManager.getStringByKey("mechanic.filter.all"),
         LocalizationManager.getStringByKey("issue.status.new"),
@@ -91,53 +75,6 @@ public class MechanicIssuesController extends BaseController {
         LocalizationManager.getStringByKey("mechanic.sort.status")
     );
     sortCombo.getSelectionModel().selectFirst();
-
-    bikeColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(viewModel.getBikeModel(cell.getValue())));
-    technicalColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(viewModel.getTechnical(cell.getValue())));
-    dateColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(viewModel.getDate(cell.getValue())));
-    statusColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(viewModel.getStatus(cell.getValue())));
-
-    FilteredList<BikeIssue> filtered = new FilteredList<>(viewModel.getIssues(), issue -> true);
-
-    Runnable refilter = () -> filtered.setPredicate(issue ->
-        viewModel.matchesSearch(issue, searchField.getText())
-            && viewModel.matchesStatus(issue, statusFilterCombo.getValue())
-            && viewModel.matchesTechnical(issue, technicalFilterCombo.getValue()));
-
-    searchField.textProperty().addListener((obs, oldV, newV) -> refilter.run());
-    statusFilterCombo.valueProperty().addListener((obs, oldV, newV) -> refilter.run());
-    technicalFilterCombo.valueProperty().addListener((obs, oldV, newV) -> refilter.run());
-
-    SortedList<BikeIssue> sorted = new SortedList<>(filtered);
-    sortCombo.valueProperty().addListener((obs, oldV, newV) ->
-        sorted.setComparator(viewModel.getComparator(newV)));
-    sorted.setComparator(viewModel.getComparator(sortCombo.getValue()));
-
-    issuesTable.setItems(sorted);
-
-    takeInWorkButton.disableProperty().bind(
-        Bindings.createBooleanBinding(
-            () -> !viewModel.canTakeInWork(issuesTable.getSelectionModel().getSelectedItem()),
-            issuesTable.getSelectionModel().selectedItemProperty()
-        )
-    );
-
-    resolveButton.disableProperty().bind(
-        Bindings.createBooleanBinding(
-            () -> !viewModel.canResolve(issuesTable.getSelectionModel().getSelectedItem()),
-            issuesTable.getSelectionModel().selectedItemProperty()
-        )
-    );
-
-    detailsButton.disableProperty().bind(
-        Bindings.isNull(issuesTable.getSelectionModel().selectedItemProperty())
-    );
-
-    viewModel.updateCount();
   }
 
   @FXML
@@ -198,5 +135,81 @@ public class MechanicIssuesController extends BaseController {
 
   @Override
   public void setCurrentUser(User currentUser) {
+    viewModel = new MechanicIssuesViewModel(currentUser, AppConfig.bikeIssueService(),AppConfig.bicycleService(),AppConfig.rentalService());
+    bind();
+    viewModel.loadIssuesAsync();
+    setupTable();
+    viewModel.updateCount();
+  }
+
+  private void bind()
+  {
+    titleLabel.textProperty().bind(viewModel.titleText);
+    searchLabel.textProperty().bind(viewModel.searchLabelText);
+    statusFilterLabel.textProperty().bind(viewModel.statusFilterLabelText);
+    technicalFilterLabel.textProperty().bind(viewModel.technicalFilterLabelText);
+    sortLabel.textProperty().bind(viewModel.sortLabelText);
+    detailsButton.textProperty().bind(viewModel.detailsButtonText);
+    takeInWorkButton.textProperty().bind(viewModel.takeInWorkButtonText);
+    resolveButton.textProperty().bind(viewModel.resolveButtonText);
+    bikeColumn.textProperty().bind(viewModel.bikeColumnText);
+    technicalColumn.textProperty().bind(viewModel.technicalColumnText);
+    statusColumn.textProperty().bind(viewModel.statusColumnText);
+    dateColumn.textProperty().bind(viewModel.dateColumnText);
+
+    searchField.promptTextProperty().bind(viewModel.searchPromptText);
+    countLabel.textProperty().bind(viewModel.countText);
+
+    takeInWorkButton.disableProperty().bind(
+        Bindings.createBooleanBinding(
+            () -> !viewModel.canTakeInWork(issuesTable.getSelectionModel().getSelectedItem()),
+            issuesTable.getSelectionModel().selectedItemProperty()
+        )
+    );
+
+    resolveButton.disableProperty().bind(
+        Bindings.createBooleanBinding(
+            () -> !viewModel.canResolve(issuesTable.getSelectionModel().getSelectedItem()),
+            issuesTable.getSelectionModel().selectedItemProperty()
+        )
+    );
+  }
+
+  private void setupTable() {
+
+    bikeColumn.setCellValueFactory(cell ->
+        new SimpleStringProperty(viewModel.getBikeModel(cell.getValue())));
+    technicalColumn.setCellValueFactory(cell ->
+        new SimpleStringProperty(viewModel.getTechnical(cell.getValue())));
+    dateColumn.setCellValueFactory(cell ->
+        new SimpleStringProperty(viewModel.getDate(cell.getValue())));
+    statusColumn.setCellValueFactory(cell ->
+        new SimpleStringProperty(viewModel.getStatus(cell.getValue())));
+
+    FilteredList<BikeIssue> filtered =
+        new FilteredList<>(viewModel.getIssues(), issue -> true);
+
+    Runnable refilter = () -> filtered.setPredicate(issue ->
+        viewModel.matchesSearch(issue, searchField.getText())
+            && viewModel.matchesStatus(issue, statusFilterCombo.getValue())
+            && viewModel.matchesTechnical(issue, technicalFilterCombo.getValue())
+    );
+
+    searchField.textProperty().addListener((obs, oldV, newV) -> refilter.run());
+    statusFilterCombo.valueProperty().addListener((obs, oldV, newV) -> refilter.run());
+    technicalFilterCombo.valueProperty().addListener((obs, oldV, newV) -> refilter.run());
+
+    SortedList<BikeIssue> sorted = new SortedList<>(filtered);
+
+    sortCombo.valueProperty().addListener((obs, oldV, newV) ->
+        sorted.setComparator(viewModel.getComparator(newV)));
+
+    sorted.setComparator(viewModel.getComparator(sortCombo.getValue()));
+
+    issuesTable.setItems(sorted);
+
+    detailsButton.disableProperty().bind(
+        Bindings.isNull(issuesTable.getSelectionModel().selectedItemProperty())
+    );
   }
 }

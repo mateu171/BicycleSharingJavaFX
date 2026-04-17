@@ -17,9 +17,9 @@ import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.services.ReservationService;
 import org.example.bicyclesharing.util.LocalizationManager;
-import org.example.bicyclesharing.viewModel.BaseViewModel;
+import org.example.bicyclesharing.viewModel.AsyncViewModel;
 
-public class ManagerReservationsViewModel extends BaseViewModel {
+public class ManagerReservationsViewModel extends AsyncViewModel {
 
   private final ReservationService reservationService;
   private final RentalService rentalService;
@@ -28,12 +28,18 @@ public class ManagerReservationsViewModel extends BaseViewModel {
 
   private final ObservableList<Reservation> reservations = FXCollections.observableArrayList();
 
-  public final StringProperty titleText = LocalizationManager.getStringProperty("manager.reservations.title");
-  public final StringProperty searchPromptText = LocalizationManager.getStringProperty("manager.reservations.search");
-  public final StringProperty addButtonText = LocalizationManager.getStringProperty("manager.reservations.add");
-  public final StringProperty issueButtonText = LocalizationManager.getStringProperty("manager.reservations.issue");
-  public final StringProperty cancelButtonText = LocalizationManager.getStringProperty("manager.reservations.cancel");
-  public final StringProperty editButtonText = LocalizationManager.getStringProperty("edit.button");
+  public final StringProperty titleText =
+      LocalizationManager.getStringProperty("manager.reservations.title");
+  public final StringProperty searchPromptText =
+      LocalizationManager.getStringProperty("manager.reservations.search");
+  public final StringProperty addButtonText =
+      LocalizationManager.getStringProperty("manager.reservations.add");
+  public final StringProperty issueButtonText =
+      LocalizationManager.getStringProperty("manager.reservations.issue");
+  public final StringProperty cancelButtonText =
+      LocalizationManager.getStringProperty("manager.reservations.cancel");
+  public final StringProperty editButtonText =
+      LocalizationManager.getStringProperty("edit.button");
   public final StringProperty countText = new SimpleStringProperty("");
   public final StringProperty searchText = new SimpleStringProperty("");
   public final StringProperty statusFilterText = new SimpleStringProperty(
@@ -42,38 +48,70 @@ public class ManagerReservationsViewModel extends BaseViewModel {
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-  public ManagerReservationsViewModel(User currentUser,
-      ReservationService reservationService, RentalService rentalService,
+  public ManagerReservationsViewModel(
+      User currentUser,
+      ReservationService reservationService,
+      RentalService rentalService,
       CustomerService customerService,
-      BicycleService bicycleService) {
+      BicycleService bicycleService
+  ) {
     super(currentUser);
     this.reservationService = reservationService;
     this.rentalService = rentalService;
     this.customerService = customerService;
     this.bicycleService = bicycleService;
-    loadReservations();
   }
 
   public ObservableList<Reservation> getReservations() {
     return reservations;
   }
 
-  public void loadReservations() {
-    reservationService.updateStatuses();
-    reservations.setAll(reservationService.findByFilters("", null));
-    updateCount();
+  public void loadReservationsAsync() {
+    runAsync(
+        () -> {
+          reservationService.updateStatuses();
+          return reservationService.findByFilters("", null);
+        },
+        result -> {
+          reservations.setAll(result);
+          updateCount();
+        }
+    );
   }
 
-  public void applyFilters() {
+  public void applyFiltersAsync() {
     String search = searchText.get() == null ? "" : searchText.get().trim();
     ReservationStatus status = resolveSelectedStatus();
 
-    reservations.setAll(reservationService.findByFilters(search, status));
-    updateCount();
+    runAsync(
+        () -> {
+          reservationService.updateStatuses();
+          return reservationService.findByFilters(search, status);
+        },
+        result -> {
+          reservations.setAll(result);
+          updateCount();
+        }
+    );
+  }
+
+  public void refreshAsync() {
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+    ReservationStatus status = resolveSelectedStatus();
+
+    boolean noFilters = search.isBlank() && status == null;
+
+    if (noFilters) {
+      loadReservationsAsync();
+    } else {
+      applyFiltersAsync();
+    }
   }
 
   private void updateCount() {
-    countText.set(LocalizationManager.getStringByKey("manager.reservations.count") + ": " + reservations.size());
+    countText.set(
+        LocalizationManager.getStringByKey("manager.reservations.count") + ": " + reservations.size()
+    );
   }
 
   public String getCustomerName(Reservation reservation) {
@@ -113,15 +151,17 @@ public class ManagerReservationsViewModel extends BaseViewModel {
     }
 
     reservation.setStatus(ReservationStatus.CANCELLED);
+
     Customer customer = customerService.getById(reservation.getCustomerId()).orElse(null);
-    if(customer != null)
-    {
+    if (customer != null) {
       customer.setActiveReservation(null);
       customerService.update(customer);
     }
+
     reservationService.update(reservation);
-    applyFilters();
+    refreshAsync();
   }
+
   public void issueReservation(Reservation reservation) {
     if (reservation == null) {
       return;
@@ -145,12 +185,11 @@ public class ManagerReservationsViewModel extends BaseViewModel {
     customerService.update(currentCustomer);
     reservationService.update(reservation);
 
-    applyFilters();
+    refreshAsync();
   }
 
   public boolean canIssue(Reservation reservation) {
-    return reservation != null
-        && (reservation.getStatus() == ReservationStatus.NEW);
+    return reservation != null && reservation.getStatus() == ReservationStatus.NEW;
   }
 
   public boolean canCancel(Reservation reservation) {
@@ -158,6 +197,7 @@ public class ManagerReservationsViewModel extends BaseViewModel {
         && reservation.getStatus() != ReservationStatus.CANCELLED
         && reservation.getStatus() != ReservationStatus.ISSUED;
   }
+
   private ReservationStatus resolveSelectedStatus() {
     String statusText = statusFilterText.get();
 

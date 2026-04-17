@@ -21,7 +21,6 @@ import org.example.bicyclesharing.viewModel.mechanic.MaintenanceHistoryViewModel
 
 public class MaintenanceHistoryController extends BaseController {
 
-
   @FXML private Label searchLabel;
   @FXML private Label typeProblemLabel;
   @FXML private Label titleLabel;
@@ -34,16 +33,34 @@ public class MaintenanceHistoryController extends BaseController {
   @FXML private TableColumn<MaintenanceRecord, String> descriptionColumn;
   @FXML private TableColumn<MaintenanceRecord, String> resultColumn;
   @FXML private TableColumn<MaintenanceRecord, String> dateColumn;
-  @FXML private TableColumn<MaintenanceRecord,String> conclusionColumn;
-
+  @FXML private TableColumn<MaintenanceRecord, String> conclusionColumn;
 
   private final BicycleService bicycleService = AppConfig.bicycleService();
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
   private MaintenanceHistoryViewModel viewModel;
+  private FilteredList<MaintenanceRecord> filtered;
 
   @FXML
   public void initialize() {
-    viewModel = new MaintenanceHistoryViewModel();
+    typeFilterCombo.getItems().add(LocalizationManager.getStringByKey("mechanic.filter.all"));
+
+    for (MaintenanceType type : MaintenanceType.values()) {
+      typeFilterCombo.getItems().add(LocalizationManager.getStringByKey(type.getKey()));
+    }
+    typeFilterCombo.getSelectionModel().selectFirst();
+  }
+
+  @Override
+  public void setCurrentUser(User currentUser) {
+    viewModel = new MaintenanceHistoryViewModel(currentUser, AppConfig.maintenanceRecordService());
+    bind();
+    setupTable();
+    setupFilters();
+    viewModel.loadAsync();
+  }
+
+  private void bind() {
     titleLabel.textProperty().bind(viewModel.titleLabelText);
     searchField.promptTextProperty().bind(viewModel.searchPromText);
     searchLabel.textProperty().bind(viewModel.searchLabelText);
@@ -54,32 +71,40 @@ public class MaintenanceHistoryController extends BaseController {
     resultColumn.textProperty().bind(viewModel.resultColumnText);
     dateColumn.textProperty().bind(viewModel.dateColumnText);
     conclusionColumn.textProperty().bind(viewModel.conclusionColumnText);
+  }
 
-    typeFilterCombo.getItems().add(LocalizationManager.getStringByKey("mechanic.filter.all"));
-
-    for(var type : MaintenanceType.values())
-    {
-      typeFilterCombo.getItems().add(LocalizationManager.getStringByKey(type.getKey()));
-    }
-    typeFilterCombo.getSelectionModel().selectFirst();
-
-    bikeColumn.setCellValueFactory(cell ->
-    {
+  private void setupTable() {
+    bikeColumn.setCellValueFactory(cell -> {
       Bicycle bicycle = bicycleService.getById(cell.getValue().getBicycleId()).orElse(null);
-      return new SimpleStringProperty(bicycle.getModel());
+      String bikeModel = bicycle != null ? bicycle.getModel() : "-";
+      return new SimpleStringProperty(bikeModel);
     });
 
     typeColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(LocalizationManager.getStringByKey(cell.getValue().getType().getKey())));
+        new SimpleStringProperty(LocalizationManager.getStringByKey(cell.getValue().getType().getKey()))
+    );
+
     conclusionColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(LocalizationManager.getStringByKey(cell.getValue().getAction().getKey())));
+        new SimpleStringProperty(LocalizationManager.getStringByKey(cell.getValue().getAction().getKey()))
+    );
+
     descriptionColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(cell.getValue().getDescription()));
+        new SimpleStringProperty(cell.getValue().getDescription())
+    );
+
     resultColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(cell.getValue().getResult()));
+        new SimpleStringProperty(cell.getValue().getResult())
+    );
+
     dateColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(cell.getValue().getCreatedAt().format(formatter)));
-    FilteredList<MaintenanceRecord> filtered = new FilteredList<>(viewModel.getRecords(), r -> true);
+        new SimpleStringProperty(cell.getValue().getCreatedAt().format(formatter))
+    );
+
+    filtered = new FilteredList<>(viewModel.getRecords(), r -> true);
+    historyTable.setItems(filtered);
+  }
+
+  private void setupFilters() {
     Runnable refilter = () -> filtered.setPredicate(record -> {
       String search = searchField.getText() == null ? "" : searchField.getText().toLowerCase().trim();
       String typeFilter = typeFilterCombo.getValue();
@@ -88,8 +113,7 @@ public class MaintenanceHistoryController extends BaseController {
       String bikeName = bicycle != null ? bicycle.getModel().toLowerCase() : "";
       String typeName = LocalizationManager.getStringByKey(record.getType().getKey());
 
-      boolean matchesSearch = search.isBlank()
-          || bikeName.contains(search);
+      boolean matchesSearch = search.isBlank() || bikeName.contains(search);
 
       boolean matchesType = typeFilter == null
           || typeFilter.equals(LocalizationManager.getStringByKey("mechanic.filter.all"))
@@ -100,12 +124,5 @@ public class MaintenanceHistoryController extends BaseController {
 
     searchField.textProperty().addListener((obs, oldV, newV) -> refilter.run());
     typeFilterCombo.valueProperty().addListener((obs, oldV, newV) -> refilter.run());
-
-    historyTable.setItems(filtered);
-  }
-
-  @Override
-  public void setCurrentUser(User currentUser) {
   }
 }
-

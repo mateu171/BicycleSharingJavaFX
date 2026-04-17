@@ -1,5 +1,7 @@
 package org.example.bicyclesharing.viewModel.admin;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -8,14 +10,12 @@ import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
-import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.StationService;
-import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
-import org.example.bicyclesharing.viewModel.BaseViewModel;
+import org.example.bicyclesharing.viewModel.AsyncViewModel;
 
-public class BicyclesManagementViewModel extends BaseViewModel {
+public class BicyclesManagementViewModel extends AsyncViewModel {
 
   private final BicycleService bicycleService;
   private final StationService stationService;
@@ -40,24 +40,47 @@ public class BicyclesManagementViewModel extends BaseViewModel {
     super(currentUser);
     this.bicycleService = bicycleService;
     this.stationService = stationService;
-    loadBicycles();
   }
 
   public ObservableList<Bicycle> getBicycles() {
     return bicycles;
   }
 
-  public void loadBicycles() {
-    bicycles.setAll(bicycleService.getAll());
-    updateCount();
+  public void loadBicyclesAsync() {
+    runAsync(
+        bicycleService::getAll,
+        result -> {
+          bicycles.setAll(result);
+          updateCount();
+        }
+    );
   }
 
-  public void applyFilters() {
+  public void applyFiltersAsync() {
     String search = searchText.get() == null ? "" : searchText.get().trim();
     StateBicycle stateFilter = resolveSelectedState();
 
-    bicycles.setAll(bicycleService.getByFilters(search, stateFilter));
-    updateCount();
+    runAsync(
+        () -> bicycleService.getByFilters(search, stateFilter),
+        result -> {
+          bicycles.setAll(result);
+          updateCount();
+        }
+    );
+  }
+
+  public void refreshAsync() {
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+    String stateFilterText = selectedStateFilter.get();
+
+    boolean noFilters = search.isBlank()
+        && (stateFilterText == null || stateFilterText.equals("ALL"));
+
+    if (noFilters) {
+      loadBicyclesAsync();
+    } else {
+      applyFiltersAsync();
+    }
   }
 
   public void deleteBicycle(Bicycle bicycle) {
@@ -76,7 +99,7 @@ public class BicyclesManagementViewModel extends BaseViewModel {
     }
 
     bicycleService.deleteById(bicycle.getId());
-    applyFilters();
+    refreshAsync();
   }
 
   private void updateCount() {

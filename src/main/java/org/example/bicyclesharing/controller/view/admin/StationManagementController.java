@@ -1,18 +1,11 @@
 package org.example.bicyclesharing.controller.view.admin;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditStationController;
 import org.example.bicyclesharing.domain.Impl.Station;
@@ -39,6 +32,7 @@ public class StationManagementController extends BaseController {
     viewModel = new StationManagementViewModel(currentUser, AppConfig.stationService());
     bind();
     setupList();
+    viewModel.loadStationsAsync();
   }
 
   private void bind() {
@@ -48,7 +42,7 @@ public class StationManagementController extends BaseController {
     addStationButton.textProperty().bind(viewModel.addStationButtonText);
 
     searchField.textProperty().bindBidirectional(viewModel.searchText);
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFilters());
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
 
     stationsListView.setItems(viewModel.getStations());
   }
@@ -124,14 +118,11 @@ public class StationManagementController extends BaseController {
     try {
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditStationView.fxml",
-          (AddEditStationController controller) -> controller.initData(station, () -> {
-            viewModel.load();
-            viewModel.applyFilters();
-          })
+          (AddEditStationController controller) -> controller.initData(station, viewModel::refreshAsync)
       );
 
     } catch (Exception e) {
-      e.printStackTrace();
+      DialogUtil.showError("error.operation.failed");
     }
   }
 }

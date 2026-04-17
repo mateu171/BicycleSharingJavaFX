@@ -10,20 +10,20 @@ import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.Impl.Rental;
+import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.BikeIssueService;
 import org.example.bicyclesharing.services.RentalService;
-import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.viewModel.AsyncViewModel;
 
-public class MechanicIssuesViewModel {
+public class MechanicIssuesViewModel extends AsyncViewModel {
 
-  private final BikeIssueService bikeIssueService = AppConfig.bikeIssueService();
-  private final BicycleService bicycleService = AppConfig.bicycleService();
-  private final RentalService rentalService = AppConfig.rentalService();
-
+  private final BikeIssueService bikeIssueService;
+  private final BicycleService bicycleService;
+  private final RentalService rentalService;
   private final ObservableList<BikeIssue> issues = FXCollections.observableArrayList();
 
   public final StringProperty titleText = LocalizationManager.getStringProperty("mechanic.issues.title");
@@ -42,10 +42,14 @@ public class MechanicIssuesViewModel {
   public final StringProperty countText = new SimpleStringProperty();
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-  private Rental rental;
 
-  public MechanicIssuesViewModel() {
-    loadIssues();
+
+  public MechanicIssuesViewModel(User currentUser, BikeIssueService bikeIssueService,
+      BicycleService bicycleService, RentalService rentalService) {
+    super(currentUser);
+    this.bikeIssueService = bikeIssueService;
+    this.bicycleService = bicycleService;
+    this.rentalService = rentalService;
   }
 
   public ObservableList<BikeIssue> getIssues()
@@ -53,10 +57,13 @@ public class MechanicIssuesViewModel {
     return issues;
   }
 
-  public void loadIssues()
+  public void loadIssuesAsync()
   {
-    issues.setAll(bikeIssueService.getAll());
-    updateCount();
+    runAsync(bikeIssueService::getAll,
+        result -> {
+          issues.setAll(result);
+          updateCount();
+        });
   }
 
   public void updateCount() {
@@ -178,7 +185,7 @@ public class MechanicIssuesViewModel {
       }
     }
 
-    loadIssues();
+    loadIssuesAsync();
   }
 
   public void resolve(BikeIssue issue) {
@@ -200,7 +207,7 @@ public class MechanicIssuesViewModel {
       }
     }
 
-    loadIssues();
+    loadIssuesAsync();
   }
 
   private String safe(String value) {

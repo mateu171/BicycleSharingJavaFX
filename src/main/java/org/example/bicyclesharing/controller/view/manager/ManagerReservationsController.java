@@ -1,9 +1,6 @@
 package org.example.bicyclesharing.controller.view.manager;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -14,9 +11,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.manager.modalController.AddEditReservationController;
 import org.example.bicyclesharing.domain.Impl.Reservation;
@@ -40,16 +34,20 @@ public class ManagerReservationsController extends BaseController {
 
   @Override
   public void setCurrentUser(User currentUser) {
+    this.currentUser = currentUser;
+
     viewModel = new ManagerReservationsViewModel(
-        this.currentUser = currentUser,
+        currentUser,
         AppConfig.reservationService(),
         AppConfig.rentalService(),
         AppConfig.customerService(),
         AppConfig.bicycleService()
     );
+
     binds();
     setupFilters();
     setupList();
+    viewModel.loadReservationsAsync();
   }
 
   private void binds() {
@@ -71,11 +69,11 @@ public class ManagerReservationsController extends BaseController {
   }
 
   private void setupFilters() {
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFilters());
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
 
     statusFilterCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
       viewModel.statusFilterText.set(newVal);
-      viewModel.applyFilters();
+      viewModel.applyFiltersAsync();
     });
   }
 
@@ -146,7 +144,7 @@ public class ManagerReservationsController extends BaseController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox actions = new HBox(10, issueCardButton,editCardButton, cancelCardButton);
+        HBox actions = new HBox(10, issueCardButton, editCardButton, cancelCardButton);
         HBox bottomRow = new HBox(10, statusLabel, spacer, actions);
 
         card.getChildren().addAll(
@@ -172,10 +170,11 @@ public class ManagerReservationsController extends BaseController {
     try {
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/manager/modalView/AddEditReservationView.fxml",
-          (AddEditReservationController controller) -> controller.initData(currentUser, reservation, () -> {
-            viewModel.loadReservations();
-            viewModel.applyFilters();
-          })
+          (AddEditReservationController controller) -> controller.initData(
+              currentUser,
+              reservation,
+              viewModel::refreshAsync
+          )
       );
     } catch (Exception e) {
       e.printStackTrace();

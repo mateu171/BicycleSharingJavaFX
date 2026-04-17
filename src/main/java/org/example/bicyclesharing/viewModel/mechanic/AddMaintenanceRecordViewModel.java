@@ -5,6 +5,8 @@ import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
@@ -21,9 +23,11 @@ import org.example.bicyclesharing.viewModel.BaseViewModel;
 
 public class AddMaintenanceRecordViewModel extends BaseViewModel {
 
-  private final MechanicServiceViewModel mechanicServiceViewModel = new MechanicServiceViewModel();
   private final BicycleService bicycleService = AppConfig.bicycleService();
   private final MaintenanceRecordService maintenanceRecordService = AppConfig.maintenanceRecordService();
+
+  private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
+  private final FilteredList<Bicycle> filteredBicycles = new FilteredList<>(bicycles, bicycle -> true);
 
   public final StringProperty searchText = new SimpleStringProperty("");
   public final ObjectProperty<Bicycle> selectedBicycle = new SimpleObjectProperty<>();
@@ -59,27 +63,34 @@ public class AddMaintenanceRecordViewModel extends BaseViewModel {
       LocalizationManager.getStringProperty("maintenance.search.prompt");
   public final StringProperty modelColumnText =
       LocalizationManager.getStringProperty("mechanic.column.model");
-  public final StringProperty stateColumnText = LocalizationManager.getStringProperty("mechanic.column.state");
-  public final StringProperty actionText = LocalizationManager.getStringProperty("maintenance.action");
+  public final StringProperty stateColumnText =
+      LocalizationManager.getStringProperty("mechanic.column.state");
+  public final StringProperty actionText =
+      LocalizationManager.getStringProperty("maintenance.action");
 
   public AddMaintenanceRecordViewModel(User currentUser) {
     super(currentUser);
+    loadBicycles();
+    setupFiltering();
   }
 
+  private void loadBicycles() {
+    bicycles.setAll(bicycleService.getAll());
+  }
 
-  public FilteredList<Bicycle> getFilteredBicycles() {
-    FilteredList<Bicycle> filtered = new FilteredList<>(mechanicServiceViewModel.getBicycles(), bicycle -> true);
-
+  private void setupFiltering() {
     searchText.addListener((obs, oldValue, newValue) -> {
       String search = newValue == null ? "" : newValue.toLowerCase(Locale.ROOT).trim();
 
-      filtered.setPredicate(bicycle ->
+      filteredBicycles.setPredicate(bicycle ->
           search.isBlank()
               || bicycle.getModel().toLowerCase(Locale.ROOT).contains(search)
       );
     });
+  }
 
-    return filtered;
+  public FilteredList<Bicycle> getFilteredBicycles() {
+    return filteredBicycles;
   }
 
   public String getStateText(Bicycle bicycle) {
@@ -104,17 +115,24 @@ public class AddMaintenanceRecordViewModel extends BaseViewModel {
       MaintenanceRecord record = new MaintenanceRecord(
           selectedBicycle.get() == null ? null : selectedBicycle.get().getId(),
           currentUser.getId(),
-          selectedType.get() == null ? null : selectedType.get(),
+          selectedType.get(),
           description.get(),
           result.get(),
-          selectedAction.get() == null ? null : selectedAction.get()
+          selectedAction.get()
       );
 
       maintenanceRecordService.add(record);
+
       Bicycle selectedBike = selectedBicycle.get();
-      selectedBike.setState(selectedAction.get() == MaintenanceAction.RETURN_TO_AVAILABLE ? StateBicycle.AVAILABLE : StateBicycle.UNAVAILABLE);
+      selectedBike.setState(
+          selectedAction.get() == MaintenanceAction.RETURN_TO_AVAILABLE
+              ? StateBicycle.AVAILABLE
+              : StateBicycle.UNAVAILABLE
+      );
       bicycleService.update(selectedBike);
+
       clearForm();
+      loadBicycles();
       successMessageKey.set("maintenance.success");
       return true;
 
@@ -123,6 +141,7 @@ public class AddMaintenanceRecordViewModel extends BaseViewModel {
         if (keys == null || keys.isEmpty()) {
           return;
         }
+
         String key = keys.get(0);
 
         switch (field) {
@@ -143,6 +162,5 @@ public class AddMaintenanceRecordViewModel extends BaseViewModel {
     descriptionErrorKey.set("");
     resultErrorKey.set("");
     actionErrorKey.set("");
-
   }
 }

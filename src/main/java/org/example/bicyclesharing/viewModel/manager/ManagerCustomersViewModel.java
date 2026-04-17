@@ -1,8 +1,5 @@
 package org.example.bicyclesharing.viewModel.manager;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -11,9 +8,9 @@ import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.util.LocalizationManager;
-import org.example.bicyclesharing.viewModel.BaseViewModel;
+import org.example.bicyclesharing.viewModel.AsyncViewModel;
 
-public class ManagerCustomersViewModel extends BaseViewModel {
+public class ManagerCustomersViewModel extends AsyncViewModel {
 
   private final CustomerService customerService;
     private final ObservableList<Customer> customers = FXCollections.observableArrayList();
@@ -30,17 +27,19 @@ public class ManagerCustomersViewModel extends BaseViewModel {
   public ManagerCustomersViewModel(User currentUser,CustomerService customerService) {
     super(currentUser);
     this.customerService = customerService;
-    loadCustomers();
   }
 
   public ObservableList<Customer> getCustomers() {
     return customers;
   }
 
-  public void loadCustomers()
+  public void loadCustomersAsync()
   {
-    customers.setAll(customerService.getAll());
-    updateCount();
+    runAsync(customerService::getAll,
+        result -> {
+      customers.setAll(result);
+          updateCount();
+        });
   }
 
   private void updateCount() {
@@ -49,17 +48,32 @@ public class ManagerCustomersViewModel extends BaseViewModel {
     );
   }
 
-  public void applyFilters() {
+  public void applyFiltersAsync() {
     String search = searchText.get() == null ? "" : searchText.get().trim();
-    customers.setAll(customerService.findByFilters(search));
-    updateCount();
+    runAsync(
+        () -> customerService.findByFilters(search),
+        result -> {
+          customers.setAll(result);
+          updateCount();
+        }
+    );
   }
 
   public void deleteCustomer(Customer customer)
   {
     customerService.validateCanDelete(customer);
     customerService.deleteById(customer.getId());
-    applyFilters();
+    refreshAsync();
   }
 
+
+  public void refreshAsync() {
+    String search = searchText.get() == null ? "" : searchText.get().trim();
+
+    if (search.isBlank()) {
+      loadCustomersAsync();
+    } else {
+      applyFiltersAsync();
+    }
+  }
 }

@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.controller.window;
 
 import java.io.IOException;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -30,13 +31,15 @@ public class MainMenuController extends BaseWindowController{
     navigationService.setCurrentUser(currentUser);
     loadMenuByRole(currentUser);
 
-    if (currentUser.getRole() == Role.ADMIN) {
-      onShowAdminDashboard();
-    } else if (currentUser.getRole() == Role.MECHANIC) {
-      onShowMechanicDashboard();
-    } else if (currentUser.getRole() == Role.MANAGER) {
-      onShowManagerDashboard();
-    }
+    Platform.runLater(() -> {
+      if (currentUser.getRole() == Role.ADMIN) {
+        onShowAdminDashboard();
+      } else if (currentUser.getRole() == Role.MECHANIC) {
+        onShowMechanicDashboard();
+      } else if (currentUser.getRole() == Role.MANAGER) {
+        onShowManagerDashboard();
+      }
+    });
   }
 
   @Override

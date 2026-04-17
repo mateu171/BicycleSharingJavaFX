@@ -1,21 +1,13 @@
 package org.example.bicyclesharing.controller.view.admin;
 
-import java.io.File;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditBicycleController;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
@@ -46,6 +38,7 @@ public class BicyclesManagementController extends BaseController {
     bindFields();
     setupFilters();
     setupList();
+    viewModel.loadBicyclesAsync();
   }
 
   private void bindFields() {
@@ -99,11 +92,11 @@ public class BicyclesManagementController extends BaseController {
       }
     });
 
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFilters());
+    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
 
     stateFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
       viewModel.selectedStateFilter.set(newVal);
-      viewModel.applyFilters();
+      viewModel.applyFiltersAsync();
     });
   }
 
@@ -183,10 +176,7 @@ public class BicyclesManagementController extends BaseController {
 
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditBicycleView.fxml",
-          (AddEditBicycleController controller) -> controller.initData(bicycle, () -> {
-            viewModel.loadBicycles();
-            viewModel.applyFilters();
-          })
+          (AddEditBicycleController controller) -> controller.initData(bicycle, viewModel::refreshAsync)
       );
 
     } catch (BusinessException e) {

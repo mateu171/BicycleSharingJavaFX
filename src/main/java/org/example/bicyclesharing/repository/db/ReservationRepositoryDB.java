@@ -135,7 +135,7 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
       query.addEqualsCondition("r.status", status.name());
     }
 
-    query.addOrderBy("r.start_time DESC");
+    query.addOrderBy("r.start_time","DESC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }

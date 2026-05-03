@@ -36,15 +36,17 @@ public class StationService extends BaseService<Station, UUID>{
       throw new BusinessException("error.station.not_found");
     }
 
-    for (UUID bicycleId : station.getBicyclesId()) {
-      Bicycle bicycle = bicycleService.getById(bicycleId).orElse(null);
+    executeInTransaction(() -> {
+      for (UUID bicycleId : station.getBicyclesId()) {
+        Bicycle bicycle = bicycleService.getById(bicycleId).orElse(null);
 
-      if (bicycle != null) {
-        bicycle.setStationId(null);
-        bicycleService.update(bicycle);
+        if (bicycle != null) {
+          bicycle.setStationId(null);
+          bicycleService.update(bicycle);
+        }
       }
-    }
 
-    deleteById(station.getId());
+      deleteById(station.getId());
+    });
   }
 }

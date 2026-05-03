@@ -16,13 +16,11 @@ public interface Repository<T, ID> {
 
   boolean deleteById(ID id);
 
-  boolean deleteById(UUID uuid);
 
   boolean delete(T entity);
 
   boolean existsById(ID id);
 
-  boolean existsById(UUID uuid);
 
   long count();
 

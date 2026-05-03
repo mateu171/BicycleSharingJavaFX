@@ -117,7 +117,7 @@ public class RentalRepositoryDB
       );
     }
 
-    query.addOrderBy("r.start DESC");
+    query.addOrderBy("r.start","DESC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }

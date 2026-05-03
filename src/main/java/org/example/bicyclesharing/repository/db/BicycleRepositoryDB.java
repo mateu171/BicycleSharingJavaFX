@@ -108,7 +108,7 @@ public class BicycleRepositoryDB
       query.addEqualsCondition("state", state.name());
     }
 
-    query.addOrderBy("model ASC");
+    query.addOrderBy("model" ,"ASC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }

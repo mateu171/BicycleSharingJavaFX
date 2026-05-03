@@ -88,7 +88,7 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
     QueryData query = new QueryData("SELECT * FROM CUSTOMERS WHERE 1=1");
 
     query.addLikeCondition("full_name", search);
-    query.addOrderBy("full_name ASC");
+    query.addOrderBy("full_name","ASC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }

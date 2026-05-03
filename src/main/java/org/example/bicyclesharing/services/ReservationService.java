@@ -13,8 +13,8 @@ public class ReservationService extends BaseService<Reservation, UUID>{
 
   private ReservationRepository reservationRepository;
 
-  public ReservationService(ReservationRepositoryDB reservationRepositoryDB) {
-    this.reservationRepository = reservationRepositoryDB;
+  public ReservationService(ReservationRepository reservationRepository) {
+    this.reservationRepository = reservationRepository;
   }
 
   @Override
@@ -27,12 +27,15 @@ public class ReservationService extends BaseService<Reservation, UUID>{
   }
 
   public void updateStatuses() {
-    List<Reservation> toUpdate =
-        reservationRepository.findNotIssuedButStarted(LocalDateTime.now());
 
-    for (Reservation r : toUpdate) {
-      r.setStatus(ReservationStatus.ISSUED);
-      reservationRepository.update(r);
-    }
+    executeInTransaction(() -> {
+      List<Reservation> toUpdate =
+          reservationRepository.findNotIssuedButStarted(LocalDateTime.now());
+
+      for (Reservation r : toUpdate) {
+        r.setStatus(ReservationStatus.ISSUED);
+        reservationRepository.update(r);
+      }
+    });
   }
 }

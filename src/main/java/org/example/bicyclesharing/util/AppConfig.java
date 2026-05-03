@@ -1,6 +1,24 @@
 package org.example.bicyclesharing.util;
 
+import java.util.UUID;
+import org.example.bicyclesharing.domain.Impl.Bicycle;
+import org.example.bicyclesharing.domain.Impl.BikeIssue;
+import org.example.bicyclesharing.domain.Impl.Customer;
+import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
+import org.example.bicyclesharing.domain.Impl.Rental;
+import org.example.bicyclesharing.domain.Impl.Reservation;
+import org.example.bicyclesharing.domain.Impl.Station;
+import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.security.PasswordHasher;
+import org.example.bicyclesharing.repository.BicycleRepository;
+import org.example.bicyclesharing.repository.BikeIssueRepository;
+import org.example.bicyclesharing.repository.CustomerRepository;
+import org.example.bicyclesharing.repository.MaintenanceRecordRepository;
+import org.example.bicyclesharing.repository.RentalRepository;
+import org.example.bicyclesharing.repository.ReservationRepository;
+import org.example.bicyclesharing.repository.StationRepository;
+import org.example.bicyclesharing.repository.UserRepository;
+import org.example.bicyclesharing.repository.cache.CachedRepositoryProxy;
 import org.example.bicyclesharing.repository.db.BicycleRepositoryDB;
 import org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB;
 import org.example.bicyclesharing.repository.db.CustomerRepositoryDB;
@@ -29,17 +47,61 @@ public final class AppConfig {
   private static final PasswordHasher PASSWORD_HASHER = new PasswordHasher();
   private static final EmailService EMAIL_SERVICE = new EmailService();
 
+  private static final UserRepository USER_REPOSITORY =
+      CachedRepositoryProxy.create(
+          new UserRepositoryDB(),
+          UserRepository.class,
+          User::getId
+      );
 
-  private static final UserRepositoryDB USER_REPOSITORY = new UserRepositoryDB();
-  private static final BicycleRepositoryDB BICYCLE_REPOSITORY = new BicycleRepositoryDB();
-  private static final StationRepositoryDB STATION_REPOSITORY = new StationRepositoryDB();
-  private static final RentalRepositoryDB RENTAL_REPOSITORY = new RentalRepositoryDB();
-  private static final ReservationRepositoryDB RESERVATION_REPOSITORY = new ReservationRepositoryDB();
-  private static final BikeIssueRepositoryDB BIKE_ISSUE_REPOSITORY = new BikeIssueRepositoryDB();
-  private static final MaintenanceRecordRepositoryDB MAINTENANCE_RECORD_REPOSITORY =
-      new MaintenanceRecordRepositoryDB();
-  private static final CustomerRepositoryDB CUSTOMER_REPOSITORY = new CustomerRepositoryDB();
+  private static final BicycleRepository BICYCLE_REPOSITORY =
+      CachedRepositoryProxy.create(
+          new BicycleRepositoryDB(),
+          BicycleRepository.class,
+          Bicycle::getId
+      );
 
+  private static final StationRepository STATION_REPOSITORY =
+      CachedRepositoryProxy.create(
+          new StationRepositoryDB(),
+          StationRepository.class,
+          Station::getId
+      );
+
+  private static final RentalRepository RENTAL_REPOSITORY =
+      CachedRepositoryProxy.create(
+          new RentalRepositoryDB(),
+          RentalRepository.class,
+          Rental::getId
+      );
+
+  private static final ReservationRepository RESERVATION_REPOSITORY =
+      CachedRepositoryProxy.create(
+          new ReservationRepositoryDB(),
+          ReservationRepository.class,
+          Reservation::getId
+      );
+
+  private static final BikeIssueRepository BIKE_ISSUE_REPOSITORY =
+      CachedRepositoryProxy.create(
+          new BikeIssueRepositoryDB(),
+          BikeIssueRepository.class,
+          BikeIssue::getId
+      );
+
+  private static final MaintenanceRecordRepository MAINTENANCE_RECORD_REPOSITORY =
+      CachedRepositoryProxy.create(
+          new MaintenanceRecordRepositoryDB(),
+          MaintenanceRecordRepository.class,
+          MaintenanceRecord::getId
+      );
+
+  private static final CustomerRepository CUSTOMER_REPOSITORY =
+      CachedRepositoryProxy.create(
+          new CustomerRepositoryDB(),
+          CustomerRepository.class,
+          Customer::getId
+      );
 
   private static final VerificationService VERIFICATION_SERVICE =
       new VerificationService(EMAIL_SERVICE);

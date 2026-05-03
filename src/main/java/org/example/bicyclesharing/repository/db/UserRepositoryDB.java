@@ -92,7 +92,7 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
       query.addEqualsCondition("role", role.name());
     }
 
-    query.addOrderBy("login ASC");
+    query.addOrderBy("login","ASC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }

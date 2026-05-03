@@ -14,6 +14,8 @@ module org.example.bicyclesharing {
   requires java.prefs;
   requires jdk.jsobject;
   requires spring.jdbc;
+  requires spring.tx;
+  requires spring.context;
 
   opens org.example.bicyclesharing to javafx.fxml;
   exports org.example.bicyclesharing;

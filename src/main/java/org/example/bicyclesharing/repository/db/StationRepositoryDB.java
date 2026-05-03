@@ -123,7 +123,7 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
     QueryData query = new QueryData("SELECT * FROM STATIONS WHERE 1=1");
 
     query.addLikeCondition("name", search);
-    query.addOrderBy("name ASC");
+    query.addOrderBy("name", "ASC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }

@@ -18,6 +18,7 @@ public class UserService extends BaseService<User, UUID> {
   public UserService(UserRepository userRepository, PasswordHasher passwordHasher) {
     this.userRepository = userRepository;
     this.passwordHasher = passwordHasher;
+    createDefaultAdminIfNotExists();
   }
 
   public boolean existsByLogin(String login) {
@@ -73,4 +74,14 @@ public class UserService extends BaseService<User, UUID> {
     }
   }
 
+  private void  createDefaultAdminIfNotExists()
+  {
+    User admin = userRepository.findByLogin("admin");
+    if (admin != null) {
+      return;
+    }
+    User user = User.create("admin","admin123","admin@gmail.com",Role.ADMIN);
+
+    userRepository.save(user);
+  }
 }

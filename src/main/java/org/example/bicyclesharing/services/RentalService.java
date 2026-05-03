@@ -61,24 +61,26 @@ public class RentalService extends BaseService<Rental, UUID> {
       throw new BusinessException("error.rental.already_finished");
     }
 
-    Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
-    if (bicycle == null) {
-      throw new BusinessException("error.bicycle.not_found");
-    }
+    return executeInTransactionWithResult(() -> {
+      Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
+      if (bicycle == null) {
+        throw new BusinessException("error.bicycle.not_found");
+      }
 
-    Customer customer = customerService.getById(rental.getCustomerId()).orElse(null);
-    if (customer == null) {
-      throw new BusinessException("error.customer.not_found");
-    }
+      Customer customer = customerService.getById(rental.getCustomerId()).orElse(null);
+      if (customer == null) {
+        throw new BusinessException("error.customer.not_found");
+      }
 
-    rental.setEnd(LocalDateTime.now());
-    calculateCost(rental, bicycle);
-    update(rental);
+      rental.setEnd(LocalDateTime.now());
+      calculateCost(rental, bicycle);
+      update(rental);
 
-    customer.setActiveRent(null);
-    customerService.update(customer);
+      customer.setActiveRent(null);
+      customerService.update(customer);
 
-    return rental.getTotalCost();
+      return rental.getTotalCost();
+    });
   }
 
 }

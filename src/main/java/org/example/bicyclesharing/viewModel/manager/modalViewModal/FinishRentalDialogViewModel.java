@@ -6,27 +6,16 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.example.bicyclesharing.domain.Impl.Bicycle;
-import org.example.bicyclesharing.domain.Impl.BikeIssue;
-import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
-import org.example.bicyclesharing.services.BicycleService;
-import org.example.bicyclesharing.services.BikeIssueService;
-import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class FinishRentalDialogViewModel {
 
   private final RentalService rentalService;
-  private final CustomerService customerService;
-  private final BicycleService bicycleService;
-  private final BikeIssueService bikeIssueService;
-
   private final Rental rental;
   private final User currentUser;
 
@@ -55,23 +44,18 @@ public class FinishRentalDialogViewModel {
 
   public final StringProperty problemTypeError = new SimpleStringProperty("");
   public final StringProperty commentError = new SimpleStringProperty("");
+  public final StringProperty generalError = new SimpleStringProperty("");
 
   private double finalPrice;
 
   public FinishRentalDialogViewModel(
       User currentUser,
       Rental rental,
-      RentalService rentalService,
-      CustomerService customerService,
-      BicycleService bicycleService,
-      BikeIssueService bikeIssueService
+      RentalService rentalService
   ) {
     this.currentUser = currentUser;
     this.rental = rental;
     this.rentalService = rentalService;
-    this.customerService = customerService;
-    this.bicycleService = bicycleService;
-    this.bikeIssueService = bikeIssueService;
   }
 
   public List<String> getProblemTypes() {
@@ -90,76 +74,44 @@ public class FinishRentalDialogViewModel {
   public boolean finishRental() {
     clearErrors();
 
-    Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
-    Customer customer = customerService.getById(rental.getCustomerId()).orElse(null);
-
-    if (bicycle == null) {
-      throw new BusinessException("error.bicycle.not_found");
-    }
-
-    if (customer == null) {
-      throw new BusinessException("error.customer.not_found");
-    }
-
-    if (rental.getEnd() != null) {
-      throw new BusinessException("error.rental.already_finished");
-    }
-
-    if (hasProblem.get()) {
-      if (selectedProblemType.get() == null || selectedProblemType.get().trim().isEmpty()) {
-        problemTypeError.set(
-            LocalizationManager.getStringByKey("ride.problem.validation.type.required")
-        );
-        return false;
-      }
-
-      try {
-        new BikeIssue(
-            rental.getId(),
-            bicycle.getId(),
-            selectedProblemType.get(),
-            comment.get(),
-            technicalProblem.get()
-        );
-      } catch (CustomEntityValidationExeption e) {
-        e.getErrors().forEach((field, messages) -> {
-          String text = messages.stream()
-              .map(LocalizationManager::getStringByKey)
-              .collect(Collectors.joining("\n"));
-
-          switch (field) {
-            case "problemType" -> problemTypeError.set(text);
-            case "comment" -> commentError.set(text);
-          }
-        });
-        return false;
-      }
-    }
-
-    finalPrice = rentalService.finishRental(rental);
-
-    if (hasProblem.get()) {
-      bicycle.setState(StateBicycle.NEEDS_INSPECTION);
-      bicycleService.update(bicycle);
-
-      BikeIssue issue = new BikeIssue(
-          rental.getId(),
-          bicycle.getId(),
+    try {
+      finalPrice = rentalService.finishRental(
+          rental,
+          hasProblem.get(),
           selectedProblemType.get(),
           comment.get(),
           technicalProblem.get()
       );
-      bikeIssueService.add(issue);
-    } else {
-      bicycle.setState(StateBicycle.AVAILABLE);
-      bicycleService.update(bicycle);
-    }
 
-    return true;
+      return true;
+
+    } catch (CustomEntityValidationExeption e) {
+      applyValidationErrors(e);
+      return false;
+
+    } catch (BusinessException e) {
+      generalError.set(LocalizationManager.getStringByKey(e.getMessage()));
+      return false;
+    }
+  }
+
+  private void applyValidationErrors(CustomEntityValidationExeption e) {
+    e.getErrors().forEach((field, messages) -> {
+      String text = messages.stream()
+          .map(LocalizationManager::getStringByKey)
+          .collect(Collectors.joining("\n"));
+
+      switch (field) {
+        case "problemType" -> problemTypeError.set(text);
+        case "comment" -> commentError.set(text);
+        default -> generalError.set(text);
+      }
+    });
   }
 
   private void clearErrors() {
     problemTypeError.set("");
     commentError.set("");
+    generalError.set("");
   }
 }

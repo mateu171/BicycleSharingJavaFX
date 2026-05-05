@@ -23,8 +23,6 @@ public class AddEditStationViewModel {
 
   public final StringProperty nameLabelText =
       LocalizationManager.getStringProperty("admin.stations.name");
-  public final StringProperty employeeLabelText =
-      LocalizationManager.getStringProperty("admin.stations.employee");
 
   public final StringProperty name = new SimpleStringProperty("");
   public final StringProperty latitude = new SimpleStringProperty("");

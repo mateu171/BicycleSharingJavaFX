@@ -2,6 +2,7 @@ package org.example.bicyclesharing.repository.db;
 
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.repository.CustomerRepository;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,6 +10,13 @@ import org.springframework.jdbc.core.RowMapper;
 public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> implements
     CustomerRepository {
 
+  public CustomerRepositoryDB() {
+    super();
+  }
+
+  public CustomerRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
   @Override
   protected String getCreateTableSQL() {
     return "CREATE TABLE IF NOT EXISTS CUSTOMERS (" +

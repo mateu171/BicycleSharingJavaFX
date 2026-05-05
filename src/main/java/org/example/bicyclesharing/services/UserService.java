@@ -25,6 +25,12 @@ public class UserService extends BaseService<User, UUID> {
     return userRepository.findByLogin(login) != null;
   }
 
+  public void validateLoginIsUnique(String login) {
+    if (existsByLogin(login)) {
+      throw new BusinessException("error.login.exists");
+    }
+  }
+
   public Optional<User> getById(UUID id) {
     return userRepository.findById(id);
   }

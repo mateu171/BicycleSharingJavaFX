@@ -139,7 +139,8 @@ public final class AppConfig {
       new RentalService(
           RENTAL_REPOSITORY,
           BICYCLE_SERVICE,
-          CUSTOMER_SERVICE
+          CUSTOMER_SERVICE,
+          BIKE_ISSUE_SERVICE
       );
 
   public static VerificationService verificationService() {

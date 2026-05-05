@@ -2,12 +2,21 @@ package org.example.bicyclesharing.repository.db;
 
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.repository.UserRepository;
 import org.springframework.jdbc.core.RowMapper;
 
 public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements UserRepository {
+
+  public UserRepositoryDB() {
+    super();
+  }
+
+  public UserRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
 
   @Override
   protected String getTableName() {

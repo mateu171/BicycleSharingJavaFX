@@ -3,6 +3,7 @@ package org.example.bicyclesharing.repository.db;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.repository.RentalRepository;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,6 +11,14 @@ import org.springframework.jdbc.core.RowMapper;
 public class RentalRepositoryDB
     extends BaseRepositoryDB<Rental, UUID>
     implements RentalRepository {
+
+  public RentalRepositoryDB() {
+    super();
+  }
+
+  public RentalRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
 
   @Override
   public List<Rental> findByCustomerId(UUID id) {

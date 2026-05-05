@@ -3,6 +3,7 @@ package org.example.bicyclesharing.repository.db;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
 import org.example.bicyclesharing.domain.enums.MaintenanceAction;
 import org.example.bicyclesharing.domain.enums.MaintenanceType;
@@ -12,6 +13,14 @@ import org.springframework.jdbc.core.RowMapper;
 public class MaintenanceRecordRepositoryDB
     extends BaseRepositoryDB<MaintenanceRecord, UUID>
     implements MaintenanceRecordRepository {
+
+  public MaintenanceRecordRepositoryDB() {
+    super();
+  }
+
+  public MaintenanceRecordRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
 
   @Override
   public List<MaintenanceRecord> findByBicycleId(UUID bicycleId) {

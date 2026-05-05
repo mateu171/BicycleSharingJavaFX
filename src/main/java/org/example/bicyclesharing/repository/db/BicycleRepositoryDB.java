@@ -1,8 +1,8 @@
 package org.example.bicyclesharing.repository.db;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
@@ -12,6 +12,14 @@ import org.springframework.jdbc.core.RowMapper;
 public class BicycleRepositoryDB
     extends BaseRepositoryDB<Bicycle, UUID>
     implements BicycleRepository {
+
+  public BicycleRepositoryDB() {
+    super();
+  }
+
+  public BicycleRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
 
   @Override
   protected String getTableName() {

@@ -41,10 +41,7 @@ public class FinishRentalDialogController {
     this.viewModel = new FinishRentalDialogViewModel(
         currentUser,
         rental,
-        AppConfig.rentalService(),
-        AppConfig.customerService(),
-        AppConfig.bicycleService(),
-        AppConfig.bikeIssueService()
+        AppConfig.rentalService()
     );
     this.onSaved = onSaved;
     bind();

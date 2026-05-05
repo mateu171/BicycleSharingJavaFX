@@ -3,6 +3,7 @@ package org.example.bicyclesharing.repository.db;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
 import org.example.bicyclesharing.repository.BikeIssueRepository;
@@ -11,6 +12,14 @@ import org.springframework.jdbc.core.RowMapper;
 public class BikeIssueRepositoryDB
     extends BaseRepositoryDB<BikeIssue, UUID>
     implements BikeIssueRepository {
+
+  public BikeIssueRepositoryDB() {
+    super();
+  }
+
+  public BikeIssueRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
 
   @Override
   public List<BikeIssue> findByStatus(IssueStatus status) {

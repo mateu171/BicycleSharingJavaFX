@@ -5,12 +5,20 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.repository.StationRepository;
 import org.springframework.jdbc.core.RowMapper;
 
 public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> implements StationRepository {
 
+  public StationRepositoryDB() {
+    super();
+  }
+
+  public StationRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
   @Override
   public Station getById(UUID id) {
     String sql = "SELECT * FROM STATIONS WHERE id = ?";

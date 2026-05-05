@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.enums.DocumentType;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
@@ -12,6 +13,14 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID> implements
     ReservationRepository {
+
+  public ReservationRepositoryDB() {
+    super();
+  }
+
+  public ReservationRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
 
   @Override
   protected String getCreateTableSQL() {

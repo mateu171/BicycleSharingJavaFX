@@ -124,16 +124,16 @@ public class AddEditUserViewModel {
           selectedRole
       );
 
-      if (userService.existsByLogin(validatedUser.getLogin())) {
-        loginError.set(LocalizationManager.getStringByKey("error.login.exists"));
-        return false;
-      }
+      userService.validateLoginIsUnique(validatedUser.getLogin());
 
       pendingUser = validatedUser;
       return true;
 
     } catch (CustomEntityValidationExeption e) {
       applyValidationErrors(e);
+      return false;
+    } catch (BusinessException e) {
+      loginError.set(LocalizationManager.getStringByKey(e.getMessage()));
       return false;
     } catch (Exception e) {
       emailError.set(LocalizationManager.getStringByKey("error.email.send_failed"));
@@ -193,9 +193,8 @@ public class AddEditUserViewModel {
             ? imagePath
             : editingUser.getImagePath();
 
-        if (!loginValue.equals(editingUser.getLogin()) && userService.existsByLogin(loginValue)) {
-          loginError.set(LocalizationManager.getStringByKey("error.login.exists"));
-          return false;
+        if (!loginValue.equals(editingUser.getLogin())) {
+          userService.validateLoginIsUnique(loginValue);
         }
 
         userService.validateRoleChange(editingUser, roleValue);
@@ -215,7 +214,7 @@ public class AddEditUserViewModel {
       applyValidationErrors(e);
       return false;
     } catch (BusinessException e) {
-      roleError.set(LocalizationManager.getStringByKey(e.getMessage()));
+      applyBusinessError(e);
       return false;
     }
   }
@@ -248,5 +247,19 @@ public class AddEditUserViewModel {
     roleError.set("");
     codeError.set("");
     photoError.set("");
+  }
+
+  private void applyBusinessError(BusinessException e) {
+    String key = e.getMessage();
+    String message = LocalizationManager.getStringByKey(key);
+
+    switch (key) {
+      case "error.login.exists" -> loginError.set(message);
+
+      case "error.user.edit.last_admin_role",
+           "error.user.not_found" -> roleError.set(message);
+
+      default -> roleError.set(message);
+    }
   }
 }

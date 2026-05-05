@@ -40,6 +40,11 @@ public abstract class BaseRepositoryDB<T, ID> implements Repository<T, ID> {
     initTable();
   }
 
+  protected BaseRepositoryDB(DataSource dataSource) {
+    this.jdbcTemplate = new JdbcTemplate(dataSource);
+    initTable();
+  }
+
   private void initTable() {
     String sql = getCreateTableSQL();
     jdbcTemplate.execute(sql);

@@ -62,40 +62,40 @@ public class MechanicDashboardController extends BaseController implements Navig
         AppConfig.maintenanceRecordService()
     );
     bind();
-    viewModel.loadAsync();
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    subtitleLabel.textProperty().bind(viewModel.subtitleText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    subtitleLabel.textProperty().bind(viewModel.subtitleTextProperty());
 
-    newIssuesTitleLabel.textProperty().bind(viewModel.newIssuesTitle);
-    inProgressIssuesTitleLabel.textProperty().bind(viewModel.inProgressIssuesTitle);
-    onMaintenanceTitleLabel.textProperty().bind(viewModel.onMaintenanceTitle);
-    needsInspectionTitleLabel.textProperty().bind(viewModel.needsInspectionTitle);
+    newIssuesTitleLabel.textProperty().bind(viewModel.newIssuesTitleProperty());
+    inProgressIssuesTitleLabel.textProperty().bind(viewModel.inProgressIssuesTitleProperty());
+    onMaintenanceTitleLabel.textProperty().bind(viewModel.onMaintenanceTitleProperty());
+    needsInspectionTitleLabel.textProperty().bind(viewModel.needsInspectionTitleProperty());
 
-    newIssuesValueLabel.textProperty().bind(viewModel.newIssuesValue);
-    inProgressIssuesValueLabel.textProperty().bind(viewModel.inProgressIssuesValue);
-    onMaintenanceValueLabel.textProperty().bind(viewModel.onMaintenanceValue);
-    needsInspectionValueLabel.textProperty().bind(viewModel.needsInspectionValue);
+    newIssuesValueLabel.textProperty().bind(viewModel.newIssuesValueProperty());
+    inProgressIssuesValueLabel.textProperty().bind(viewModel.inProgressIssuesValueProperty());
+    onMaintenanceValueLabel.textProperty().bind(viewModel.onMaintenanceValueProperty());
+    needsInspectionValueLabel.textProperty().bind(viewModel.needsInspectionValueProperty());
 
-    attentionTitleLabel.textProperty().bind(viewModel.attentionTitle);
-    latestActivityTitleLabel.textProperty().bind(viewModel.latestActivityTitle);
-    quickActionsTitleLabel.textProperty().bind(viewModel.quickActionsTitle);
+    attentionTitleLabel.textProperty().bind(viewModel.attentionTitleProperty());
+    latestActivityTitleLabel.textProperty().bind(viewModel.latestActivityTitleProperty());
+    quickActionsTitleLabel.textProperty().bind(viewModel.quickActionsTitleProperty());
 
-    attentionNewIssuesLabel.textProperty().bind(viewModel.attentionNewIssuesText);
-    attentionTechnicalIssuesLabel.textProperty().bind(viewModel.attentionTechnicalIssuesText);
-    attentionResolvedIssuesLabel.textProperty().bind(viewModel.attentionResolvedIssuesText);
-    attentionMaintenanceRecordsLabel.textProperty().bind(viewModel.attentionMaintenanceRecordsText);
-    attentionUnavailableBicyclesLabel.textProperty().bind(viewModel.attentionUnavailableBicyclesText);
+    attentionNewIssuesLabel.textProperty().bind(viewModel.attentionNewIssuesTextProperty());
+    attentionTechnicalIssuesLabel.textProperty().bind(viewModel.attentionTechnicalIssuesTextProperty());
+    attentionResolvedIssuesLabel.textProperty().bind(viewModel.attentionResolvedIssuesTextProperty());
+    attentionMaintenanceRecordsLabel.textProperty().bind(viewModel.attentionMaintenanceRecordsTextProperty());
+    attentionUnavailableBicyclesLabel.textProperty().bind(viewModel.attentionUnavailableBicyclesTextProperty());
 
-    latestIssueLabel.textProperty().bind(viewModel.latestIssueText);
-    latestMaintenanceLabel.textProperty().bind(viewModel.latestMaintenanceText);
-    latestInspectionLabel.textProperty().bind(viewModel.latestInspectionText);
+    latestIssueLabel.textProperty().bind(viewModel.latestIssueTextProperty());
+    latestMaintenanceLabel.textProperty().bind(viewModel.latestMaintenanceTextProperty());
+    latestInspectionLabel.textProperty().bind(viewModel.latestInspectionTextProperty());
 
-    openIssuesButton.textProperty().bind(viewModel.openIssuesButtonText);
-    openServiceButton.textProperty().bind(viewModel.openServiceButtonText);
-    openHistoryButton.textProperty().bind(viewModel.openHistoryButtonText);
+    openIssuesButton.textProperty().bind(viewModel.openIssuesButtonTextProperty());
+    openServiceButton.textProperty().bind(viewModel.openServiceButtonTextProperty());
+    openHistoryButton.textProperty().bind(viewModel.openHistoryButtonTextProperty());
   }
 
   @FXML

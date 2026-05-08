@@ -13,26 +13,19 @@ public class AddEditStationViewModel {
   private final StationService stationService;
   private final Station editingStation;
 
-  public final StringProperty titleText = new SimpleStringProperty();
-  public final StringProperty saveButtonText =
-      LocalizationManager.getStringProperty("save.button");
-  public final StringProperty cancelButtonText =
-      LocalizationManager.getStringProperty("cancel.button");
-  public final StringProperty pickOnMapButtonText =
-      LocalizationManager.getStringProperty("station.pick.on.map");
+  private final StringProperty titleText = new SimpleStringProperty();
+  private final StringProperty saveButtonText = LocalizationManager.getStringProperty("save.button");
+  private final StringProperty cancelButtonText = LocalizationManager.getStringProperty("cancel.button");
+  private final StringProperty pickOnMapButtonText = LocalizationManager.getStringProperty("station.pick.on.map");
+  private final StringProperty nameLabelText = LocalizationManager.getStringProperty("admin.stations.name");
 
-  public final StringProperty nameLabelText =
-      LocalizationManager.getStringProperty("admin.stations.name");
+  private final StringProperty name = new SimpleStringProperty("");
+  private final StringProperty latitude = new SimpleStringProperty("");
+  private final StringProperty longitude = new SimpleStringProperty("");
+  private final StringProperty locationInfo = new SimpleStringProperty("");
 
-  public final StringProperty name = new SimpleStringProperty("");
-  public final StringProperty latitude = new SimpleStringProperty("");
-  public final StringProperty longitude = new SimpleStringProperty("");
-  public final StringProperty locationInfo = new SimpleStringProperty("");
-
-  public final StringProperty nameError = new SimpleStringProperty("");
-  public final StringProperty latitudeError = new SimpleStringProperty("");
-  public final StringProperty employeeError = new SimpleStringProperty("");
-
+  private final StringProperty nameError = new SimpleStringProperty("");
+  private final StringProperty coordinatesError = new SimpleStringProperty("");
 
   public AddEditStationViewModel(
       StationService stationService,
@@ -40,15 +33,26 @@ public class AddEditStationViewModel {
   ) {
     this.stationService = stationService;
     this.editingStation = editingStation;
+  }
 
+  public void initialize()
+  {
+    if(isEditMode())
+      initializeEditMode();
+    else
+      initializeAddMode();
+  }
 
-    if (editingStation == null) {
-      titleText.set(LocalizationManager.getStringByKey("admin.stations.add.title"));
-    } else {
-      titleText.set(LocalizationManager.getStringByKey("admin.stations.edit.title"));
+  private void initializeAddMode() {
+    titleText.set(LocalizationManager.getStringByKey("admin.stations.add.title"));
+    locationInfo.set(LocalizationManager.getStringByKey("station.location.not.selected"));
+  }
 
-      setCoordinates(editingStation.getLatitude(), editingStation.getLongitude());
-    }
+  private void initializeEditMode() {
+    titleText.set(LocalizationManager.getStringByKey("admin.stations.edit.title"));
+
+    name.set(editingStation.getName());
+    setCoordinates(editingStation.getLatitude(), editingStation.getLongitude());
   }
 
   public boolean isEditMode() {
@@ -58,53 +62,62 @@ public class AddEditStationViewModel {
   public boolean save() {
     clearErrors();
     try {
-      if (editingStation == null) {
-        Station station = new Station(
-            name.get(),
-            latitude.get(),
-            longitude.get()
-        );
-
-        stationService.add(station);
-
+      if (isEditMode()) {
+        updateStation();
       } else {
-        String nameValue = isBlank(name.get()) ? editingStation.getName() : name.get().trim();
-
-        Station validated = new Station(
-            nameValue,
-            latitude.get(),
-            longitude.get()
-        );
-
-        editingStation.setName(validated.getName());
-        editingStation.setLatitude(String.valueOf(validated.getLatitude()));
-        editingStation.setLongitude(String.valueOf(validated.getLongitude()));
-
-        if (!editingStation.isValid()) {
-          throw new CustomEntityValidationExeption(editingStation.getErrors());
-        }
-
-        stationService.update(editingStation);
+        createStation();
       }
 
       return true;
 
     } catch (CustomEntityValidationExeption e) {
-      e.getErrors().forEach((field, messages) -> {
-        String text = messages.stream()
-            .map(LocalizationManager::getStringByKey)
-            .collect(Collectors.joining("\n"));
-
-        switch (field) {
-          case "name" -> nameError.set(text);
-          case "latitude", "longitude" -> latitudeError.set(text);
-        }
-      });
-      return false;
-
-    } catch (IllegalArgumentException e) {
+      applyValidationErrors(e);
       return false;
     }
+  }
+
+  private void applyValidationErrors(CustomEntityValidationExeption e) {
+    e.getErrors().forEach((field, messages) -> {
+      String text = messages.stream()
+          .map(LocalizationManager::getStringByKey)
+          .collect(Collectors.joining("\n"));
+
+      switch (field) {
+        case "name" -> nameError.set(text);
+        case "latitude", "longitude" -> coordinatesError.set(text);
+      }
+    });
+  }
+
+  private void createStation() {
+    Station station = new Station(
+        name.get(),
+        latitude.get(),
+        longitude.get()
+    );
+
+    stationService.add(station);
+  }
+
+  private void updateStation() {
+    String nameValue = isBlank(name.get()) ? editingStation.getName() : name.get().trim();
+
+    Station validated = new Station(
+        nameValue,
+        latitude.get(),
+        longitude.get()
+    );
+
+    editingStation.setName(validated.getName());
+    editingStation.setLatitude(String.valueOf(validated.getLatitude()));
+    editingStation.setLongitude(String.valueOf(validated.getLongitude()));
+
+    if (!editingStation.isValid()) {
+      throw new CustomEntityValidationExeption(editingStation.getErrors());
+    }
+
+    stationService.update(editingStation);
+
   }
 
   private boolean isBlank(String value) {
@@ -118,12 +131,47 @@ public class AddEditStationViewModel {
         LocalizationManager.getStringByKey("station.location.selected")
             + ": " + String.format("%.5f, %.5f", lat, lng)
     );
-    latitudeError.set("");
+    coordinatesError.set("");
   }
 
   private void clearErrors() {
     nameError.set("");
-    latitudeError.set("");
-    employeeError.set("");
+    coordinatesError.set("");
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty saveButtonTextProperty() {
+    return saveButtonText;
+  }
+
+  public StringProperty cancelButtonTextProperty() {
+    return cancelButtonText;
+  }
+
+  public StringProperty pickOnMapButtonTextProperty() {
+    return pickOnMapButtonText;
+  }
+
+  public StringProperty nameLabelTextProperty() {
+    return nameLabelText;
+  }
+
+  public StringProperty nameProperty() {
+    return name;
+  }
+
+  public StringProperty locationInfoProperty() {
+    return locationInfo;
+  }
+
+  public StringProperty nameErrorProperty() {
+    return nameError;
+  }
+
+  public StringProperty coordinatesErrorProperty() {
+    return coordinatesError;
   }
 }

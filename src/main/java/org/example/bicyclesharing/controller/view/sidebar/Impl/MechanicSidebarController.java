@@ -15,59 +15,74 @@ public class MechanicSidebarController implements SidebarController {
   @FXML private Button btnDashboardMechanic;
   @FXML private Button btnSettings;
 
-  private MainMenuController mainMenuController;
   private MainMenuViewModel mainMenuViewModel;
 
+  private Runnable showDashboardAction;
+  private Runnable showIssuesAction;
+  private Runnable showServiceAction;
+  private Runnable showHistoryAction;
+  private Runnable showAddRecordAction;
+  private Runnable showSettingsAction;
+
   @Override
-  public void setMainMenuController(MainMenuController controller, MainMenuViewModel viewModel) {
-       mainMenuController = controller;
-       mainMenuViewModel = viewModel;
-       binds();
+  public void setMainMenuController(
+      MainMenuController controller,
+      MainMenuViewModel viewModel
+  ) {
+    this.mainMenuViewModel = viewModel;
+
+    this.showDashboardAction = controller::onShowMechanicDashboard;
+    this.showIssuesAction = controller::onShowMechanicIssues;
+    this.showServiceAction = controller::onShowMechanicService;
+    this.showHistoryAction = controller::onShowMechanicHistory;
+    this.showAddRecordAction = controller::onShowMechanicAddRecord;
+    this.showSettingsAction = controller::onShowSettings;
+
+    bind();
   }
 
-
-  @FXML
-  private void onShowIssues()
-  {
-    mainMenuController.onShowMechanicIssues();
-  }
-
-  @FXML
-  private void onShowService()
-  {
-    mainMenuController.onShowMechanicService();
-  }
-
-  @FXML
-  private void onShowHistory()
-  {
-    mainMenuController.onShowMechanicHistory();
-  }
-
-  @FXML
-  private void onShowAddRecord()
-  {
-    mainMenuController.onShowMechanicAddRecord();
+  private void bind() {
+    btnDashboardMechanic.textProperty().bind(mainMenuViewModel.dashboardButtonTextProperty());
+    btnMechanicIssues.textProperty().bind(mainMenuViewModel.mechanicIssuesButtonTextProperty());
+    btnMechanicHistory.textProperty().bind(mainMenuViewModel.mechanicHistoryButtonTextProperty());
+    btnMechanicService.textProperty().bind(mainMenuViewModel.mechanicServiceButtonTextProperty());
+    btnMechanicRecord.textProperty().bind(mainMenuViewModel.mechanicRecordButtonTextProperty());
+    btnSettings.textProperty().bind(mainMenuViewModel.settingsButtonTextProperty());
   }
 
   @FXML
-  private void onShowDashboard()
-  {
-       mainMenuController.onShowMechanicDashboard();
+  private void onShowIssues() {
+    run(showIssuesAction);
   }
 
   @FXML
-  private void onShowSettings()
-  {
-    mainMenuController.onShowSettings();
+  private void onShowService() {
+    run(showServiceAction);
   }
 
-  private void binds() {
-    btnDashboardMechanic.textProperty().bind(mainMenuViewModel.dashboardButtonText);
-    btnMechanicIssues.textProperty().bind(mainMenuViewModel.mechanicIssuesButtonText);
-    btnMechanicHistory.textProperty().bind(mainMenuViewModel.mechanicHistoryButtonText);
-    btnMechanicService.textProperty().bind(mainMenuViewModel.mechanicServiceButtonText);
-    btnMechanicRecord.textProperty().bind(mainMenuViewModel.mechanicRecordButtonText);
-    btnSettings.textProperty().bind(mainMenuViewModel.settingsButtonText);
+  @FXML
+  private void onShowHistory() {
+    run(showHistoryAction);
+  }
+
+  @FXML
+  private void onShowAddRecord() {
+    run(showAddRecordAction);
+  }
+
+  @FXML
+  private void onShowDashboard() {
+    run(showDashboardAction);
+  }
+
+  @FXML
+  private void onShowSettings() {
+    run(showSettingsAction);
+  }
+
+  private void run(Runnable action) {
+    if (action != null) {
+      action.run();
+    }
   }
 }

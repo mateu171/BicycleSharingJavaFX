@@ -1,6 +1,5 @@
 package org.example.bicyclesharing.controller.view.admin;
 
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -11,7 +10,6 @@ import javafx.scene.layout.VBox;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditUserController;
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
@@ -19,6 +17,7 @@ import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.admin.UsersManagementViewModel;
+import org.example.bicyclesharing.viewModel.admin.item.UserItemViewModel;
 
 public class UsersManagementController extends BaseController {
 
@@ -26,107 +25,111 @@ public class UsersManagementController extends BaseController {
   @FXML private Label countLabel;
   @FXML private TextField searchField;
   @FXML private ComboBox<String> roleFilterComboBox;
-  @FXML private ListView<User> usersListView;
+  @FXML private ListView<UserItemViewModel> usersListView;
   @FXML private Button addUserButton;
 
   private UsersManagementViewModel viewModel;
 
   @Override
   public void setCurrentUser(User currentUser) {
-    viewModel = new UsersManagementViewModel(currentUser, AppConfig.userService());
-    bindFields();
+    viewModel = new UsersManagementViewModel(
+        currentUser,
+        AppConfig.userService()
+    );
+
+    bind();
     setupFilters();
     setupList();
-    viewModel.loadUsersAsync();
+    viewModel.initialize();
   }
 
-  private void bindFields() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    countLabel.textProperty().bind(viewModel.countText);
-    searchField.promptTextProperty().bind(viewModel.searchPromptText);
-    addUserButton.textProperty().bind(viewModel.addButtonText);
+  private void bind() {
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    countLabel.textProperty().bind(viewModel.countTextProperty());
+    searchField.promptTextProperty().bind(viewModel.searchPromptTextProperty());
+    addUserButton.textProperty().bind(viewModel.addButtonTextProperty());
 
-    searchField.textProperty().bindBidirectional(viewModel.searchText);
+    searchField.textProperty().bindBidirectional(viewModel.searchTextProperty());
+    roleFilterComboBox.valueProperty().bindBidirectional(viewModel.selectedRoleFilterProperty());
+
     usersListView.setItems(viewModel.getUsers());
+
+    searchField.textProperty().addListener((obs, oldVal, newVal) ->
+        viewModel.applyFiltersAsync()
+    );
+
+    roleFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) ->
+        viewModel.applyFiltersAsync()
+    );
   }
 
   private void setupFilters() {
-    roleFilterComboBox.setItems(FXCollections.observableArrayList(
-        LocalizationManager.getStringByKey("all.text"),
-        LocalizationManager.getStringByKey(Role.ADMIN.getKey()),
-        LocalizationManager.getStringByKey(Role.MANAGER.getKey()),
-        LocalizationManager.getStringByKey(Role.MECHANIC.getKey())
-    ));
+    roleFilterComboBox.setItems(viewModel.getRoleFilters());
     roleFilterComboBox.getSelectionModel().selectFirst();
-
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
-
-    roleFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-      viewModel.selectedRoleFilter.set(newVal);
-      viewModel.applyFiltersAsync();
-    });
   }
 
   private void setupList() {
     usersListView.setCellFactory(list -> new ListCell<>() {
       @Override
-      protected void updateItem(User user, boolean empty) {
-        super.updateItem(user, empty);
+      protected void updateItem(UserItemViewModel item, boolean empty) {
+        super.updateItem(item, empty);
 
-        if (empty || user == null) {
+        if (empty || item == null) {
           setGraphic(null);
           setText(null);
           return;
         }
 
-        VBox card = new VBox(8);
-        card.getStyleClass().add("user-card");
-
-        ImageView avatar = ImageStorageUtil.createImageView(user.getImagePath(),60,60);
-        avatar.getStyleClass().add("avatar");
-
-        Label loginLabel = new Label(user.getLogin());
-        loginLabel.getStyleClass().add("user-card-title");
-
-        Label emailLabel = new Label(user.getEmail());
-        emailLabel.getStyleClass().add("user-card-subtitle");
-
-        Label roleLabelText = new Label(LocalizationManager.getStringByKey("admin.users.role"));
-        roleLabelText.getStyleClass().add("user-card-subtitle");
-
-        Label roleLabel = new Label(LocalizationManager.getStringByKey(user.getRole().getKey()));
-        roleLabel.getStyleClass().add("user-card-subtitle");
-
-        Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
-        editButton.getStyleClass().add("button-edit");
-        editButton.setOnAction(e -> openUserDialog(user));
-
-        Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
-        deleteButton.getStyleClass().add("button-danger");
-        deleteButton.setOnAction(e ->
-        {
-          try {
-            viewModel.deleteUser(user);
-            viewModel.refreshAsync();
-          }catch (BusinessException ex)
-          {
-            DialogUtil.showError(ex.getMessage());
-          }
-        });
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        VBox infoBox = new VBox(5,loginLabel,emailLabel);
-
-        HBox roleBox = new HBox(8, roleLabelText, roleLabel);
-        HBox actions = new HBox(10, editButton, deleteButton);
-        HBox bottomRow = new HBox(10, roleBox, spacer, actions);
-
-        card.getChildren().addAll(avatar,infoBox, bottomRow);
-        setGraphic(card);
+        setGraphic(createCard(item));
       }
     });
+  }
+
+  private VBox createCard(UserItemViewModel item) {
+    VBox card = new VBox(8);
+    card.getStyleClass().add("user-card");
+
+    ImageView avatar = ImageStorageUtil.createImageView(
+        item.imagePathProperty().get(),
+        60,
+        60
+    );
+    avatar.getStyleClass().add("avatar");
+
+    Label loginLabel = new Label();
+    loginLabel.getStyleClass().add("user-card-title");
+    loginLabel.textProperty().bind(item.loginTextProperty());
+
+    Label emailLabel = new Label();
+    emailLabel.getStyleClass().add("user-card-subtitle");
+    emailLabel.textProperty().bind(item.emailTextProperty());
+
+    Label roleTitleLabel = new Label();
+    roleTitleLabel.getStyleClass().add("user-card-subtitle");
+    roleTitleLabel.textProperty().bind(item.roleTitleTextProperty());
+
+    Label roleLabel = new Label();
+    roleLabel.getStyleClass().add("user-card-subtitle");
+    roleLabel.textProperty().bind(item.roleTextProperty());
+
+    Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
+    editButton.getStyleClass().add("button-edit");
+    editButton.setOnAction(e -> openUserDialog(item));
+
+    Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
+    deleteButton.getStyleClass().add("button-danger");
+    deleteButton.setOnAction(e -> deleteUser(item));
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    VBox infoBox = new VBox(5, loginLabel, emailLabel);
+    HBox roleBox = new HBox(8, roleTitleLabel, roleLabel);
+    HBox actions = new HBox(10, editButton, deleteButton);
+    HBox bottomRow = new HBox(10, roleBox, spacer, actions);
+
+    card.getChildren().addAll(avatar, infoBox, bottomRow);
+    return card;
   }
 
   @FXML
@@ -134,14 +137,28 @@ public class UsersManagementController extends BaseController {
     openUserDialog(null);
   }
 
-  private void openUserDialog(User user) {
+  private void openUserDialog(UserItemViewModel item) {
     try {
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditUserView.fxml",
-          (AddEditUserController controller) -> controller.initData(user, viewModel::refreshAsync)
+          (AddEditUserController controller) ->
+              controller.initData(
+                  item == null ? null : item.getUser(),
+                  viewModel::refreshAsync
+              )
       );
     } catch (Exception e) {
-      e.printStackTrace();
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.operation.failed"));
+    }
+  }
+
+  private void deleteUser(UserItemViewModel item) {
+    try {
+      viewModel.deleteUser(item);
+    } catch (BusinessException e) {
+      DialogUtil.showError(e.getMessage());
+    } catch (Exception e) {
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.delete.failed"));
     }
   }
 }

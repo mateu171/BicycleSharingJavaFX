@@ -13,47 +13,67 @@ public class AdminSidebarController implements SidebarController {
   @FXML private Button btnStations;
   @FXML private Button btnDashboardAdmin;
   @FXML private Button btnSettings;
-  private MainMenuController mainMenuController;
+
   private MainMenuViewModel mainMenuViewModel;
 
+  private Runnable showDashboardAction;
+  private Runnable showUsersAction;
+  private Runnable showBicyclesAction;
+  private Runnable showStationsAction;
+  private Runnable showSettingsAction;
+
   @Override
-  public void setMainMenuController(MainMenuController controller,MainMenuViewModel viewModel) {
-    this.mainMenuController = controller;
+  public void setMainMenuController(
+      MainMenuController controller,
+      MainMenuViewModel viewModel
+  ) {
     this.mainMenuViewModel = viewModel;
-    binds();
+
+    this.showDashboardAction = controller::onShowAdminDashboard;
+    this.showUsersAction = controller::onShowUsers;
+    this.showBicyclesAction = controller::onShowBicycles;
+    this.showStationsAction = controller::onShowStations;
+    this.showSettingsAction = controller::onShowSettings;
+
+    bind();
+  }
+
+  private void bind() {
+    btnUsers.textProperty().bind(mainMenuViewModel.usersButtonTextProperty());
+    btnBicycles.textProperty().bind(mainMenuViewModel.bicyclesButtonTextProperty());
+    btnDashboardAdmin.textProperty().bind(mainMenuViewModel.dashboardButtonTextProperty());
+    btnStations.textProperty().bind(mainMenuViewModel.stationButtonTextProperty());
+    btnSettings.textProperty().bind(mainMenuViewModel.settingsButtonTextProperty());
   }
 
   @FXML
   private void onShowDashboard() {
-    mainMenuController.onShowAdminDashboard();
+    run(showDashboardAction);
   }
 
   @FXML
   private void onShowUsers() {
-    mainMenuController.onShowUsers();
+    run(showUsersAction);
   }
 
   @FXML
   private void onShowBicycles() {
-    mainMenuController.onShowBicycles();
+    run(showBicyclesAction);
   }
 
   @FXML
   private void onShowStations() {
-    mainMenuController.onShowStations();
+    run(showStationsAction);
   }
 
   @FXML
   private void onShowSettings() {
-    mainMenuController.onShowSettings();
+    run(showSettingsAction);
   }
 
-  private void binds()
-  {
-    btnUsers.textProperty().bind(mainMenuViewModel.usersButtonText);
-    btnBicycles.textProperty().bind(mainMenuViewModel.bicyclesButtonText);
-    btnDashboardAdmin.textProperty().bind(mainMenuViewModel.dashboardButtonText);
-    btnStations.textProperty().bind(mainMenuViewModel.stationButtonText);
-    btnSettings.textProperty().bind(mainMenuViewModel.settingsButtonText);
+  private void run(Runnable action) {
+    if (action != null) {
+      action.run();
+    }
   }
 }

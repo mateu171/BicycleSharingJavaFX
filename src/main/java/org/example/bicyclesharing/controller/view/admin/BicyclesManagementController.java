@@ -1,6 +1,5 @@
 package org.example.bicyclesharing.controller.view.admin;
 
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -9,10 +8,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.example.bicyclesharing.controller.view.BaseController;
+import org.example.bicyclesharing.viewModel.admin.item.BicycleItemViewModel;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditBicycleController;
-import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.User;
-import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
@@ -28,7 +26,7 @@ public class BicyclesManagementController extends BaseController {
   @FXML private TextField searchField;
   @FXML private ComboBox<String> stateFilterComboBox;
   @FXML private Button addBikeButton;
-  @FXML private ListView<Bicycle> bicyclesListView;
+  @FXML private ListView<BicycleItemViewModel> bicyclesListView;
 
   private BicyclesManagementViewModel viewModel;
 
@@ -38,42 +36,40 @@ public class BicyclesManagementController extends BaseController {
     bindFields();
     setupFilters();
     setupList();
-    viewModel.loadBicyclesAsync();
+    viewModel.initialize();
   }
 
   private void bindFields() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    countLabel.textProperty().bind(viewModel.countText);
-    searchField.promptTextProperty().bind(viewModel.searchPromptText);
-    addBikeButton.textProperty().bind(viewModel.addBikeButtonText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    countLabel.textProperty().bind(viewModel.countTextProperty());
+    searchField.promptTextProperty().bind(viewModel.searchPromptTextProperty());
+    addBikeButton.textProperty().bind(viewModel.addBikeButtonTextProperty());
 
-    searchField.textProperty().bindBidirectional(viewModel.searchText);
+    searchField.textProperty().bindBidirectional(viewModel.searchTextProperty());
+    stateFilterComboBox.valueProperty().bindBidirectional(
+        viewModel.selectedStateFilterProperty()
+    );
+
     bicyclesListView.setItems(viewModel.getBicycles());
+
+    searchField.textProperty().addListener((obs, oldVal, newVal) ->
+        viewModel.applyFiltersAsync()
+    );
+
+    stateFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) ->
+        viewModel.applyFiltersAsync()
+    );
   }
 
   private void setupFilters() {
-    stateFilterComboBox.setItems(FXCollections.observableArrayList(
-        "ALL",
-        LocalizationManager.getStringByKey(StateBicycle.AVAILABLE.getKey()),
-        LocalizationManager.getStringByKey(StateBicycle.RENTED.getKey()),
-        LocalizationManager.getStringByKey(StateBicycle.UNAVAILABLE.getKey()),
-        LocalizationManager.getStringByKey(StateBicycle.NEEDS_INSPECTION.getKey()),
-        LocalizationManager.getStringByKey(StateBicycle.ON_MAINTENANCE.getKey())
-    ));
+    stateFilterComboBox.setItems(viewModel.getStateFilters());
     stateFilterComboBox.getSelectionModel().selectFirst();
 
     stateFilterComboBox.setCellFactory(cb -> new ListCell<>() {
       @Override
       protected void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-
-        if (empty || item == null) {
-          setText(null);
-        } else if (item.equals("ALL")) {
-          setText(LocalizationManager.getStringByKey("all.text"));
-        } else {
-          setText(item);
-        }
+        setText(toFilterText(item, empty));
       }
     });
 
@@ -81,85 +77,84 @@ public class BicyclesManagementController extends BaseController {
       @Override
       protected void updateItem(String item, boolean empty) {
         super.updateItem(item, empty);
-
-        if (empty || item == null) {
-          setText(null);
-        } else if (item.equals("ALL")) {
-          setText(LocalizationManager.getStringByKey("all.text"));
-        } else {
-          setText(item);
-        }
+        setText(toFilterText(item, empty));
       }
     });
+  }
 
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
+  private String toFilterText(String item,boolean empty)
+  {
+    if(empty || item == null)
+    return null;
 
-    stateFilterComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-      viewModel.selectedStateFilter.set(newVal);
-      viewModel.applyFiltersAsync();
-    });
+    if(item.equals("ALL"))
+      return LocalizationManager.getStringByKey("all.text");
+
+    return item;
   }
 
   private void setupList() {
     bicyclesListView.setCellFactory(list -> new ListCell<>() {
       @Override
-      protected void updateItem(Bicycle bicycle, boolean empty) {
-        super.updateItem(bicycle, empty);
+      protected void updateItem(BicycleItemViewModel item, boolean empty) {
+        super.updateItem(item, empty);
 
-        if (empty || bicycle == null) {
+        if (empty || item == null) {
           setGraphic(null);
           setText(null);
           return;
         }
 
-        VBox card = new VBox(8);
-        card.getStyleClass().add("user-card");
-
-        ImageView avatar = ImageStorageUtil.createImageView(bicycle.getImagePath(),60,60);
-        avatar.getStyleClass().add("avatar");
-
-        Label modelLabel = new Label(bicycle.getModel());
-        modelLabel.getStyleClass().add("user-card-title");
-
-        Label infoLabel = new Label(
-            LocalizationManager.getStringByKey("admin.bicycles.price") + ": "
-                + String.format("%.2f", bicycle.getPricePerMinute())
-        );
-        infoLabel.getStyleClass().add("user-card-subtitle");
-
-        Label stateLabel = new Label(LocalizationManager.getStringByKey("admin.bicycles.state"));
-        stateLabel.getStyleClass().add("user-card-subtitle");
-
-        Label stateLabelInfo = new Label(LocalizationManager.getStringByKey(bicycle.getState().getKey()));
-        stateLabelInfo.getStyleClass().add("user-card-subtitle");
-
-        Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
-        editButton.getStyleClass().add("button-edit");
-        editButton.setOnAction(e -> openBikeDialog(bicycle));
-
-        Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
-        deleteButton.getStyleClass().add("button-danger");
-        deleteButton.setOnAction(e -> {
-          try {
-            viewModel.deleteBicycle(bicycle);
-          } catch (BusinessException ex) {
-            DialogUtil.showError(ex.getMessage());
-          } catch (Exception ex) {
-            DialogUtil.showError(LocalizationManager.getStringByKey("error.delete.failed"));
-          }
-        });
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        HBox stateBox = new HBox(8, stateLabel, stateLabelInfo);
-        HBox actions = new HBox(10, editButton, deleteButton);
-        HBox bottomRow = new HBox(10, stateBox, spacer, actions);
-
-        card.getChildren().addAll(avatar,modelLabel, infoLabel, bottomRow);
+        VBox card = createCard(item);
         setGraphic(card);
       }
     });
+  }
+
+  private VBox createCard(BicycleItemViewModel item) {
+    VBox card = new VBox(8);
+    card.getStyleClass().add("user-card");
+
+    ImageView avatar = ImageStorageUtil.createImageView(
+        item.imagePathProperty().get(),
+        60,
+        60
+    );
+    avatar.getStyleClass().add("avatar");
+
+    Label modelLabel = new Label();
+    modelLabel.getStyleClass().add("user-card-title");
+    modelLabel.textProperty().bind(item.modelTextProperty());
+
+    Label priceLabel = new Label();
+    priceLabel.getStyleClass().add("user-card-subtitle");
+    priceLabel.textProperty().bind(item.priceTextProperty());
+
+    Label stateLabel = new Label();
+    stateLabel.getStyleClass().add("user-card-subtitle");
+    stateLabel.textProperty().bind(item.stateTitleTextProperty());
+
+    Label stateInfoLabel = new Label();
+    stateInfoLabel.getStyleClass().add("user-card-subtitle");
+    stateInfoLabel.textProperty().bind(item.stateTextProperty());
+
+    Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
+    editButton.getStyleClass().add("button-edit");
+    editButton.setOnAction(e -> openBikeDialog(item));
+
+    Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
+    deleteButton.getStyleClass().add("button-danger");
+    deleteButton.setOnAction(e -> deleteBike(item));
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    HBox stateBox = new HBox(8, stateLabel, stateInfoLabel);
+    HBox actions = new HBox(10, editButton, deleteButton);
+    HBox bottomRow = new HBox(10, stateBox, spacer, actions);
+
+    card.getChildren().addAll(avatar, modelLabel, priceLabel, bottomRow);
+    return card;
   }
 
   @FXML
@@ -168,21 +163,33 @@ public class BicyclesManagementController extends BaseController {
   }
 
 
-  private void openBikeDialog(Bicycle bicycle) {
+  private void openBikeDialog(BicycleItemViewModel item) {
     try {
-      if (bicycle != null) {
-        AppConfig.bicycleService().validateCanEdit(bicycle);
+      if (item != null) {
+       viewModel.validateCanEdit(item);
       }
 
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditBicycleView.fxml",
-          (AddEditBicycleController controller) -> controller.initData(bicycle, viewModel::refreshAsync)
+          (AddEditBicycleController controller) -> controller.initData(item == null ? null : item.getBicycle(), viewModel::refreshAsync)
       );
 
     } catch (BusinessException e) {
       DialogUtil.showError(e.getMessage());
     } catch (Exception e) {
       DialogUtil.showError("error.operation.failed");
+    }
+  }
+
+  private void deleteBike(BicycleItemViewModel item)
+  {
+    try {
+      viewModel.deleteBicycle(item);
+    }catch (BusinessException e)
+    {
+      DialogUtil.showError(e.getMessage());
+    }catch (Exception e) {
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.delete.failed"));
     }
   }
 }

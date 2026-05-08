@@ -1,11 +1,11 @@
 package org.example.bicyclesharing.viewModel.admin;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.example.bicyclesharing.viewModel.admin.item.BicycleItemViewModel;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
@@ -17,20 +17,22 @@ import org.example.bicyclesharing.viewModel.AsyncViewModel;
 
 public class BicyclesManagementViewModel extends AsyncViewModel {
 
+  private static final String ALL_FILTER = "ALL";
+
   private final BicycleService bicycleService;
   private final StationService stationService;
-  private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
 
-  public final StringProperty titleText =
-      LocalizationManager.getStringProperty("admin.bicycles.title");
-  public final StringProperty searchPromptText =
-      LocalizationManager.getStringProperty("admin.bicycles.search");
-  public final StringProperty addBikeButtonText =
-      LocalizationManager.getStringProperty("admin.bicycles.add");
+  private final ObservableList<BicycleItemViewModel> bicycles = FXCollections.observableArrayList();
+  private final ObservableList<String> stateFilters = FXCollections.observableArrayList();
+
+
+  public final StringProperty titleText = LocalizationManager.getStringProperty("admin.bicycles.title");
+  public final StringProperty searchPromptText = LocalizationManager.getStringProperty("admin.bicycles.search");
+  public final StringProperty addBikeButtonText = LocalizationManager.getStringProperty("admin.bicycles.add");
   public final StringProperty countText = new SimpleStringProperty("");
 
   public final StringProperty searchText = new SimpleStringProperty("");
-  public final StringProperty selectedStateFilter = new SimpleStringProperty("ALL");
+  public final StringProperty selectedStateFilter = new SimpleStringProperty(ALL_FILTER);
 
   public BicyclesManagementViewModel(
       User currentUser,
@@ -40,19 +42,31 @@ public class BicyclesManagementViewModel extends AsyncViewModel {
     super(currentUser);
     this.bicycleService = bicycleService;
     this.stationService = stationService;
+
+    initializeFilters();
   }
 
-  public ObservableList<Bicycle> getBicycles() {
-    return bicycles;
+  private void initializeFilters() {
+    stateFilters.setAll(
+        ALL_FILTER,
+        LocalizationManager.getStringByKey(StateBicycle.AVAILABLE.getKey()),
+        LocalizationManager.getStringByKey(StateBicycle.RENTED.getKey()),
+        LocalizationManager.getStringByKey(StateBicycle.UNAVAILABLE.getKey()),
+        LocalizationManager.getStringByKey(StateBicycle.NEEDS_INSPECTION.getKey()),
+        LocalizationManager.getStringByKey(StateBicycle.ON_MAINTENANCE.getKey())
+    );
+
+    selectedStateFilter.set(ALL_FILTER);
+  }
+  public void initialize()
+  {
+    loadBicyclesAsync();
   }
 
   public void loadBicyclesAsync() {
     runAsync(
         bicycleService::getAll,
-        result -> {
-          bicycles.setAll(result);
-          updateCount();
-        }
+        this::setBicycles
     );
   }
 
@@ -62,11 +76,16 @@ public class BicyclesManagementViewModel extends AsyncViewModel {
 
     runAsync(
         () -> bicycleService.getByFilters(search, stateFilter),
-        result -> {
-          bicycles.setAll(result);
-          updateCount();
-        }
+        this::setBicycles
     );
+  }
+
+  public void validateCanEdit(BicycleItemViewModel item)
+  {
+    if(item == null)
+      return;
+
+    bicycleService.validateCanEdit(item.getBicycle());
   }
 
   public void refreshAsync() {
@@ -83,11 +102,11 @@ public class BicyclesManagementViewModel extends AsyncViewModel {
     }
   }
 
-  public void deleteBicycle(Bicycle bicycle) {
-    if (bicycle == null) {
+  public void deleteBicycle(BicycleItemViewModel item) {
+    if (item == null) {
       return;
     }
-
+    Bicycle bicycle = item.getBicycle();
     bicycleService.validateCanDelete(bicycle);
 
     if (bicycle.getStationId() != null) {
@@ -100,6 +119,12 @@ public class BicyclesManagementViewModel extends AsyncViewModel {
 
     bicycleService.deleteById(bicycle.getId());
     refreshAsync();
+  }
+
+  private void setBicycles(List<Bicycle> result)
+  {
+    bicycles.setAll(result.stream().map(BicycleItemViewModel::new).toList());
+    updateCount();
   }
 
   private void updateCount() {
@@ -123,5 +148,37 @@ public class BicyclesManagementViewModel extends AsyncViewModel {
     }
 
     return null;
+  }
+
+  public ObservableList<BicycleItemViewModel> getBicycles() {
+    return bicycles;
+  }
+
+  public ObservableList<String> getStateFilters() {
+    return stateFilters;
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty searchPromptTextProperty() {
+    return searchPromptText;
+  }
+
+  public StringProperty addBikeButtonTextProperty() {
+    return addBikeButtonText;
+  }
+
+  public StringProperty countTextProperty() {
+    return countText;
+  }
+
+  public StringProperty searchTextProperty() {
+    return searchText;
+  }
+
+  public StringProperty selectedStateFilterProperty() {
+    return selectedStateFilter;
   }
 }

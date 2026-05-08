@@ -1,7 +1,5 @@
 package org.example.bicyclesharing.controller.view.manager.modalController;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -57,6 +55,8 @@ public class AddEditReservationController {
   private AddEditReservationViewModel viewModel;
 
   public void initData(User currentUser, Reservation reservation, Runnable onSaved) {
+    this.onSaved = onSaved;
+
     this.viewModel = new AddEditReservationViewModel(
         currentUser,
         AppConfig.reservationService(),
@@ -64,51 +64,60 @@ public class AddEditReservationController {
         AppConfig.bicycleService(),
         reservation
     );
-    this.onSaved = onSaved;
+    setupConverters();
     bind();
-    setupCombos();
-    fillDateTimeFields();
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
 
-    customerLabel.textProperty().bind(viewModel.customerLabelText);
-    bicycleLabel.textProperty().bind(viewModel.bicycleLabelText);
-    startTimeLabel.textProperty().bind(viewModel.startTimeLabelText);
-    endTimeLabel.textProperty().bind(viewModel.endTimeLabelText);
-    documentTypeLabel.textProperty().bind(viewModel.documentTypeLabelText);
-    documentNumberLabel.textProperty().bind(viewModel.documentNumberLabelText);
-    depositAmountLabel.textProperty().bind(viewModel.depositAmountLabelText);
+    customerLabel.textProperty().bind(viewModel.customerLabelTextProperty());
+    bicycleLabel.textProperty().bind(viewModel.bicycleLabelTextProperty());
+    startTimeLabel.textProperty().bind(viewModel.startTimeLabelTextProperty());
+    endTimeLabel.textProperty().bind(viewModel.endTimeLabelTextProperty());
+    documentTypeLabel.textProperty().bind(viewModel.documentTypeLabelTextProperty());
+    documentNumberLabel.textProperty().bind(viewModel.documentNumberLabelTextProperty());
+    depositAmountLabel.textProperty().bind(viewModel.depositAmountLabelTextProperty());
 
-    documentNumberField.textProperty().bindBidirectional(viewModel.documentNumber);
-    depositAmountField.textProperty().bindBidirectional(viewModel.depositAmount);
-
-    customerErrorLabel.textProperty().bind(viewModel.customerError);
-    bicycleErrorLabel.textProperty().bind(viewModel.bicycleError);
-    startTimeErrorLabel.textProperty().bind(viewModel.startTimeError);
-    endTimeErrorLabel.textProperty().bind(viewModel.endTimeError);
-    documentTypeErrorLabel.textProperty().bind(viewModel.documentTypeError);
-    documentNumberErrorLabel.textProperty().bind(viewModel.documentNumberError);
-    depositAmountErrorLabel.textProperty().bind(viewModel.depositAmountError);
-
-    saveButton.textProperty().bind(viewModel.saveButtonText);
-    cancelButton.textProperty().bind(viewModel.cancelButtonText);
-  }
-
-  private void setupCombos() {
     customerComboBox.setItems(viewModel.getCustomers());
     bicycleComboBox.setItems(viewModel.getBicycles());
     documentTypeComboBox.setItems(viewModel.getDocumentTypes());
 
+    customerComboBox.valueProperty().bindBidirectional(viewModel.selectedCustomerProperty());
+    bicycleComboBox.valueProperty().bindBidirectional(viewModel.selectedBicycleProperty());
+    documentTypeComboBox.valueProperty().bindBidirectional(viewModel.selectedDocumentTypeProperty());
+
+    startDatePicker.valueProperty().bindBidirectional(viewModel.startDateProperty());
+    endDatePicker.valueProperty().bindBidirectional(viewModel.endDateProperty());
+
+    startTimeField.textProperty().bindBidirectional(viewModel.startTimeProperty());
+    endTimeField.textProperty().bindBidirectional(viewModel.endTimeProperty());
+    documentNumberField.textProperty().bindBidirectional(viewModel.documentNumberProperty());
+    depositAmountField.textProperty().bindBidirectional(viewModel.depositAmountProperty());
+
+    customerErrorLabel.textProperty().bind(viewModel.customerErrorProperty());
+    bicycleErrorLabel.textProperty().bind(viewModel.bicycleErrorProperty());
+    startTimeErrorLabel.textProperty().bind(viewModel.startTimeErrorProperty());
+    endTimeErrorLabel.textProperty().bind(viewModel.endTimeErrorProperty());
+    documentTypeErrorLabel.textProperty().bind(viewModel.documentTypeErrorProperty());
+    documentNumberErrorLabel.textProperty().bind(viewModel.documentNumberErrorProperty());
+    depositAmountErrorLabel.textProperty().bind(viewModel.depositAmountErrorProperty());
+
+    saveButton.textProperty().bind(viewModel.saveButtonTextProperty());
+    cancelButton.textProperty().bind(viewModel.cancelButtonTextProperty());
+  }
+  private void setupConverters() {
     customerComboBox.setConverter(new StringConverter<>() {
       @Override
-      public String toString(Customer customer) {
+      public String toString(Customer customer)
+      {
         return customer == null ? "" : customer.getFullName();
       }
 
       @Override
-      public Customer fromString(String string) {
+      public Customer fromString(String string)
+      {
         return null;
       }
     });
@@ -127,34 +136,19 @@ public class AddEditReservationController {
 
     documentTypeComboBox.setConverter(new StringConverter<>() {
       @Override
-      public String toString(DocumentType type) {
-        return type == null ? "" : LocalizationManager.getStringByKey(type.getKey());
+      public String toString(DocumentType documentType) {
+        return documentType == null ? "" : LocalizationManager.getStringByKey(documentType.getKey());
       }
 
       @Override
-      public DocumentType fromString(String string) {
+      public DocumentType fromString(String s) {
         return null;
       }
     });
-
-    customerComboBox.getSelectionModel().select(viewModel.getSelectedCustomer());
-    bicycleComboBox.getSelectionModel().select(viewModel.getSelectedBicycle());
-    documentTypeComboBox.getSelectionModel().select(viewModel.getSelectedDocumentType());
-
-    customerComboBox.valueProperty().addListener((obs, oldVal, newVal) -> viewModel.setSelectedCustomer(newVal));
-    bicycleComboBox.valueProperty().addListener((obs, oldVal, newVal) -> viewModel.setSelectedBicycle(newVal));
-    documentTypeComboBox.valueProperty().addListener((obs, oldVal, newVal) -> viewModel.setSelectedDocumentType(newVal));
-
-    startTimeField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.startTimeError.set(""));
-    endTimeField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.endTimeError.set(""));
-    documentNumberField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.documentNumberError.set(""));
-    depositAmountField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.depositAmountError.set(""));
   }
 
   @FXML
   private void onSave() {
-    viewModel.startTime.set(buildDateTimeString(startDatePicker, startTimeField));
-    viewModel.endTime.set(buildDateTimeString(endDatePicker, endTimeField));
     if (viewModel.save()) {
       if (onSaved != null) {
         onSaved.run();
@@ -172,28 +166,4 @@ public class AddEditReservationController {
     ((Stage) saveButton.getScene().getWindow()).close();
   }
 
-  private String buildDateTimeString(DatePicker datePicker, TextField timeField) {
-    LocalDate date = datePicker.getValue();
-    String timeText = timeField.getText() == null ? "" : timeField.getText().trim();
-
-    if (date == null || timeText.isBlank()) {
-      return "";
-    }
-
-    return date + "T" + timeText;
-  }
-
-  private void fillDateTimeFields() {
-    if (viewModel.startTime.get() != null && !viewModel.startTime.get().isBlank()) {
-      LocalDateTime start = LocalDateTime.parse(viewModel.startTime.get());
-      startDatePicker.setValue(start.toLocalDate());
-      startTimeField.setText(start.toLocalTime().toString());
-    }
-
-    if (viewModel.endTime.get() != null && !viewModel.endTime.get().isBlank()) {
-      LocalDateTime end = LocalDateTime.parse(viewModel.endTime.get());
-      endDatePicker.setValue(end.toLocalDate());
-      endTimeField.setText(end.toLocalTime().toString());
-    }
-  }
 }

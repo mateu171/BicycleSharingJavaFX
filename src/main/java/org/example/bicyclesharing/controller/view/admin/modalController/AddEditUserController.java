@@ -1,23 +1,16 @@
 package org.example.bicyclesharing.controller.view.admin.modalController;
 
 import java.io.File;
-import javafx.collections.FXCollections;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.util.AppConfig;
-import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditUserViewModel;
@@ -57,77 +50,63 @@ public class AddEditUserController {
   @FXML private VBox userFormBlock;
   @FXML private VBox codeFormBlock;
 
-  private Runnable onSaved;
   private AddEditUserViewModel viewModel;
-  private File selectedImage;
-  private boolean sendingCode = false;
+  private Runnable onSaved;
 
   public void initData(User user, Runnable onSaved) {
     this.onSaved = onSaved;
-    this.viewModel = new AddEditUserViewModel(
+
+    viewModel = new AddEditUserViewModel(
         AppConfig.userService(),
         AppConfig.verificationService(),
         user
     );
 
+    setupRoleComboBox();
     bind();
-    setupRoleCombo();
-
-    if (viewModel.isEditMode()) {
-      roleComboBox.setValue(user.getRole());
-    }
-
-    var defaultImageUrl =
-        getClass().getResource("/org/example/bicyclesharing/art/image/defaultImg.jpg");
-
-    Image image = new Image(defaultImageUrl.toExternalForm());
-
-    if (user != null && user.getImagePath() != null) {
-      File file = new File(user.getImagePath());
-      if (file.exists()) {
-        image = new Image(file.toURI().toString());
-      }
-    }
-
-    photoPreview.setImage(image);
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    loginLabel.textProperty().bind(viewModel.loginLabelText);
-    passwordLabel.textProperty().bind(viewModel.passwordLabelText);
-    emailLabel.textProperty().bind(viewModel.emailLabelText);
-    roleLabel.textProperty().bind(viewModel.roleLabelText);
-    codeLabel.textProperty().bind(viewModel.codeLabelText);
-    codeInfoLabel.textProperty().bind(viewModel.codeInfoText);
-    photoLabel.textProperty().bind(viewModel.photoLabelText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
 
-    loginField.textProperty().bindBidirectional(viewModel.login);
-    passwordField.textProperty().bindBidirectional(viewModel.password);
-    emailField.textProperty().bindBidirectional(viewModel.email);
-    codeField.textProperty().bindBidirectional(viewModel.code);
+    loginLabel.textProperty().bind(viewModel.loginLabelTextProperty());
+    passwordLabel.textProperty().bind(viewModel.passwordLabelTextProperty());
+    emailLabel.textProperty().bind(viewModel.emailLabelTextProperty());
+    roleLabel.textProperty().bind(viewModel.roleLabelTextProperty());
+    codeLabel.textProperty().bind(viewModel.codeLabelTextProperty());
+    codeInfoLabel.textProperty().bind(viewModel.codeInfoTextProperty());
+    photoLabel.textProperty().bind(viewModel.photoLabelTextProperty());
 
-    loginErrorLabel.textProperty().bind(viewModel.loginError);
-    passwordErrorLabel.textProperty().bind(viewModel.passwordError);
-    emailErrorLabel.textProperty().bind(viewModel.emailError);
-    roleErrorLabel.textProperty().bind(viewModel.roleError);
-    codeErrorLabel.textProperty().bind(viewModel.codeError);
-    photoErrorLabel.textProperty().bind(viewModel.photoError);
-    photoFileNameLabel.textProperty().bind(viewModel.photoFileNameText);
+    loginField.textProperty().bindBidirectional(viewModel.loginProperty());
+    passwordField.textProperty().bindBidirectional(viewModel.passwordProperty());
+    emailField.textProperty().bindBidirectional(viewModel.emailProperty());
+    codeField.textProperty().bindBidirectional(viewModel.codeProperty());
 
-    saveButton.textProperty().bind(viewModel.saveButtonText);
-    cancelButton.textProperty().bind(viewModel.cancelButtonText);
-    sendCodeButton.textProperty().bind(viewModel.sendCodeButtonText);
-    backButton.textProperty().bind(viewModel.backButtonText);
-    uploadPhotoButton.textProperty().bind(viewModel.uploadButtonText);
+    roleComboBox.itemsProperty().bind(viewModel.rolesProperty());
+    roleComboBox.valueProperty().bindBidirectional(viewModel.selectedRoleProperty());
 
-    userFormBlock.visibleProperty().bind(viewModel.codeStep.not());
+    loginErrorLabel.textProperty().bind(viewModel.loginErrorProperty());
+    passwordErrorLabel.textProperty().bind(viewModel.passwordErrorProperty());
+    emailErrorLabel.textProperty().bind(viewModel.emailErrorProperty());
+    roleErrorLabel.textProperty().bind(viewModel.roleErrorProperty());
+    codeErrorLabel.textProperty().bind(viewModel.codeErrorProperty());
+    photoErrorLabel.textProperty().bind(viewModel.photoErrorProperty());
+    photoFileNameLabel.textProperty().bind(viewModel.photoFileNameTextProperty());
+
+    saveButton.textProperty().bind(viewModel.saveButtonTextProperty());
+    cancelButton.textProperty().bind(viewModel.cancelButtonTextProperty());
+    sendCodeButton.textProperty().bind(viewModel.sendCodeButtonTextProperty());
+    backButton.textProperty().bind(viewModel.backButtonTextProperty());
+    uploadPhotoButton.textProperty().bind(viewModel.uploadButtonTextProperty());
+
+    userFormBlock.visibleProperty().bind(viewModel.codeStepProperty().not());
     userFormBlock.managedProperty().bind(userFormBlock.visibleProperty());
 
-    codeFormBlock.visibleProperty().bind(viewModel.codeStep);
+    codeFormBlock.visibleProperty().bind(viewModel.codeStepProperty());
     codeFormBlock.managedProperty().bind(codeFormBlock.visibleProperty());
 
-    backButton.visibleProperty().bind(viewModel.codeStep);
+    backButton.visibleProperty().bind(viewModel.codeStepProperty());
     backButton.managedProperty().bind(backButton.visibleProperty());
 
     if (viewModel.isEditMode()) {
@@ -137,122 +116,66 @@ public class AddEditUserController {
       saveButton.setVisible(true);
       saveButton.setManaged(true);
     } else {
-      sendCodeButton.visibleProperty().bind(viewModel.codeStep.not());
+      sendCodeButton.visibleProperty().bind(viewModel.codeStepProperty().not());
       sendCodeButton.managedProperty().bind(sendCodeButton.visibleProperty());
 
-      saveButton.visibleProperty().bind(viewModel.codeStep);
+      saveButton.visibleProperty().bind(viewModel.codeStepProperty());
       saveButton.managedProperty().bind(saveButton.visibleProperty());
     }
+
+    loginField.disableProperty().bind(viewModel.sendingCodeProperty());
+    passwordField.disableProperty().bind(viewModel.sendingCodeProperty());
+    emailField.disableProperty().bind(viewModel.sendingCodeProperty());
+    roleComboBox.disableProperty().bind(viewModel.sendingCodeProperty());
+    codeField.disableProperty().bind(viewModel.sendingCodeProperty());
+
+    sendCodeButton.disableProperty().bind(viewModel.sendingCodeProperty());
+    saveButton.disableProperty().bind(viewModel.sendingCodeProperty());
+    backButton.disableProperty().bind(viewModel.sendingCodeProperty());
+    cancelButton.disableProperty().bind(viewModel.sendingCodeProperty());
+    uploadPhotoButton.disableProperty().bind(viewModel.sendingCodeProperty());
+
+    viewModel.photoPreviewPathProperty().addListener((obs, oldVal, newVal) -> updatePreview(newVal));
+    updatePreview(viewModel.photoPreviewPathProperty().get());
   }
 
-  private void setupRoleCombo() {
-    roleComboBox.setItems(FXCollections.observableArrayList(
-        Role.ADMIN,
-        Role.MANAGER,
-        Role.MECHANIC
-    ));
-
-    roleComboBox.setCellFactory(cb -> new ListCell<>() {
+  private void setupRoleComboBox() {
+    roleComboBox.setConverter(new StringConverter<>() {
       @Override
-      protected void updateItem(Role item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
+      public String toString(Role role) {
+        return role == null ? "" : LocalizationManager.getStringByKey(role.getKey());
+      }
+
+      @Override
+      public Role fromString(String string) {
+        return null;
       }
     });
-
-    roleComboBox.setButtonCell(new ListCell<>() {
-      @Override
-      protected void updateItem(Role item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
-      }
-    });
-
-    roleComboBox.valueProperty().addListener((obs, oldVal, newVal) ->
-        viewModel.setSelectedRole(newVal));
   }
 
   @FXML
   private void onSendCode() {
-    if (sendingCode) {
-      return;
-    }
-
-    if (!viewModel.prepareForCodeSending()) {
-      return;
-    }
-
-    setCodeSendingState(true);
-
-    String email = viewModel.pendingUserEmail();
-
-    Task<Integer> task = new Task<>() {
-      @Override
-      protected Integer call() {
-        return AppConfig.verificationService().sendVerificationCode(email);
-      }
-    };
-
-    task.setOnSucceeded(event -> {
-      viewModel.setSentCode(task.getValue());
-      viewModel.goToCodeStep();
-      setCodeSendingState(false);
-    });
-
-    task.setOnFailed(event -> {
-      Throwable throwable = task.getException();
-      if (throwable != null) {
-        throwable.printStackTrace();
-      }
-      viewModel.handleCodeSendingFailed();
-      setCodeSendingState(false);
-    });
-
-    Thread thread = new Thread(task);
-    thread.setDaemon(true);
-    thread.start();
+    viewModel.sendCodeAsync();
   }
 
   @FXML
   private void onBack() {
-    if (sendingCode) {
-      return;
-    }
     viewModel.goToFormStep();
   }
 
   @FXML
   private void onSave() {
-    if (sendingCode) {
-      return;
-    }
-
-    try {
-      String imagePath = ImageStorageUtil.saveImage(selectedImage, "users");
-      viewModel.setImagePath(imagePath);
-
-      if (viewModel.save()) {
-        if (onSaved != null) {
-          onSaved.run();
-        }
-        close();
+    if (viewModel.save()) {
+      if (onSaved != null) {
+        onSaved.run();
       }
-    } catch (Exception e) {
-      DialogUtil.showError("error.save.failed");
+      close();
     }
-  }
-
-  @FXML
-  private void onClose() {
-    if (sendingCode) {
-      return;
-    }
-    close();
   }
 
   @FXML
   private void onUploadPhoto() {
-    if (sendingCode) {
+    if (viewModel.sendingCodeProperty().get()) {
       return;
     }
 
@@ -260,30 +183,36 @@ public class AddEditUserController {
     File file = ImageStorageUtil.chooseImage(stage);
 
     if (file != null) {
-      selectedImage = file;
-      viewModel.photoFileNameText.set(file.getName());
-      ImageStorageUtil.showPreview(file, photoPreview, 90, 90);
-      viewModel.setPhotoError("");
+      viewModel.selectPhoto(file);
     }
   }
 
-  private void setCodeSendingState(boolean sending) {
-    sendingCode = sending;
-
-    loginField.setDisable(sending);
-    passwordField.setDisable(sending);
-    emailField.setDisable(sending);
-    roleComboBox.setDisable(sending);
-    codeField.setDisable(sending);
-
-    sendCodeButton.setDisable(sending);
-    saveButton.setDisable(sending);
-    backButton.setDisable(sending);
-    cancelButton.setDisable(sending);
-    uploadPhotoButton.setDisable(sending);
+  @FXML
+  private void onClose() {
+    if (!viewModel.sendingCodeProperty().get()) {
+      close();
+    }
   }
 
   private void close() {
     ((Stage) cancelButton.getScene().getWindow()).close();
+  }
+
+  private void updatePreview(String path) {
+    if (path == null || path.isBlank()) {
+      return;
+    }
+
+    File file = new File(path);
+
+    if (file.exists()) {
+      photoPreview.setImage(new Image(file.toURI().toString()));
+      return;
+    }
+
+    var resource = getClass().getResource(path);
+    if (resource != null) {
+      photoPreview.setImage(new Image(resource.toExternalForm()));
+    }
   }
 }

@@ -1,23 +1,13 @@
 package org.example.bicyclesharing.controller.view.mechanic;
 
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.transformation.FilteredList;
-import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import org.example.bicyclesharing.controller.view.BaseController;
-import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.util.AppConfig;
-import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.mechanic.MechanicServiceViewModel;
+import org.example.bicyclesharing.viewModel.mechanic.item.MechanicServiceItemViewModel;
 
 public class MechanicServiceController extends BaseController {
 
@@ -26,6 +16,7 @@ public class MechanicServiceController extends BaseController {
   @FXML private Label sortLabel;
   @FXML private Label titleLabel;
   @FXML private Label countLabel;
+
   @FXML private TextField searchField;
   @FXML private ComboBox<String> stateFilterCombo;
   @FXML private ComboBox<String> sortCombo;
@@ -35,140 +26,96 @@ public class MechanicServiceController extends BaseController {
   @FXML private Button availableButton;
   @FXML private Button unavailableButton;
 
-  @FXML private TableView<Bicycle> bicyclesTable;
-  @FXML private TableColumn<Bicycle, String> modelColumn;
-  @FXML private TableColumn<Bicycle, String> priceColumn;
-  @FXML private TableColumn<Bicycle, String> stateColumn;
+  @FXML private TableView<MechanicServiceItemViewModel> bicyclesTable;
+  @FXML private TableColumn<MechanicServiceItemViewModel, String> modelColumn;
+  @FXML private TableColumn<MechanicServiceItemViewModel, String> priceColumn;
+  @FXML private TableColumn<MechanicServiceItemViewModel, String> stateColumn;
 
   private MechanicServiceViewModel viewModel;
-  private FilteredList<Bicycle> filtered;
-  private SortedList<Bicycle> sorted;
-
-  @FXML
-  public void initialize() {
-    stateFilterCombo.getItems().addAll(
-        LocalizationManager.getStringByKey("mechanic.filter.all"),
-        LocalizationManager.getStringByKey("state.available"),
-        LocalizationManager.getStringByKey("state.rented"),
-        LocalizationManager.getStringByKey("state.needs.inspection"),
-        LocalizationManager.getStringByKey("state.on.maintenance"),
-        LocalizationManager.getStringByKey("state.unavailable")
-    );
-    stateFilterCombo.getSelectionModel().selectFirst();
-
-    sortCombo.getItems().addAll(
-        LocalizationManager.getStringByKey("mechanic.sort.bike"),
-        LocalizationManager.getStringByKey("mechanic.sort.price"),
-        LocalizationManager.getStringByKey("mechanic.sort.state")
-    );
-    sortCombo.getSelectionModel().selectFirst();
-
-    modelColumn.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getModel()));
-    priceColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(String.valueOf(cell.getValue().getPricePerMinute())));
-    stateColumn.setCellValueFactory(cell ->
-        new SimpleStringProperty(viewModel == null ? "" : viewModel.getStateText(cell.getValue())));
-
-    inspectButton.disableProperty().bind(
-        Bindings.isNull(bicyclesTable.getSelectionModel().selectedItemProperty())
-    );
-    maintenanceButton.disableProperty().bind(
-        Bindings.isNull(bicyclesTable.getSelectionModel().selectedItemProperty())
-    );
-    availableButton.disableProperty().bind(
-        Bindings.isNull(bicyclesTable.getSelectionModel().selectedItemProperty())
-    );
-    unavailableButton.disableProperty().bind(
-        Bindings.isNull(bicyclesTable.getSelectionModel().selectedItemProperty())
-    );
-  }
 
   @Override
   public void setCurrentUser(User currentUser) {
-    viewModel = new MechanicServiceViewModel(currentUser, AppConfig.bicycleService());
-    bindViewModel();
-    setupFiltering();
-    viewModel.loadBicyclesAsync();
+    viewModel = new MechanicServiceViewModel(
+        currentUser,
+        AppConfig.bicycleService()
+    );
+
+    bind();
+    setupTable();
+    viewModel.initialize();
   }
 
-  private void bindViewModel() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    countLabel.textProperty().bind(viewModel.countText);
-    modelColumn.textProperty().bind(viewModel.modelColumnText);
-    priceColumn.textProperty().bind(viewModel.priceColumnText);
-    stateColumn.textProperty().bind(viewModel.stateColumnText);
-    inspectButton.textProperty().bind(viewModel.inspectButtonText);
-    availableButton.textProperty().bind(viewModel.availableButtonText);
-    maintenanceButton.textProperty().bind(viewModel.maintenanceButtonText);
-    unavailableButton.textProperty().bind(viewModel.unavailableButtonText);
-    searchLabel.textProperty().bind(viewModel.searchLabelText);
-    sortLabel.textProperty().bind(viewModel.sortLabelText);
-    statusLabel.textProperty().bind(viewModel.statusLabelText);
-    searchField.promptTextProperty().bind(viewModel.searchPromText);
+  private void bind() {
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    countLabel.textProperty().bind(viewModel.countTextProperty());
 
-    filtered = new FilteredList<>(viewModel.getBicycles(), bicycle -> true);
-    sorted = new SortedList<>(filtered);
+    modelColumn.textProperty().bind(viewModel.modelColumnTextProperty());
+    priceColumn.textProperty().bind(viewModel.priceColumnTextProperty());
+    stateColumn.textProperty().bind(viewModel.stateColumnTextProperty());
 
-    bicyclesTable.setItems(sorted);
-    sorted.setComparator(viewModel.getComparator(sortCombo.getValue()));
+    inspectButton.textProperty().bind(viewModel.inspectButtonTextProperty());
+    availableButton.textProperty().bind(viewModel.availableButtonTextProperty());
+    maintenanceButton.textProperty().bind(viewModel.maintenanceButtonTextProperty());
+    unavailableButton.textProperty().bind(viewModel.unavailableButtonTextProperty());
+
+    searchLabel.textProperty().bind(viewModel.searchLabelTextProperty());
+    sortLabel.textProperty().bind(viewModel.sortLabelTextProperty());
+    statusLabel.textProperty().bind(viewModel.statusLabelTextProperty());
+    searchField.promptTextProperty().bind(viewModel.searchPromptTextProperty());
+
+    searchField.textProperty().bindBidirectional(viewModel.searchTextProperty());
+    stateFilterCombo.valueProperty().bindBidirectional(viewModel.selectedStateFilterProperty());
+    sortCombo.valueProperty().bindBidirectional(viewModel.selectedSortProperty());
+
+    stateFilterCombo.setItems(viewModel.getStateFilters());
+    sortCombo.setItems(viewModel.getSortOptions());
+
+    bicyclesTable.getSelectionModel()
+        .selectedItemProperty()
+        .addListener((obs, oldValue, newValue) ->
+            viewModel.selectedBicycleProperty().set(newValue)
+        );
+
+    inspectButton.disableProperty().bind(viewModel.actionButtonsDisabledProperty());
+    maintenanceButton.disableProperty().bind(viewModel.actionButtonsDisabledProperty());
+    availableButton.disableProperty().bind(viewModel.actionButtonsDisabledProperty());
+    unavailableButton.disableProperty().bind(viewModel.actionButtonsDisabledProperty());
   }
 
-  private void setupFiltering() {
-    Runnable refilter = () -> {
-      if (viewModel == null) {
-        return;
-      }
+  private void setupTable() {
+    modelColumn.setCellValueFactory(cell ->
+        cell.getValue().modelTextProperty());
 
-      filtered.setPredicate(bicycle ->
-          viewModel.matchesSearch(bicycle, searchField.getText())
-              && viewModel.matchesState(bicycle, stateFilterCombo.getValue())
-      );
-      viewModel.updateCount();
-    };
+    priceColumn.setCellValueFactory(cell ->
+        cell.getValue().priceTextProperty());
 
-    searchField.textProperty().addListener((obs, oldV, newV) -> refilter.run());
-    stateFilterCombo.valueProperty().addListener((obs, oldV, newV) -> refilter.run());
+    stateColumn.setCellValueFactory(cell ->
+        cell.getValue().stateTextProperty());
 
-    sortCombo.valueProperty().addListener((obs, oldV, newV) -> {
-      if (viewModel != null) {
-        sorted.setComparator(viewModel.getComparator(newV));
-      }
-    });
+    bicyclesTable.setItems(viewModel.getSortedBicycles());
   }
 
   @FXML
   private void onNeedsInspection() {
-    viewModel.setState(
-        bicyclesTable.getSelectionModel().getSelectedItem(),
-        StateBicycle.NEEDS_INSPECTION
-    );
+    viewModel.setSelectedState(StateBicycle.NEEDS_INSPECTION);
     bicyclesTable.refresh();
   }
 
   @FXML
   private void onMaintenance() {
-    viewModel.setState(
-        bicyclesTable.getSelectionModel().getSelectedItem(),
-        StateBicycle.ON_MAINTENANCE
-    );
+    viewModel.setSelectedState(StateBicycle.ON_MAINTENANCE);
     bicyclesTable.refresh();
   }
 
   @FXML
   private void onAvailable() {
-    viewModel.setState(
-        bicyclesTable.getSelectionModel().getSelectedItem(),
-        StateBicycle.AVAILABLE
-    );
+    viewModel.setSelectedState(StateBicycle.AVAILABLE);
     bicyclesTable.refresh();
   }
 
   @FXML
   private void onUnavailable() {
-    viewModel.setState(
-        bicyclesTable.getSelectionModel().getSelectedItem(),
-        StateBicycle.UNAVAILABLE
-    );
+    viewModel.setSelectedState(StateBicycle.UNAVAILABLE);
     bicyclesTable.refresh();
   }
 }

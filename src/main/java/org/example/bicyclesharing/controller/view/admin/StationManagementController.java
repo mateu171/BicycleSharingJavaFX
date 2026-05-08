@@ -8,7 +8,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.admin.modalController.AddEditStationController;
-import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
@@ -16,33 +15,41 @@ import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.admin.StationManagementViewModel;
+import org.example.bicyclesharing.viewModel.admin.item.StationItemViewModel;
 
 public class StationManagementController extends BaseController {
 
   @FXML private Label titleLabel;
   @FXML private Label countLabel;
   @FXML private TextField searchField;
-  @FXML private ListView<Station> stationsListView;
+  @FXML private ListView<StationItemViewModel> stationsListView;
   @FXML private Button addStationButton;
 
   private StationManagementViewModel viewModel;
 
   @Override
   public void setCurrentUser(User currentUser) {
-    viewModel = new StationManagementViewModel(currentUser, AppConfig.stationService());
+    viewModel = new StationManagementViewModel(
+        currentUser,
+        AppConfig.stationService()
+    );
+
     bind();
     setupList();
-    viewModel.loadStationsAsync();
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    countLabel.textProperty().bind(viewModel.countText);
-    searchField.promptTextProperty().bind(viewModel.searchPromptText);
-    addStationButton.textProperty().bind(viewModel.addStationButtonText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    countLabel.textProperty().bind(viewModel.countTextProperty());
+    searchField.promptTextProperty().bind(viewModel.searchPromptTextProperty());
+    addStationButton.textProperty().bind(viewModel.addStationButtonTextProperty());
 
-    searchField.textProperty().bindBidirectional(viewModel.searchText);
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
+    searchField.textProperty().bindBidirectional(viewModel.searchTextProperty());
+
+    searchField.textProperty().addListener((obs, oldVal, newVal) ->
+        viewModel.applyFiltersAsync()
+    );
 
     stationsListView.setItems(viewModel.getStations());
   }
@@ -50,63 +57,52 @@ public class StationManagementController extends BaseController {
   private void setupList() {
     stationsListView.setCellFactory(list -> new ListCell<>() {
       @Override
-      protected void updateItem(Station station, boolean empty) {
-        super.updateItem(station, empty);
+      protected void updateItem(StationItemViewModel item, boolean empty) {
+        super.updateItem(item, empty);
 
-        if (empty || station == null) {
+        if (empty || item == null) {
           setGraphic(null);
           setText(null);
           return;
         }
 
-        VBox card = new VBox(8);
-        card.getStyleClass().add("user-card");
-
-        Label nameLabel = new Label(station.getName());
-        nameLabel.getStyleClass().add("user-card-title");
-
-        Label coordsLabel = new Label(
-            LocalizationManager.getStringByKey("admin.stations.coords") + ": "
-                + station.getLatitude() + ", " + station.getLongitude()
-        );
-        coordsLabel.getStyleClass().add("user-card-subtitle");
-
-
-        Label infoLabel = new Label(
-            LocalizationManager.getStringByKey("admin.stations.bicycles") + ": "
-                + station.getBicyclesId().size()
-        );
-        infoLabel.getStyleClass().add("user-card-role");
-
-        Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
-        editButton.getStyleClass().add("button-edit");
-        editButton.setOnAction(e -> openDialog(station));
-
-        Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
-        deleteButton.getStyleClass().add("button-danger");
-        deleteButton.setOnAction(e ->
-        {
-          try {
-            viewModel.delete(station);
-          }catch (BusinessException ex)
-          {
-            DialogUtil.showError(ex.getMessage());
-          }catch (Exception ex)
-          {
-            DialogUtil.showError("error.delete.failed");
-          }
-        });
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        HBox actions = new HBox(10, editButton, deleteButton);
-        HBox bottomRow = new HBox(10, spacer, actions);
-
-        card.getChildren().addAll(nameLabel, coordsLabel, infoLabel, bottomRow);
-        setGraphic(card);
+        setGraphic(createCard(item));
       }
     });
+  }
+
+  private VBox createCard(StationItemViewModel item) {
+    VBox card = new VBox(8);
+    card.getStyleClass().add("user-card");
+
+    Label nameLabel = new Label();
+    nameLabel.getStyleClass().add("user-card-title");
+    nameLabel.textProperty().bind(item.nameTextProperty());
+
+    Label coordsLabel = new Label();
+    coordsLabel.getStyleClass().add("user-card-subtitle");
+    coordsLabel.textProperty().bind(item.coordinatesTextProperty());
+
+    Label infoLabel = new Label();
+    infoLabel.getStyleClass().add("user-card-role");
+    infoLabel.textProperty().bind(item.bicyclesCountTextProperty());
+
+    Button editButton = new Button(LocalizationManager.getStringByKey("edit.button"));
+    editButton.getStyleClass().add("button-edit");
+    editButton.setOnAction(e -> openDialog(item));
+
+    Button deleteButton = new Button(LocalizationManager.getStringByKey("admin.delete.button"));
+    deleteButton.getStyleClass().add("button-danger");
+    deleteButton.setOnAction(e -> deleteStation(item));
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    HBox actions = new HBox(10, editButton, deleteButton);
+    HBox bottomRow = new HBox(10, spacer, actions);
+
+    card.getChildren().addAll(nameLabel, coordsLabel, infoLabel, bottomRow);
+    return card;
   }
 
   @FXML
@@ -114,15 +110,29 @@ public class StationManagementController extends BaseController {
     openDialog(null);
   }
 
-  private void openDialog(Station station) {
+  private void openDialog(StationItemViewModel item) {
     try {
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/admin/modalView/AddEditStationView.fxml",
-          (AddEditStationController controller) -> controller.initData(station, viewModel::refreshAsync)
+          (AddEditStationController controller) ->
+              controller.initData(
+                  item == null ? null : item.getStation(),
+                  viewModel::refreshAsync
+              )
       );
 
     } catch (Exception e) {
-      DialogUtil.showError("error.operation.failed");
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.operation.failed"));
+    }
+  }
+
+  private void deleteStation(StationItemViewModel item) {
+    try {
+      viewModel.delete(item);
+    } catch (BusinessException e) {
+      DialogUtil.showError(e.getMessage());
+    } catch (Exception e) {
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.delete.failed"));
     }
   }
 }

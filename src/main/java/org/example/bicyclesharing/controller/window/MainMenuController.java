@@ -150,6 +150,7 @@ public class MainMenuController extends BaseWindowController{
     stage.setY(event.getScreenY() - yOffset);
   }
 
+
   private void loadMenuByRole(User currentUser) throws IOException {
     String fxml;
 

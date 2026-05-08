@@ -1,5 +1,6 @@
 package org.example.bicyclesharing.viewModel.admin;
 
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -9,62 +10,55 @@ import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.services.StationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.AsyncViewModel;
+import org.example.bicyclesharing.viewModel.admin.item.StationItemViewModel;
 
 public class StationManagementViewModel extends AsyncViewModel {
 
   private final StationService stationService;
-  private final ObservableList<Station> stations = FXCollections.observableArrayList();
 
-  public final StringProperty titleText =
+  private final ObservableList<StationItemViewModel> stations =
+      FXCollections.observableArrayList();
+
+  private final StringProperty titleText =
       LocalizationManager.getStringProperty("admin.stations.title");
-  public final StringProperty searchPromptText =
+
+  private final StringProperty searchPromptText =
       LocalizationManager.getStringProperty("admin.stations.search");
-  public final StringProperty addStationButtonText =
+
+  private final StringProperty addStationButtonText =
       LocalizationManager.getStringProperty("admin.stations.add");
-  public final StringProperty countText = new SimpleStringProperty("");
 
-  public final StringProperty searchText = new SimpleStringProperty("");
+  private final StringProperty countText =
+      new SimpleStringProperty("");
 
-  public StationManagementViewModel(User currentUser, StationService stationService) {
+  private final StringProperty searchText =
+      new SimpleStringProperty("");
+
+  public StationManagementViewModel(
+      User currentUser,
+      StationService stationService
+  ) {
     super(currentUser);
     this.stationService = stationService;
   }
 
-  public ObservableList<Station> getStations() {
-    return stations;
+  public void initialize() {
+    loadStationsAsync();
   }
 
   public void loadStationsAsync() {
-
-    runAsync(stationService::getAll,
-        result ->
-        {
-          stations.setAll(result);
-          updateCount();
-        });
+    runAsync(
+        stationService::getAll,
+        this::setStations
+    );
   }
 
   public void applyFiltersAsync() {
     String search = searchText.get() == null ? "" : searchText.get().trim();
+
     runAsync(
         () -> stationService.findByFilters(search),
-        result ->
-        {
-          stations.setAll(result);
-          updateCount();
-        }
-    );
-  }
-
-  public void delete(Station station) {
-    if (station == null) return;
-    stationService.deleteStation(station);
-    refreshAsync();
-  }
-
-  private void updateCount() {
-    countText.set(
-        LocalizationManager.getStringByKey("admin.stations.count") + ": " + stations.size()
+        this::setStations
     );
   }
 
@@ -76,5 +70,56 @@ public class StationManagementViewModel extends AsyncViewModel {
     } else {
       applyFiltersAsync();
     }
+  }
+
+  public void delete(StationItemViewModel item) {
+    if (item == null) {
+      return;
+    }
+
+    stationService.deleteStation(item.getStation());
+    refreshAsync();
+  }
+
+  private void setStations(List<Station> result) {
+    stations.setAll(
+        result.stream()
+            .map(StationItemViewModel::new)
+            .toList()
+    );
+
+    updateCount();
+  }
+
+  private void updateCount() {
+    countText.set(
+        LocalizationManager.getStringByKey("admin.stations.count")
+            + ": "
+            + stations.size()
+    );
+  }
+
+  public ObservableList<StationItemViewModel> getStations() {
+    return stations;
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty searchPromptTextProperty() {
+    return searchPromptText;
+  }
+
+  public StringProperty addStationButtonTextProperty() {
+    return addStationButtonText;
+  }
+
+  public StringProperty countTextProperty() {
+    return countText;
+  }
+
+  public StringProperty searchTextProperty() {
+    return searchText;
   }
 }

@@ -17,61 +17,68 @@ import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.MaintenanceRecordService;
-import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.BaseViewModel;
 
 public class AddMaintenanceRecordViewModel extends BaseViewModel {
 
-  private final BicycleService bicycleService = AppConfig.bicycleService();
-  private final MaintenanceRecordService maintenanceRecordService = AppConfig.maintenanceRecordService();
+  private final BicycleService bicycleService;
+  private final MaintenanceRecordService maintenanceRecordService;
 
   private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
-  private final FilteredList<Bicycle> filteredBicycles = new FilteredList<>(bicycles, bicycle -> true);
+  private final FilteredList<Bicycle> filteredBicycles =
+      new FilteredList<>(bicycles, bicycle -> true);
 
-  public final StringProperty searchText = new SimpleStringProperty("");
-  public final ObjectProperty<Bicycle> selectedBicycle = new SimpleObjectProperty<>();
-  public final ObjectProperty<MaintenanceType> selectedType = new SimpleObjectProperty<>();
-  public final StringProperty description = new SimpleStringProperty("");
-  public final StringProperty result = new SimpleStringProperty("");
-  public final ObjectProperty<MaintenanceAction> selectedAction = new SimpleObjectProperty<>();
+  private final StringProperty searchText = new SimpleStringProperty("");
+  private final ObjectProperty<Bicycle> selectedBicycle = new SimpleObjectProperty<>();
+  private final ObjectProperty<MaintenanceType> selectedType = new SimpleObjectProperty<>();
+  private final StringProperty description = new SimpleStringProperty("");
+  private final StringProperty result = new SimpleStringProperty("");
+  private final ObjectProperty<MaintenanceAction> selectedAction = new SimpleObjectProperty<>();
 
-  public final StringProperty actionErrorKey = new SimpleStringProperty("");
-  public final StringProperty bicycleErrorKey = new SimpleStringProperty("");
-  public final StringProperty typeErrorKey = new SimpleStringProperty("");
-  public final StringProperty descriptionErrorKey = new SimpleStringProperty("");
-  public final StringProperty resultErrorKey = new SimpleStringProperty("");
-  public final StringProperty successMessageKey = new SimpleStringProperty("");
+  private final StringProperty actionErrorKey = new SimpleStringProperty("");
+  private final StringProperty bicycleErrorKey = new SimpleStringProperty("");
+  private final StringProperty typeErrorKey = new SimpleStringProperty("");
+  private final StringProperty descriptionErrorKey = new SimpleStringProperty("");
+  private final StringProperty resultErrorKey = new SimpleStringProperty("");
+  private final StringProperty successMessageKey = new SimpleStringProperty("");
 
-  public final StringProperty titleText =
+  private final StringProperty titleText =
       LocalizationManager.getStringProperty("maintenance.add.title");
-  public final StringProperty bikeSectionTitleText =
+  private final StringProperty bikeSectionTitleText =
       LocalizationManager.getStringProperty("maintenance.section.bike");
-  public final StringProperty recordSectionTitleText =
+  private final StringProperty recordSectionTitleText =
       LocalizationManager.getStringProperty("maintenance.section.record");
-  public final StringProperty typeLabelText =
+  private final StringProperty typeLabelText =
       LocalizationManager.getStringProperty("maintenance.type");
-  public final StringProperty descriptionLabelText =
+  private final StringProperty descriptionLabelText =
       LocalizationManager.getStringProperty("maintenance.description");
-  public final StringProperty resultLabelText =
+  private final StringProperty resultLabelText =
       LocalizationManager.getStringProperty("maintenance.result");
-  public final StringProperty saveButtonText =
+  private final StringProperty saveButtonText =
       LocalizationManager.getStringProperty("save.button");
-  public final StringProperty clearButtonText =
+  private final StringProperty clearButtonText =
       LocalizationManager.getStringProperty("clear.button");
-  public final StringProperty searchPromptText =
+  private final StringProperty searchPromptText =
       LocalizationManager.getStringProperty("maintenance.search.prompt");
-  public final StringProperty modelColumnText =
+  private final StringProperty modelColumnText =
       LocalizationManager.getStringProperty("mechanic.column.model");
-  public final StringProperty stateColumnText =
+  private final StringProperty stateColumnText =
       LocalizationManager.getStringProperty("mechanic.column.state");
-  public final StringProperty actionText =
+  private final StringProperty actionText =
       LocalizationManager.getStringProperty("maintenance.action");
 
-  public AddMaintenanceRecordViewModel(User currentUser) {
+  public AddMaintenanceRecordViewModel(
+      User currentUser,
+      BicycleService bicycleService,
+      MaintenanceRecordService maintenanceRecordService
+  ) {
     super(currentUser);
-    loadBicycles();
+    this.bicycleService = bicycleService;
+    this.maintenanceRecordService = maintenanceRecordService;
+
     setupFiltering();
+    loadBicycles();
   }
 
   private void loadBicycles() {
@@ -80,7 +87,9 @@ public class AddMaintenanceRecordViewModel extends BaseViewModel {
 
   private void setupFiltering() {
     searchText.addListener((obs, oldValue, newValue) -> {
-      String search = newValue == null ? "" : newValue.toLowerCase(Locale.ROOT).trim();
+      String search = newValue == null
+          ? ""
+          : newValue.toLowerCase(Locale.ROOT).trim();
 
       filteredBicycles.setPredicate(bicycle ->
           search.isBlank()
@@ -89,11 +98,32 @@ public class AddMaintenanceRecordViewModel extends BaseViewModel {
     });
   }
 
-  public FilteredList<Bicycle> getFilteredBicycles() {
-    return filteredBicycles;
+  public void selectBicycle(Bicycle bicycle) {
+    selectedBicycle.set(bicycle);
+    bicycleErrorKey.set("");
+  }
+
+  public void clearTypeError() {
+    typeErrorKey.set("");
+  }
+
+  public void clearDescriptionError() {
+    descriptionErrorKey.set("");
+  }
+
+  public void clearResultError() {
+    resultErrorKey.set("");
+  }
+
+  public void clearActionError() {
+    actionErrorKey.set("");
   }
 
   public String getStateText(Bicycle bicycle) {
+    if (bicycle == null || bicycle.getState() == null) {
+      return "-";
+    }
+
     return LocalizationManager.getStringByKey(bicycle.getState().getKey());
   }
 
@@ -122,45 +152,159 @@ public class AddMaintenanceRecordViewModel extends BaseViewModel {
       );
 
       maintenanceRecordService.add(record);
-
-      Bicycle selectedBike = selectedBicycle.get();
-      selectedBike.setState(
-          selectedAction.get() == MaintenanceAction.RETURN_TO_AVAILABLE
-              ? StateBicycle.AVAILABLE
-              : StateBicycle.UNAVAILABLE
-      );
-      bicycleService.update(selectedBike);
+      updateBicycleState();
 
       clearForm();
       loadBicycles();
       successMessageKey.set("maintenance.success");
+
       return true;
 
     } catch (CustomEntityValidationExeption e) {
-      e.getErrors().forEach((field, keys) -> {
-        if (keys == null || keys.isEmpty()) {
-          return;
-        }
-
-        String key = keys.get(0);
-
-        switch (field) {
-          case "bicycleId" -> bicycleErrorKey.set(key);
-          case "type" -> typeErrorKey.set(key);
-          case "description" -> descriptionErrorKey.set(key);
-          case "result" -> resultErrorKey.set(key);
-          case "action" -> actionErrorKey.set(key);
-        }
-      });
+      applyValidationErrors(e);
       return false;
     }
   }
 
-  public void clearErrors() {
+  private void updateBicycleState() {
+    Bicycle bicycle = selectedBicycle.get();
+
+    if (bicycle == null || selectedAction.get() == null) {
+      return;
+    }
+
+    bicycle.setState(
+        selectedAction.get() == MaintenanceAction.RETURN_TO_AVAILABLE
+            ? StateBicycle.AVAILABLE
+            : StateBicycle.UNAVAILABLE
+    );
+
+    bicycleService.update(bicycle);
+  }
+
+  private void applyValidationErrors(CustomEntityValidationExeption e) {
+    e.getErrors().forEach((field, keys) -> {
+      if (keys == null || keys.isEmpty()) {
+        return;
+      }
+
+      String key = keys.get(0);
+
+      switch (field) {
+        case "bicycleId" -> bicycleErrorKey.set(key);
+        case "type" -> typeErrorKey.set(key);
+        case "description" -> descriptionErrorKey.set(key);
+        case "result" -> resultErrorKey.set(key);
+        case "action" -> actionErrorKey.set(key);
+      }
+    });
+  }
+
+  private void clearErrors() {
     bicycleErrorKey.set("");
     typeErrorKey.set("");
     descriptionErrorKey.set("");
     resultErrorKey.set("");
     actionErrorKey.set("");
+  }
+
+  public FilteredList<Bicycle> getFilteredBicycles() {
+    return filteredBicycles;
+  }
+
+  public StringProperty searchTextProperty() {
+    return searchText;
+  }
+
+  public ObjectProperty<Bicycle> selectedBicycleProperty() {
+    return selectedBicycle;
+  }
+
+  public ObjectProperty<MaintenanceType> selectedTypeProperty() {
+    return selectedType;
+  }
+
+  public StringProperty descriptionProperty() {
+    return description;
+  }
+
+  public StringProperty resultProperty() {
+    return result;
+  }
+
+  public ObjectProperty<MaintenanceAction> selectedActionProperty() {
+    return selectedAction;
+  }
+
+  public StringProperty actionErrorKeyProperty() {
+    return actionErrorKey;
+  }
+
+  public StringProperty bicycleErrorKeyProperty() {
+    return bicycleErrorKey;
+  }
+
+  public StringProperty typeErrorKeyProperty() {
+    return typeErrorKey;
+  }
+
+  public StringProperty descriptionErrorKeyProperty() {
+    return descriptionErrorKey;
+  }
+
+  public StringProperty resultErrorKeyProperty() {
+    return resultErrorKey;
+  }
+
+  public StringProperty successMessageKeyProperty() {
+    return successMessageKey;
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty bikeSectionTitleTextProperty() {
+    return bikeSectionTitleText;
+  }
+
+  public StringProperty recordSectionTitleTextProperty() {
+    return recordSectionTitleText;
+  }
+
+  public StringProperty typeLabelTextProperty() {
+    return typeLabelText;
+  }
+
+  public StringProperty descriptionLabelTextProperty() {
+    return descriptionLabelText;
+  }
+
+  public StringProperty resultLabelTextProperty() {
+    return resultLabelText;
+  }
+
+  public StringProperty saveButtonTextProperty() {
+    return saveButtonText;
+  }
+
+  public StringProperty clearButtonTextProperty() {
+    return clearButtonText;
+  }
+
+  public StringProperty searchPromptTextProperty() {
+    return searchPromptText;
+  }
+
+  public StringProperty modelColumnTextProperty() {
+    return modelColumnText;
+  }
+
+  public StringProperty stateColumnTextProperty() {
+    return stateColumnText;
+  }
+
+  public StringProperty actionTextProperty() {
+    return actionText;
   }
 }

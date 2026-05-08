@@ -1,13 +1,21 @@
 package org.example.bicyclesharing.controller.view.admin;
 
+import java.util.Comparator;
+import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.Navigable;
+import org.example.bicyclesharing.domain.Impl.Bicycle;
+import org.example.bicyclesharing.domain.Impl.BikeIssue;
+import org.example.bicyclesharing.domain.Impl.Customer;
+import org.example.bicyclesharing.domain.Impl.Rental;
+import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.services.NavigationService;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel;
 
 public class AdminDashboardController extends BaseController implements Navigable {
@@ -65,41 +73,42 @@ public class AdminDashboardController extends BaseController implements Navigabl
         AppConfig.bikeIssueService(),
         AppConfig.customerService()
     );
+
     bind();
-    viewModel.loadAsync();
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    subtitleLabel.textProperty().bind(viewModel.subtitleText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    subtitleLabel.textProperty().bind(viewModel.subtitleTextProperty());
 
-    totalUsersTitleLabel.textProperty().bind(viewModel.totalUsersTitle);
-    totalBicyclesTitleLabel.textProperty().bind(viewModel.totalBicyclesTitle);
-    activeRentalsTitleLabel.textProperty().bind(viewModel.activeRentalsTitle);
-    activeReservationsTitleLabel.textProperty().bind(viewModel.activeReservationsTitle);
+    totalUsersTitleLabel.textProperty().bind(viewModel.totalUsersTitleProperty());
+    totalBicyclesTitleLabel.textProperty().bind(viewModel.totalBicyclesTitleProperty());
+    activeRentalsTitleLabel.textProperty().bind(viewModel.activeRentalsTitleProperty());
+    activeReservationsTitleLabel.textProperty().bind(viewModel.activeReservationsTitleProperty());
 
-    totalUsersValueLabel.textProperty().bind(viewModel.totalUsersValue);
-    totalBicyclesValueLabel.textProperty().bind(viewModel.totalBicyclesValue);
-    activeRentalsValueLabel.textProperty().bind(viewModel.activeRentalsValue);
-    activeReservationsValueLabel.textProperty().bind(viewModel.activeReservationsValue);
+    totalUsersValueLabel.textProperty().bind(viewModel.totalUsersValueProperty());
+    totalBicyclesValueLabel.textProperty().bind(viewModel.totalBicyclesValueProperty());
+    activeRentalsValueLabel.textProperty().bind(viewModel.activeRentalsValueProperty());
+    activeReservationsValueLabel.textProperty().bind(viewModel.activeReservationsValueProperty());
 
-    attentionTitleLabel.textProperty().bind(viewModel.attentionTitle);
-    latestActivityTitleLabel.textProperty().bind(viewModel.latestActivityTitle);
-    quickActionsTitleLabel.textProperty().bind(viewModel.quickActionsTitle);
+    attentionTitleLabel.textProperty().bind(viewModel.attentionTitleProperty());
+    latestActivityTitleLabel.textProperty().bind(viewModel.latestActivityTitleProperty());
+    quickActionsTitleLabel.textProperty().bind(viewModel.quickActionsTitleProperty());
 
-    needsInspectionLabel.textProperty().bind(viewModel.needsInspectionText);
-    onMaintenanceLabel.textProperty().bind(viewModel.onMaintenanceText);
-    unavailableLabel.textProperty().bind(viewModel.unavailableText);
-    newIssuesLabel.textProperty().bind(viewModel.newIssuesText);
-    totalStationsLabel.textProperty().bind(viewModel.totalStationsText);
+    needsInspectionLabel.textProperty().bind(viewModel.needsInspectionTextProperty());
+    onMaintenanceLabel.textProperty().bind(viewModel.onMaintenanceTextProperty());
+    unavailableLabel.textProperty().bind(viewModel.unavailableTextProperty());
+    newIssuesLabel.textProperty().bind(viewModel.newIssuesTextProperty());
+    totalStationsLabel.textProperty().bind(viewModel.totalStationsTextProperty());
 
-    latestRentalLabel.textProperty().bind(viewModel.latestRentalText);
-    latestReservationLabel.textProperty().bind(viewModel.latestReservationText);
-    latestIssueLabel.textProperty().bind(viewModel.latestIssueText);
+    latestRentalLabel.textProperty().bind(viewModel.latestRentalTextProperty());
+    latestReservationLabel.textProperty().bind(viewModel.latestReservationTextProperty());
+    latestIssueLabel.textProperty().bind(viewModel.latestIssueTextProperty());
 
-    openUsersButton.textProperty().bind(viewModel.openUsersButtonText);
-    openBicyclesButton.textProperty().bind(viewModel.openBicyclesButtonText);
-    openStationsButton.textProperty().bind(viewModel.openStationsButtonText);
+    openUsersButton.textProperty().bind(viewModel.openUsersButtonTextProperty());
+    openBicyclesButton.textProperty().bind(viewModel.openBicyclesButtonTextProperty());
+    openStationsButton.textProperty().bind(viewModel.openStationsButtonTextProperty());
   }
 
   @FXML

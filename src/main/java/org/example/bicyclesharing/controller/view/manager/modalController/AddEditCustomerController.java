@@ -30,37 +30,35 @@ public class AddEditCustomerController {
   private Runnable onSaved;
   private AddEditCustomerViewModel viewModel;
 
-  public void initData(Customer customer,Runnable onSaved) {
-    this.viewModel = new AddEditCustomerViewModel(AppConfig.customerService(),customer);
+  public void initData(Customer customer, Runnable onSaved) {
     this.onSaved = onSaved;
-    bind();
 
-    if(viewModel.isEditMode())
-    {
-      fullNameField.setPromptText(customer.getFullName());
-      phoneNumberField.setPromptText(customer.getPhoneNumber());
-      documentNumberField.setPromptText(customer.getDocumentNumber());
-    }
+    viewModel = new AddEditCustomerViewModel(
+        AppConfig.customerService(),
+        customer
+    );
+
+    bind();
+    viewModel.initialize();
   }
 
-  private void bind()
-  {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    fullNameField.textProperty().bindBidirectional(viewModel.fullName);
-    fullNameLabel.textProperty().bind(viewModel.fullNameLabelText);
-    fullNameErrorLabel.textProperty().bind(viewModel.fullNameError);
+  private void bind() {
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
 
-    phoneNumberField.textProperty().bindBidirectional(viewModel.phoneNumber);
-    phoneNumberLabel.textProperty().bind(viewModel.phoneNumberLabelText);
-    phoneNumberErrorLabel.textProperty().bind(viewModel.phoneNumberError);
+    fullNameLabel.textProperty().bind(viewModel.fullNameLabelTextProperty());
+    phoneNumberLabel.textProperty().bind(viewModel.phoneNumberLabelTextProperty());
+    documentNumberLabel.textProperty().bind(viewModel.documentNumberLabelTextProperty());
 
-    documentNumberField.textProperty().bindBidirectional(viewModel.documentNumber);
-    documentNumberLabel.textProperty().bind(viewModel.documentNumberLabelText);
-    documnetNumberErrorLabel.textProperty().bind(viewModel.documentNumberError);
+    fullNameField.textProperty().bindBidirectional(viewModel.fullNameProperty());
+    phoneNumberField.textProperty().bindBidirectional(viewModel.phoneNumberProperty());
+    documentNumberField.textProperty().bindBidirectional(viewModel.documentNumberProperty());
 
-    saveButton.textProperty().bind(viewModel.saveButtonText);
-    cancelButton.textProperty().bind(viewModel.cancelButtonText);
+    fullNameErrorLabel.textProperty().bind(viewModel.fullNameErrorProperty());
+    phoneNumberErrorLabel.textProperty().bind(viewModel.phoneNumberErrorProperty());
+    documnetNumberErrorLabel.textProperty().bind(viewModel.documentNumberErrorProperty());
 
+    saveButton.textProperty().bind(viewModel.saveButtonTextProperty());
+    cancelButton.textProperty().bind(viewModel.cancelButtonTextProperty());
   }
 
   @FXML
@@ -69,6 +67,7 @@ public class AddEditCustomerController {
       if (onSaved != null) {
         onSaved.run();
       }
+
       close();
     }
   }

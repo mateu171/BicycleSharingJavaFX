@@ -1,7 +1,10 @@
 package org.example.bicyclesharing.viewModel.manager.modalViewModal;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -11,7 +14,6 @@ import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.DocumentType;
-import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.CustomerService;
@@ -30,44 +32,54 @@ public class AddEditReservationViewModel {
   private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
   private final ObservableList<DocumentType> documentTypes = FXCollections.observableArrayList();
 
-  public final StringProperty titleText = new SimpleStringProperty();
+  private final StringProperty titleText = new SimpleStringProperty();
 
-  public final StringProperty saveButtonText =
+  private final StringProperty saveButtonText =
       LocalizationManager.getStringProperty("save.button");
-  public final StringProperty cancelButtonText =
+
+  private final StringProperty cancelButtonText =
       LocalizationManager.getStringProperty("cancel.button");
 
-  public final StringProperty customerLabelText =
+  private final StringProperty customerLabelText =
       LocalizationManager.getStringProperty("manager.reservation.customer");
-  public final StringProperty bicycleLabelText =
+
+  private final StringProperty bicycleLabelText =
       LocalizationManager.getStringProperty("manager.reservation.bicycle");
-  public final StringProperty startTimeLabelText =
+
+  private final StringProperty startTimeLabelText =
       LocalizationManager.getStringProperty("manager.reservation.start");
-  public final StringProperty endTimeLabelText =
+
+  private final StringProperty endTimeLabelText =
       LocalizationManager.getStringProperty("manager.reservation.end");
-  public final StringProperty documentTypeLabelText =
+
+  private final StringProperty documentTypeLabelText =
       LocalizationManager.getStringProperty("manager.reservation.document.type");
-  public final StringProperty documentNumberLabelText =
+
+  private final StringProperty documentNumberLabelText =
       LocalizationManager.getStringProperty("manager.reservation.document.number");
-  public final StringProperty depositAmountLabelText =
+
+  private final StringProperty depositAmountLabelText =
       LocalizationManager.getStringProperty("manager.reservation.deposit");
 
-  public final StringProperty startTime = new SimpleStringProperty("");
-  public final StringProperty endTime = new SimpleStringProperty("");
-  public final StringProperty documentNumber = new SimpleStringProperty("");
-  public final StringProperty depositAmount = new SimpleStringProperty("");
+  private final ObjectProperty<Customer> selectedCustomer = new SimpleObjectProperty<>();
+  private final ObjectProperty<Bicycle> selectedBicycle = new SimpleObjectProperty<>();
+  private final ObjectProperty<DocumentType> selectedDocumentType = new SimpleObjectProperty<>();
 
-  public final StringProperty customerError = new SimpleStringProperty("");
-  public final StringProperty bicycleError = new SimpleStringProperty("");
-  public final StringProperty startTimeError = new SimpleStringProperty("");
-  public final StringProperty endTimeError = new SimpleStringProperty("");
-  public final StringProperty documentTypeError = new SimpleStringProperty("");
-  public final StringProperty documentNumberError = new SimpleStringProperty("");
-  public final StringProperty depositAmountError = new SimpleStringProperty("");
+  private final ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>();
+  private final ObjectProperty<LocalDate> endDate = new SimpleObjectProperty<>();
 
-  private Customer selectedCustomer;
-  private Bicycle selectedBicycle;
-  private DocumentType selectedDocumentType;
+  private final StringProperty startTime = new SimpleStringProperty("");
+  private final StringProperty endTime = new SimpleStringProperty("");
+  private final StringProperty documentNumber = new SimpleStringProperty("");
+  private final StringProperty depositAmount = new SimpleStringProperty("");
+
+  private final StringProperty customerError = new SimpleStringProperty("");
+  private final StringProperty bicycleError = new SimpleStringProperty("");
+  private final StringProperty startTimeError = new SimpleStringProperty("");
+  private final StringProperty endTimeError = new SimpleStringProperty("");
+  private final StringProperty documentTypeError = new SimpleStringProperty("");
+  private final StringProperty documentNumberError = new SimpleStringProperty("");
+  private final StringProperty depositAmountError = new SimpleStringProperty("");
 
   public AddEditReservationViewModel(
       User currentUser,
@@ -81,139 +93,149 @@ public class AddEditReservationViewModel {
     this.customerService = customerService;
     this.bicycleService = bicycleService;
     this.editingReservation = editingReservation;
+  }
 
+  public void initialize()
+  {
+    loadOptions();
+
+    if(isEditMode())
+      initializeEditMode();
+    else
+      initializeAddMode();
+  }
+
+  private void initializeAddMode() {
+    titleText.set(LocalizationManager.getStringByKey("manager.reservation.add.title"));
+  }
+
+  private void initializeEditMode() {
+    titleText.set(LocalizationManager.getStringByKey("manager.reservation.edit.title"));
+    startDate.set(editingReservation.getStartTime().toLocalDate());
+    startTime.set(editingReservation.getStartTime().toLocalTime().toString());
+
+    endDate.set(editingReservation.getEndTime().toLocalDate());
+    endTime.set(editingReservation.getEndTime().toLocalTime().toString());
+
+    documentNumber.set(editingReservation.getDocumentNumber());
+    depositAmount.set(String.valueOf(editingReservation.getDepositAmount()));
+
+    Customer customer = customerService.getById(editingReservation.getCustomerId()).orElse(null);
+    Bicycle bicycle = bicycleService.getById(editingReservation.getBicycleId()).orElse(null);
+
+    if (customer != null && !customers.contains(customer)) {
+      customers.add(customer);
+    }
+
+    if (bicycle != null && !bicycles.contains(bicycle)) {
+      bicycles.add(bicycle);
+    }
+
+    selectedCustomer.set(customer);
+    selectedBicycle.set(bicycle);
+    selectedDocumentType.set(editingReservation.getDocumentType());
+  }
+
+  private void loadOptions() {
     customers.setAll(customerService.getAll().stream()
         .filter(c -> c.getActiveRent() == null)
         .collect(Collectors.toList()));
 
     bicycles.setAll(bicycleService.getAvailable());
     documentTypes.setAll(DocumentType.values());
-
-    if (editingReservation == null) {
-      titleText.set(LocalizationManager.getStringByKey("manager.reservation.add.title"));
-    } else {
-      titleText.set(LocalizationManager.getStringByKey("manager.reservation.edit.title"));
-      startTime.set(editingReservation.getStartTime().toString());
-      endTime.set(editingReservation.getEndTime().toString());
-      documentNumber.set(editingReservation.getDocumentNumber());
-      depositAmount.set(String.valueOf(editingReservation.getDepositAmount()));
-
-      selectedCustomer = customerService.getById(editingReservation.getCustomerId()).orElse(null);
-      selectedBicycle = bicycleService.getById(editingReservation.getBicycleId()).orElse(null);
-      selectedDocumentType = editingReservation.getDocumentType();
-    }
-  }
-
-  public ObservableList<Customer> getCustomers() {
-    return customers;
-  }
-
-  public ObservableList<Bicycle> getBicycles() {
-    return bicycles;
-  }
-
-  public ObservableList<DocumentType> getDocumentTypes() {
-    return documentTypes;
-  }
-
-  public Customer getSelectedCustomer() {
-    return selectedCustomer;
-  }
-
-  public void setSelectedCustomer(Customer selectedCustomer) {
-    this.selectedCustomer = selectedCustomer;
-    customerError.set("");
-  }
-
-  public Bicycle getSelectedBicycle() {
-    return selectedBicycle;
-  }
-
-  public void setSelectedBicycle(Bicycle selectedBicycle) {
-    this.selectedBicycle = selectedBicycle;
-    bicycleError.set("");
-  }
-
-  public DocumentType getSelectedDocumentType() {
-    return selectedDocumentType;
-  }
-
-  public void setSelectedDocumentType(DocumentType selectedDocumentType) {
-    this.selectedDocumentType = selectedDocumentType;
-    documentTypeError.set("");
   }
 
   public boolean save() {
     clearErrors();
 
     try {
-      if (editingReservation == null) {
-        Reservation reservation = new Reservation(
-            selectedCustomer == null ? null : selectedCustomer.getId(),
-            selectedBicycle == null ? null : selectedBicycle.getId(),
-            currentUser.getId(),
-            startTime.get(),
-            endTime.get(),
-            selectedDocumentType == null ? null : selectedDocumentType,
-            documentNumber.get(),
-            depositAmount.get()
-        );
-        selectedCustomer.setActiveReservation(reservation.getId());
-        reservationService.add(reservation);
-        customerService.update(selectedCustomer);
-      } else {
-
-        List<Bicycle> available = bicycleService.getAvailable();
-
-        if (editingReservation != null) {
-          Bicycle current = bicycleService.getById(editingReservation.getBicycleId()).orElse(null);
-          if (current != null && !available.contains(current)) {
-            available.add(current);
-          }
-        }
-        bicycles.setAll(available);
-        Reservation validated = new Reservation(
-            selectedCustomer.getId(),
-            selectedBicycle.getId(),
-            currentUser.getId(),
-            startTime.get(),
-            endTime.get(),
-            selectedDocumentType,
-            documentNumber.get(),
-            depositAmount.get()
-        );
-
-        editingReservation.setCustomerId(validated.getCustomerId());
-        editingReservation.setBicycleId(validated.getBicycleId());
-        editingReservation.setManagerId(validated.getManagerId());
-        editingReservation.setStartTime(validated.getStartTime().toString());
-        editingReservation.setEndTime(validated.getEndTime().toString());
-        editingReservation.setDocumentType(validated.getDocumentType());
-        editingReservation.setDocumentNumber(validated.getDocumentNumber());
-        editingReservation.setDepositAmount(String.valueOf(validated.getDepositAmount()));
-
-        reservationService.update(editingReservation);
+      if(isEditMode()) {
+        updateReservation();
       }
-      return true;
-
+      else {
+        createReservation();
+      }
+      return  true;
     } catch (CustomEntityValidationExeption e) {
-      e.getErrors().forEach((field, messages) -> {
-        String text = messages.stream()
-            .map(LocalizationManager::getStringByKey)
-            .collect(Collectors.joining("\n"));
-
-        switch (field) {
-          case "customerId" -> customerError.set(text);
-          case "bicycleId" -> bicycleError.set(text);
-          case "startTime" -> startTimeError.set(text);
-          case "endTime" -> endTimeError.set(text);
-          case "documentType" -> documentTypeError.set(text);
-          case "documentNumber" -> documentNumberError.set(text);
-          case "depositAmount" -> depositAmountError.set(text);
-        }
-      });
+     applyValidationErrors(e);
       return false;
     }
+  }
+
+  private void applyValidationErrors(CustomEntityValidationExeption e)
+  {
+    e.getErrors().forEach((field, messages) -> {
+      String text = messages.stream()
+          .map(LocalizationManager::getStringByKey)
+          .collect(Collectors.joining("\n"));
+
+      switch (field) {
+        case "customerId" -> customerError.set(text);
+        case "bicycleId" -> bicycleError.set(text);
+        case "startTime" -> startTimeError.set(text);
+        case "endTime" -> endTimeError.set(text);
+        case "documentType" -> documentTypeError.set(text);
+        case "documentNumber" -> documentNumberError.set(text);
+        case "depositAmount" -> depositAmountError.set(text);
+      }
+    });
+  }
+
+  private void createReservation() {
+    Reservation reservation = buildReservation();
+
+    if(selectedCustomer.get() != null)
+    {
+      selectedCustomer.get().setActiveReservation(reservation.getId());
+    }
+
+    reservationService.add(reservation);
+
+    if(selectedCustomer.get() != null)
+    {
+      customerService.update(selectedCustomer.get());
+    }
+  }
+
+  private void updateReservation() {
+    Reservation validated = buildReservation();
+
+    editingReservation.setCustomerId(validated.getCustomerId());
+    editingReservation.setBicycleId(validated.getBicycleId());
+    editingReservation.setManagerId(validated.getManagerId());
+    editingReservation.setStartTime(validated.getStartTime().toString());
+    editingReservation.setEndTime(validated.getEndTime().toString());
+    editingReservation.setDocumentType(validated.getDocumentType());
+    editingReservation.setDocumentNumber(validated.getDocumentNumber());
+    editingReservation.setDepositAmount(String.valueOf(validated.getDepositAmount()));
+
+    reservationService.update(editingReservation);
+  }
+
+  private Reservation buildReservation()
+  {
+    return new Reservation(
+        selectedCustomer.get() == null ? null : selectedCustomer.get().getId(),
+        selectedBicycle.get() == null ? null : selectedBicycle.get().getId(),
+        currentUser.getId(),
+        buildDateTime(startDate.get(),startTime.get()),
+        buildDateTime(endDate.get(),endTime.get()),
+        selectedDocumentType.get(),
+        documentNumber.get(),
+        depositAmount.get()
+    );
+  }
+
+  private String buildDateTime(LocalDate date,String timeText)
+  {
+    String time = timeText == null ? "" : timeText.trim();
+
+    if(date == null || time.isBlank())
+    {
+      return  "";
+    }
+
+    return date + "T" + time;
   }
 
   public boolean isEditMode() {
@@ -228,5 +250,121 @@ public class AddEditReservationViewModel {
     documentTypeError.set("");
     documentNumberError.set("");
     depositAmountError.set("");
+  }
+
+  public ObservableList<Customer> getCustomers() {
+    return customers;
+  }
+
+  public ObservableList<Bicycle> getBicycles() {
+    return bicycles;
+  }
+
+  public ObservableList<DocumentType> getDocumentTypes() {
+    return documentTypes;
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty saveButtonTextProperty() {
+    return saveButtonText;
+  }
+
+  public StringProperty cancelButtonTextProperty() {
+    return cancelButtonText;
+  }
+
+  public StringProperty customerLabelTextProperty() {
+    return customerLabelText;
+  }
+
+  public StringProperty bicycleLabelTextProperty() {
+    return bicycleLabelText;
+  }
+
+  public StringProperty startTimeLabelTextProperty() {
+    return startTimeLabelText;
+  }
+
+  public StringProperty endTimeLabelTextProperty() {
+    return endTimeLabelText;
+  }
+
+  public StringProperty documentTypeLabelTextProperty() {
+    return documentTypeLabelText;
+  }
+
+  public StringProperty documentNumberLabelTextProperty() {
+    return documentNumberLabelText;
+  }
+
+  public StringProperty depositAmountLabelTextProperty() {
+    return depositAmountLabelText;
+  }
+
+  public ObjectProperty<Customer> selectedCustomerProperty() {
+    return selectedCustomer;
+  }
+
+  public ObjectProperty<Bicycle> selectedBicycleProperty() {
+    return selectedBicycle;
+  }
+
+  public ObjectProperty<DocumentType> selectedDocumentTypeProperty() {
+    return selectedDocumentType;
+  }
+
+  public ObjectProperty<LocalDate> startDateProperty() {
+    return startDate;
+  }
+
+  public ObjectProperty<LocalDate> endDateProperty() {
+    return endDate;
+  }
+
+  public StringProperty startTimeProperty() {
+    return startTime;
+  }
+
+  public StringProperty endTimeProperty() {
+    return endTime;
+  }
+
+  public StringProperty documentNumberProperty() {
+    return documentNumber;
+  }
+
+  public StringProperty depositAmountProperty() {
+    return depositAmount;
+  }
+
+  public StringProperty customerErrorProperty() {
+    return customerError;
+  }
+
+  public StringProperty bicycleErrorProperty() {
+    return bicycleError;
+  }
+
+  public StringProperty startTimeErrorProperty() {
+    return startTimeError;
+  }
+
+  public StringProperty endTimeErrorProperty() {
+    return endTimeError;
+  }
+
+  public StringProperty documentTypeErrorProperty() {
+    return documentTypeError;
+  }
+
+  public StringProperty documentNumberErrorProperty() {
+    return documentNumberError;
+  }
+
+  public StringProperty depositAmountErrorProperty() {
+    return depositAmountError;
   }
 }

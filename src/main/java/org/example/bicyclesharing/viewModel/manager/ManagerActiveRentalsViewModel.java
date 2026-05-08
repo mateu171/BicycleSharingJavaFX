@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.viewModel.manager;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -14,6 +15,7 @@ import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.AsyncViewModel;
+import org.example.bicyclesharing.viewModel.manager.item.ActiveRentalItemViewModel;
 
 public class ManagerActiveRentalsViewModel extends AsyncViewModel {
 
@@ -21,16 +23,24 @@ public class ManagerActiveRentalsViewModel extends AsyncViewModel {
   private final CustomerService customerService;
   private final BicycleService bicycleService;
 
-  private final ObservableList<Rental> rentals = FXCollections.observableArrayList();
+  private final ObservableList<ActiveRentalItemViewModel> rentals =
+      FXCollections.observableArrayList();
 
-  public final StringProperty titleText =
+  private final StringProperty titleText =
       LocalizationManager.getStringProperty("manager.rentals.active.title");
-  public final StringProperty searchPromptText =
+
+  private final StringProperty searchPromptText =
       LocalizationManager.getStringProperty("manager.rentals.active.search");
-  public final StringProperty finishButtonText =
+
+  private final StringProperty finishButtonText =
       LocalizationManager.getStringProperty("manager.rentals.active.finish");
-  public final StringProperty countText = new SimpleStringProperty("");
-  public final StringProperty searchText = new SimpleStringProperty("");
+
+  private final StringProperty countText =
+      new SimpleStringProperty("");
+
+  private final StringProperty searchText =
+      new SimpleStringProperty("");
+
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
@@ -46,17 +56,18 @@ public class ManagerActiveRentalsViewModel extends AsyncViewModel {
     this.bicycleService = bicycleService;
   }
 
-  public ObservableList<Rental> getRentals() {
+  public void initialize()
+  {
+    loadRentalsAsync();
+  }
+  public ObservableList<ActiveRentalItemViewModel> getRentals() {
     return rentals;
   }
 
-  public void loadRentalsAsync() {
+  private void loadRentalsAsync() {
     runAsync(
         () -> rentalService.findActiveByFilters(""),
-        result -> {
-          rentals.setAll(result);
-          updateCount();
-        }
+        this::setRentals
     );
   }
 
@@ -65,10 +76,7 @@ public class ManagerActiveRentalsViewModel extends AsyncViewModel {
 
     runAsync(
         () -> rentalService.findActiveByFilters(search),
-        result -> {
-          rentals.setAll(result);
-          updateCount();
-        }
+        this::setRentals
     );
   }
 
@@ -82,23 +90,43 @@ public class ManagerActiveRentalsViewModel extends AsyncViewModel {
     }
   }
 
+  private void setRentals(List<Rental> result)
+  {
+    rentals.setAll(result.stream().map(this::toItemViewModel).toList());
+    updateCount();
+  }
+
+  private ActiveRentalItemViewModel toItemViewModel(Rental rental)
+  {
+    Customer customer = customerService.getById(rental.getCustomerId()).orElse(null);
+    Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
+
+    return new ActiveRentalItemViewModel(rental,customer,bicycle);
+  }
+
   private void updateCount() {
     countText.set(
         LocalizationManager.getStringByKey("manager.rentals.active.count") + ": " + rentals.size()
     );
   }
 
-  public String getCustomerName(Rental rental) {
-    Customer customer = customerService.getById(rental.getCustomerId()).orElse(null);
-    return customer != null ? customer.getFullName() : "-";
+  public StringProperty titleTextProperty() {
+    return titleText;
   }
 
-  public String getBicycleModel(Rental rental) {
-    Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
-    return bicycle != null ? bicycle.getModel() : "-";
+  public StringProperty searchPromptTextProperty() {
+    return searchPromptText;
   }
 
-  public String getStartText(Rental rental) {
-    return rental.getStart() != null ? rental.getStart().format(formatter) : "-";
+  public StringProperty finishButtonTextProperty() {
+    return finishButtonText;
+  }
+
+  public StringProperty countTextProperty() {
+    return countText;
+  }
+
+  public StringProperty searchTextProperty() {
+    return searchText;
   }
 }

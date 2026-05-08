@@ -58,6 +58,7 @@ public class User extends BaseEntity {
   }
 
   public void updateProfile(String login, String email, Role role, String imagePath) {
+    cleanErrors("password");
     setLogin(login);
     setEmail(email);
     setRole(role);
@@ -105,7 +106,7 @@ public class User extends BaseEntity {
   public void changePassword(String plainPassword) {
     validatePassword(plainPassword);
 
-    if (!isValid()) {
+    if (getErrors().containsKey("password")) {
       throw new CustomEntityValidationExeption(getErrors());
     }
 

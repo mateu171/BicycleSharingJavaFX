@@ -62,55 +62,56 @@ public class ManagerDashboardController extends BaseController implements Naviga
         AppConfig.customerService(),
         AppConfig.bicycleService()
     );
+
     bind();
-    viewModel.loadAsync();
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    subtitleLabel.textProperty().bind(viewModel.subtitleText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    subtitleLabel.textProperty().bind(viewModel.subtitleTextProperty());
 
-    activeRentalsTitleLabel.textProperty().bind(viewModel.activeRentalsTitle);
-    activeReservationsTitleLabel.textProperty().bind(viewModel.activeReservationsTitle);
-    totalCustomersTitleLabel.textProperty().bind(viewModel.totalCustomersTitle);
-    availableBicyclesTitleLabel.textProperty().bind(viewModel.availableBicyclesTitle);
+    activeRentalsTitleLabel.textProperty().bind(viewModel.activeRentalsTitleProperty());
+    activeReservationsTitleLabel.textProperty().bind(viewModel.activeReservationsTitleProperty());
+    totalCustomersTitleLabel.textProperty().bind(viewModel.totalCustomersTitleProperty());
+    availableBicyclesTitleLabel.textProperty().bind(viewModel.availableBicyclesTitleProperty());
 
-    activeRentalsValueLabel.textProperty().bind(viewModel.activeRentalsValue);
-    activeReservationsValueLabel.textProperty().bind(viewModel.activeReservationsValue);
-    totalCustomersValueLabel.textProperty().bind(viewModel.totalCustomersValue);
-    availableBicyclesValueLabel.textProperty().bind(viewModel.availableBicyclesValue);
+    activeRentalsValueLabel.textProperty().bind(viewModel.activeRentalsValueProperty());
+    activeReservationsValueLabel.textProperty().bind(viewModel.activeReservationsValueProperty());
+    totalCustomersValueLabel.textProperty().bind(viewModel.totalCustomersValueProperty());
+    availableBicyclesValueLabel.textProperty().bind(viewModel.availableBicyclesValueProperty());
 
-    attentionTitleLabel.textProperty().bind(viewModel.attentionTitle);
-    latestActivityTitleLabel.textProperty().bind(viewModel.latestActivityTitle);
-    quickActionsTitleLabel.textProperty().bind(viewModel.quickActionsTitle);
+    attentionTitleLabel.textProperty().bind(viewModel.attentionTitleProperty());
+    latestActivityTitleLabel.textProperty().bind(viewModel.latestActivityTitleProperty());
+    quickActionsTitleLabel.textProperty().bind(viewModel.quickActionsTitleProperty());
 
-    issuedReservationsLabel.textProperty().bind(viewModel.issuedReservationsText);
-    newReservationsLabel.textProperty().bind(viewModel.newReservationsText);
-    rentedBicyclesLabel.textProperty().bind(viewModel.rentedBicyclesText);
-    unavailableBicyclesLabel.textProperty().bind(viewModel.unavailableBicyclesText);
-    totalBicyclesLabel.textProperty().bind(viewModel.totalBicyclesText);
+    issuedReservationsLabel.textProperty().bind(viewModel.issuedReservationsTextProperty());
+    newReservationsLabel.textProperty().bind(viewModel.newReservationsTextProperty());
+    rentedBicyclesLabel.textProperty().bind(viewModel.rentedBicyclesTextProperty());
+    unavailableBicyclesLabel.textProperty().bind(viewModel.unavailableBicyclesTextProperty());
+    totalBicyclesLabel.textProperty().bind(viewModel.totalBicyclesTextProperty());
 
-    latestRentalLabel.textProperty().bind(viewModel.latestRentalText);
-    latestReservationLabel.textProperty().bind(viewModel.latestReservationText);
-    latestCustomerLabel.textProperty().bind(viewModel.latestCustomerText);
+    latestRentalLabel.textProperty().bind(viewModel.latestRentalTextProperty());
+    latestReservationLabel.textProperty().bind(viewModel.latestReservationTextProperty());
+    latestCustomerLabel.textProperty().bind(viewModel.latestCustomerTextProperty());
 
-    openCustomersButton.textProperty().bind(viewModel.openCustomersButtonText);
-    openRentalsButton.textProperty().bind(viewModel.openRentalsButtonText);
-    openReservationsButton.textProperty().bind(viewModel.openReservationsButtonText);
+    openCustomersButton.textProperty().bind(viewModel.openCustomersButtonTextProperty());
+    openRentalsButton.textProperty().bind(viewModel.openRentalsButtonTextProperty());
+    openReservationsButton.textProperty().bind(viewModel.openReservationsButtonTextProperty());
   }
 
   @FXML
   private void onOpenCustomers() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/CustomerManagementView.fxml");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerCustomersView.fxml");
   }
 
   @FXML
   private void onOpenRentals() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/RentalManagementView.fxml");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerActiveRentalsView.fxml");
   }
 
   @FXML
   private void onOpenReservations() {
-    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ReservationManagementView.fxml");
+    navigationService.load("/org/example/bicyclesharing/presentation/view/manager/ManagerReservationsView.fxml");
   }
 }

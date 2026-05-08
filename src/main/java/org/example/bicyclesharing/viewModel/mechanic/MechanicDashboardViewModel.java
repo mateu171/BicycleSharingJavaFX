@@ -28,52 +28,83 @@ public class MechanicDashboardViewModel extends BaseViewModel {
   private final BikeIssueService bikeIssueService;
   private final MaintenanceRecordService maintenanceRecordService;
 
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+  private final DateTimeFormatter formatter =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-  public final StringProperty titleText =
+  private final StringProperty titleText =
       LocalizationManager.getStringProperty("mechanic.dashboard.title");
-  public final StringProperty subtitleText =
+
+  private final StringProperty subtitleText =
       LocalizationManager.getStringProperty("mechanic.dashboard.subtitle");
 
-  public final StringProperty newIssuesTitle =
+  private final StringProperty newIssuesTitle =
       LocalizationManager.getStringProperty("mechanic.dashboard.new_issues");
-  public final StringProperty inProgressIssuesTitle =
+
+  private final StringProperty inProgressIssuesTitle =
       LocalizationManager.getStringProperty("mechanic.dashboard.in_progress_issues");
-  public final StringProperty onMaintenanceTitle =
+
+  private final StringProperty onMaintenanceTitle =
       LocalizationManager.getStringProperty("mechanic.dashboard.on_maintenance");
-  public final StringProperty needsInspectionTitle =
+
+  private final StringProperty needsInspectionTitle =
       LocalizationManager.getStringProperty("mechanic.dashboard.needs_inspection");
 
-  public final StringProperty newIssuesValue = new SimpleStringProperty("...");
-  public final StringProperty inProgressIssuesValue = new SimpleStringProperty("...");
-  public final StringProperty onMaintenanceValue = new SimpleStringProperty("...");
-  public final StringProperty needsInspectionValue = new SimpleStringProperty("...");
+  private final StringProperty newIssuesValue =
+      new SimpleStringProperty("...");
 
-  public final StringProperty attentionTitle =
+  private final StringProperty inProgressIssuesValue =
+      new SimpleStringProperty("...");
+
+  private final StringProperty onMaintenanceValue =
+      new SimpleStringProperty("...");
+
+  private final StringProperty needsInspectionValue =
+      new SimpleStringProperty("...");
+
+  private final StringProperty attentionTitle =
       LocalizationManager.getStringProperty("mechanic.dashboard.attention_title");
-  public final StringProperty latestActivityTitle =
+
+  private final StringProperty latestActivityTitle =
       LocalizationManager.getStringProperty("mechanic.dashboard.latest_activity_title");
-  public final StringProperty quickActionsTitle =
+
+  private final StringProperty quickActionsTitle =
       LocalizationManager.getStringProperty("mechanic.dashboard.quick_actions_title");
 
-  public final StringProperty attentionNewIssuesText = new SimpleStringProperty("...");
-  public final StringProperty attentionTechnicalIssuesText = new SimpleStringProperty("...");
-  public final StringProperty attentionResolvedIssuesText = new SimpleStringProperty("...");
-  public final StringProperty attentionMaintenanceRecordsText = new SimpleStringProperty("...");
-  public final StringProperty attentionUnavailableBicyclesText = new SimpleStringProperty("...");
+  private final StringProperty attentionNewIssuesText =
+      new SimpleStringProperty("...");
 
-  public final StringProperty latestIssueText = new SimpleStringProperty("...");
-  public final StringProperty latestMaintenanceText = new SimpleStringProperty("...");
-  public final StringProperty latestInspectionText = new SimpleStringProperty("...");
+  private final StringProperty attentionTechnicalIssuesText =
+      new SimpleStringProperty("...");
 
-  public final StringProperty openIssuesButtonText =
+  private final StringProperty attentionResolvedIssuesText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty attentionMaintenanceRecordsText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty attentionUnavailableBicyclesText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty latestIssueText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty latestMaintenanceText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty latestInspectionText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty openIssuesButtonText =
       LocalizationManager.getStringProperty("mechanic.dashboard.open_issues");
-  public final StringProperty openServiceButtonText =
+
+  private final StringProperty openServiceButtonText =
       LocalizationManager.getStringProperty("mechanic.dashboard.open_service");
-  public final StringProperty openHistoryButtonText =
+
+  private final StringProperty openHistoryButtonText =
       LocalizationManager.getStringProperty("mechanic.dashboard.open_history");
 
-  public final BooleanProperty loading = new SimpleBooleanProperty(false);
+  private final BooleanProperty loading =
+      new SimpleBooleanProperty(false);
 
   public MechanicDashboardViewModel(
       User currentUser,
@@ -87,10 +118,15 @@ public class MechanicDashboardViewModel extends BaseViewModel {
     this.maintenanceRecordService = maintenanceRecordService;
   }
 
-  public void loadAsync() {
+  public void initialize() {
+    loadAsync();
+  }
+
+  private void loadAsync() {
     Task<MechanicDashboardData> task = new Task<>() {
       @Override
       protected MechanicDashboardData call() {
+
         List<Bicycle> bicycles = bicycleService.getAll();
         List<BikeIssue> issues = bikeIssueService.getAll();
         List<MaintenanceRecord> records = maintenanceRecordService.getAll();
@@ -124,26 +160,35 @@ public class MechanicDashboardViewModel extends BaseViewModel {
             .count();
 
         long myRecordsCount = records.stream()
-            .filter(record -> currentUser != null && currentUser.getId().equals(record.getMechanicId()))
+            .filter(record ->
+                currentUser != null
+                    && currentUser.getId().equals(record.getMechanicId()))
             .count();
-
-        String latestIssue = buildLatestIssueText(issues, bicycles);
-        String latestMaintenance = buildLatestMaintenanceText(records, bicycles);
-        String latestInspection = buildLatestInspectionText(bicycles);
 
         return new MechanicDashboardData(
             String.valueOf(newIssues),
             String.valueOf(inProgressIssues),
             String.valueOf(onMaintenance),
             String.valueOf(needsInspection),
-            LocalizationManager.getStringByKey("mechanic.dashboard.new_issues") + ": " + newIssues,
-            LocalizationManager.getStringByKey("mechanic.dashboard.technical_issues") + ": " + technicalIssues,
-            LocalizationManager.getStringByKey("mechanic.dashboard.resolved_issues") + ": " + resolvedIssues,
-            LocalizationManager.getStringByKey("mechanic.dashboard.my_records") + ": " + myRecordsCount,
-            LocalizationManager.getStringByKey("mechanic.dashboard.unavailable_bicycles") + ": " + unavailable,
-            latestIssue,
-            latestMaintenance,
-            latestInspection
+
+            LocalizationManager.getStringByKey("mechanic.dashboard.new_issues")
+                + ": " + newIssues,
+
+            LocalizationManager.getStringByKey("mechanic.dashboard.technical_issues")
+                + ": " + technicalIssues,
+
+            LocalizationManager.getStringByKey("mechanic.dashboard.resolved_issues")
+                + ": " + resolvedIssues,
+
+            LocalizationManager.getStringByKey("mechanic.dashboard.my_records")
+                + ": " + myRecordsCount,
+
+            LocalizationManager.getStringByKey("mechanic.dashboard.unavailable_bicycles")
+                + ": " + unavailable,
+
+            buildLatestIssueText(issues, bicycles),
+            buildLatestMaintenanceText(records, bicycles),
+            buildLatestInspectionText(bicycles)
         );
       }
     };
@@ -171,19 +216,22 @@ public class MechanicDashboardViewModel extends BaseViewModel {
       loading.set(false);
     });
 
-    task.setOnFailed(event -> {
-      task.getException().printStackTrace();
-      loading.set(false);
-    });
+    task.setOnFailed(event -> loading.set(false));
 
     Thread thread = new Thread(task);
     thread.setDaemon(true);
     thread.start();
   }
 
-  private String buildLatestIssueText(List<BikeIssue> issues, List<Bicycle> bicycles) {
+  private String buildLatestIssueText(
+      List<BikeIssue> issues,
+      List<Bicycle> bicycles
+  ) {
     return issues.stream()
-        .sorted(Comparator.comparing(BikeIssue::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+        .sorted(Comparator.comparing(
+            BikeIssue::getCreatedAt,
+            Comparator.nullsLast(Comparator.reverseOrder())
+        ))
         .findFirst()
         .map(issue ->
             LocalizationManager.getStringByKey("mechanic.dashboard.latest_issue")
@@ -197,9 +245,15 @@ public class MechanicDashboardViewModel extends BaseViewModel {
         .orElse(LocalizationManager.getStringByKey("mechanic.dashboard.no_data"));
   }
 
-  private String buildLatestMaintenanceText(List<MaintenanceRecord> records, List<Bicycle> bicycles) {
+  private String buildLatestMaintenanceText(
+      List<MaintenanceRecord> records,
+      List<Bicycle> bicycles
+  ) {
     return records.stream()
-        .sorted(Comparator.comparing(MaintenanceRecord::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())))
+        .sorted(Comparator.comparing(
+            MaintenanceRecord::getCreatedAt,
+            Comparator.nullsLast(Comparator.reverseOrder())
+        ))
         .findFirst()
         .map(record ->
             LocalizationManager.getStringByKey("mechanic.dashboard.latest_maintenance")
@@ -215,7 +269,8 @@ public class MechanicDashboardViewModel extends BaseViewModel {
 
   private String buildLatestInspectionText(List<Bicycle> bicycles) {
     return bicycles.stream()
-        .filter(bicycle -> bicycle.getState() == StateBicycle.NEEDS_INSPECTION)
+        .filter(bicycle ->
+            bicycle.getState() == StateBicycle.NEEDS_INSPECTION)
         .findFirst()
         .map(bicycle ->
             LocalizationManager.getStringByKey("mechanic.dashboard.latest_inspection")
@@ -225,16 +280,23 @@ public class MechanicDashboardViewModel extends BaseViewModel {
         .orElse(LocalizationManager.getStringByKey("mechanic.dashboard.no_data"));
   }
 
-  private String getBicycleModel(UUID bicycleId, List<Bicycle> bicycles) {
+  private String getBicycleModel(
+      UUID bicycleId,
+      List<Bicycle> bicycles
+  ) {
     if (bicycleId == null) {
-      return LocalizationManager.getStringByKey("mechanic.dashboard.unknown_bicycle");
+      return LocalizationManager.getStringByKey(
+          "mechanic.dashboard.unknown_bicycle"
+      );
     }
 
     return bicycles.stream()
         .filter(bicycle -> bicycleId.equals(bicycle.getId()))
         .map(Bicycle::getModel)
         .findFirst()
-        .orElse(LocalizationManager.getStringByKey("mechanic.dashboard.unknown_bicycle"));
+        .orElse(LocalizationManager.getStringByKey(
+            "mechanic.dashboard.unknown_bicycle"
+        ));
   }
 
   private String formatDate(LocalDateTime value) {
@@ -247,6 +309,106 @@ public class MechanicDashboardViewModel extends BaseViewModel {
     return value == null || value.isBlank()
         ? LocalizationManager.getStringByKey("mechanic.dashboard.no_data")
         : value;
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty subtitleTextProperty() {
+    return subtitleText;
+  }
+
+  public StringProperty newIssuesTitleProperty() {
+    return newIssuesTitle;
+  }
+
+  public StringProperty inProgressIssuesTitleProperty() {
+    return inProgressIssuesTitle;
+  }
+
+  public StringProperty onMaintenanceTitleProperty() {
+    return onMaintenanceTitle;
+  }
+
+  public StringProperty needsInspectionTitleProperty() {
+    return needsInspectionTitle;
+  }
+
+  public StringProperty newIssuesValueProperty() {
+    return newIssuesValue;
+  }
+
+  public StringProperty inProgressIssuesValueProperty() {
+    return inProgressIssuesValue;
+  }
+
+  public StringProperty onMaintenanceValueProperty() {
+    return onMaintenanceValue;
+  }
+
+  public StringProperty needsInspectionValueProperty() {
+    return needsInspectionValue;
+  }
+
+  public StringProperty attentionTitleProperty() {
+    return attentionTitle;
+  }
+
+  public StringProperty latestActivityTitleProperty() {
+    return latestActivityTitle;
+  }
+
+  public StringProperty quickActionsTitleProperty() {
+    return quickActionsTitle;
+  }
+
+  public StringProperty attentionNewIssuesTextProperty() {
+    return attentionNewIssuesText;
+  }
+
+  public StringProperty attentionTechnicalIssuesTextProperty() {
+    return attentionTechnicalIssuesText;
+  }
+
+  public StringProperty attentionResolvedIssuesTextProperty() {
+    return attentionResolvedIssuesText;
+  }
+
+  public StringProperty attentionMaintenanceRecordsTextProperty() {
+    return attentionMaintenanceRecordsText;
+  }
+
+  public StringProperty attentionUnavailableBicyclesTextProperty() {
+    return attentionUnavailableBicyclesText;
+  }
+
+  public StringProperty latestIssueTextProperty() {
+    return latestIssueText;
+  }
+
+  public StringProperty latestMaintenanceTextProperty() {
+    return latestMaintenanceText;
+  }
+
+  public StringProperty latestInspectionTextProperty() {
+    return latestInspectionText;
+  }
+
+  public StringProperty openIssuesButtonTextProperty() {
+    return openIssuesButtonText;
+  }
+
+  public StringProperty openServiceButtonTextProperty() {
+    return openServiceButtonText;
+  }
+
+  public StringProperty openHistoryButtonTextProperty() {
+    return openHistoryButtonText;
+  }
+
+  public BooleanProperty loadingProperty() {
+    return loading;
   }
 
   private record MechanicDashboardData(

@@ -11,18 +11,17 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
+import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditStationViewModel;
 
 public class AddEditStationController {
 
   @FXML private Label titleLabel;
   @FXML private Label nameLabel;
-
   @FXML private TextField nameField;
-
   @FXML private Label nameErrorLabel;
   @FXML private Label latitudeErrorLabel;
-
   @FXML private Button cancelButton;
   @FXML private Button saveButton;
   @FXML private Button pickOnMapButton;
@@ -39,25 +38,19 @@ public class AddEditStationController {
     );
 
     bind();
-
-    if (viewModel.isEditMode()) {
-      nameField.setPromptText(station.getName());
-    }
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    nameLabel.textProperty().bind(viewModel.nameLabelText);
-
-    cancelButton.textProperty().bind(viewModel.cancelButtonText);
-    saveButton.textProperty().bind(viewModel.saveButtonText);
-    pickOnMapButton.textProperty().bind(viewModel.pickOnMapButtonText);
-
-    nameField.textProperty().bindBidirectional(viewModel.name);
-    locationInfoLabel.textProperty().bind(viewModel.locationInfo);
-
-    nameErrorLabel.textProperty().bind(viewModel.nameError);
-    latitudeErrorLabel.textProperty().bind(viewModel.latitudeError);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    nameLabel.textProperty().bind(viewModel.nameLabelTextProperty());
+    cancelButton.textProperty().bind(viewModel.cancelButtonTextProperty());
+    saveButton.textProperty().bind(viewModel.saveButtonTextProperty());
+    pickOnMapButton.textProperty().bind(viewModel.pickOnMapButtonTextProperty());
+    nameField.textProperty().bindBidirectional(viewModel.nameProperty());
+    locationInfoLabel.textProperty().bind(viewModel.locationInfoProperty());
+    nameErrorLabel.textProperty().bind(viewModel.nameErrorProperty());
+    latitudeErrorLabel.textProperty().bind(viewModel.coordinatesErrorProperty());
   }
 
   @FXML
@@ -90,7 +83,7 @@ public class AddEditStationController {
       Parent root = loader.load();
 
       MapPickerController controller = loader.getController();
-      controller.setListener((lat, lng) -> viewModel.setCoordinates(lat, lng));
+      controller.setListener(viewModel::setCoordinates);
 
       Stage stage = new Stage();
       stage.initModality(Modality.APPLICATION_MODAL);
@@ -98,7 +91,7 @@ public class AddEditStationController {
       stage.showAndWait();
 
     } catch (Exception e) {
-      e.printStackTrace();
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.operation.failed"));
     }
   }
 }

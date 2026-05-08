@@ -37,9 +37,8 @@ public class FinishRentalDialogController {
   private Runnable onSaved;
   private FinishRentalDialogViewModel viewModel;
 
-  public void initData(User currentUser, Rental rental, Runnable onSaved) {
+  public void initData(Rental rental, Runnable onSaved) {
     this.viewModel = new FinishRentalDialogViewModel(
-        currentUser,
         rental,
         AppConfig.rentalService()
     );
@@ -48,49 +47,31 @@ public class FinishRentalDialogController {
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
 
-    problemCheckBox.textProperty().bind(viewModel.problemText);
-    technicalProblemCheckBox.textProperty().bind(viewModel.technicalProblemText);
+    problemCheckBox.textProperty().bind(viewModel.problemTextProperty());
+    technicalProblemCheckBox.textProperty().bind(viewModel.technicalProblemTextProperty());
 
-    problemTypeLabel.textProperty().bind(viewModel.problemTypeLabelText);
-    commentLabel.textProperty().bind(viewModel.commentLabelText);
+    problemTypeLabel.textProperty().bind(viewModel.problemTypeLabelTextProperty());
+    commentLabel.textProperty().bind(viewModel.commentLabelTextProperty());
 
-    problemCheckBox.selectedProperty().bindBidirectional(viewModel.hasProblem);
-    technicalProblemCheckBox.selectedProperty().bindBidirectional(viewModel.technicalProblem);
+    problemCheckBox.selectedProperty().bindBidirectional(viewModel.hasProblemProperty());
+    technicalProblemCheckBox.selectedProperty().bindBidirectional(viewModel.technicalProblemProperty());
 
     problemTypeCombo.getItems().setAll(viewModel.getProblemTypes());
-    problemTypeCombo.valueProperty().bindBidirectional(viewModel.selectedProblemType);
+    problemTypeCombo.valueProperty().bindBidirectional(viewModel.selectedProblemTypeProperty());
 
-    commentArea.textProperty().bindBidirectional(viewModel.comment);
+    commentArea.textProperty().bindBidirectional(viewModel.commentProperty());
 
-    problemTypeErrorLabel.textProperty().bind(viewModel.problemTypeError);
-    commentErrorLabel.textProperty().bind(viewModel.commentError);
+    problemTypeErrorLabel.textProperty().bind(viewModel.problemTypeErrorProperty());
+    commentErrorLabel.textProperty().bind(viewModel.commentErrorProperty());
 
-    cancelButton.textProperty().bind(viewModel.cancelButtonText);
-    finishButton.textProperty().bind(viewModel.finishButtonText);
+    cancelButton.textProperty().bind(viewModel.cancelButtonTextProperty());
+    finishButton.textProperty().bind(viewModel.finishButtonTextProperty());
 
-    problemTypeCombo.disableProperty().bind(viewModel.hasProblem.not());
-    commentArea.disableProperty().bind(viewModel.hasProblem.not());
-    technicalProblemCheckBox.disableProperty().bind(viewModel.hasProblem.not());
-
-    problemCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
-      if (!newVal) {
-        problemTypeCombo.getSelectionModel().clearSelection();
-        technicalProblemCheckBox.setSelected(false);
-        commentArea.clear();
-        viewModel.problemTypeError.set("");
-        viewModel.commentError.set("");
-      }
-    });
-
-    problemTypeCombo.valueProperty().addListener((obs, oldVal, newVal) ->
-        viewModel.problemTypeError.set("")
-    );
-
-    commentArea.textProperty().addListener((obs, oldVal, newVal) ->
-        viewModel.commentError.set("")
-    );
+    problemTypeCombo.disableProperty().bind(viewModel.hasProblemProperty().not());
+    commentArea.disableProperty().bind(viewModel.hasProblemProperty().not());
+    technicalProblemCheckBox.disableProperty().bind(viewModel.hasProblemProperty().not());
 
     bindErrorVisibility(problemTypeErrorLabel);
     bindErrorVisibility(commentErrorLabel);
@@ -112,8 +93,6 @@ public class FinishRentalDialogController {
         showFinalPrice(viewModel.getFinalPrice());
         close();
       }
-    } catch (BusinessException e) {
-      DialogUtil.showError(e.getMessage());
     } catch (Exception e) {
       DialogUtil.showError(LocalizationManager.getStringByKey("error.rental.finish.failed"));
     }

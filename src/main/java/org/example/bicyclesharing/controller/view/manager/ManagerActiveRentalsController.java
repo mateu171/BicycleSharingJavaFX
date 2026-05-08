@@ -1,37 +1,27 @@
 package org.example.bicyclesharing.controller.view.manager;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.manager.modalController.FinishRentalDialogController;
-import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.manager.ManagerActiveRentalsViewModel;
+import org.example.bicyclesharing.viewModel.manager.item.ActiveRentalItemViewModel;
 
 public class ManagerActiveRentalsController extends BaseController {
 
   @FXML private Label titleLabel;
   @FXML private TextField searchField;
   @FXML private Label countLabel;
-  @FXML private ListView<Rental> rentalsListView;
+  @FXML private ListView<ActiveRentalItemViewModel> rentalsListView;
 
   private ManagerActiveRentalsViewModel viewModel;
   private User currentUser;
@@ -39,89 +29,95 @@ public class ManagerActiveRentalsController extends BaseController {
   @Override
   public void setCurrentUser(User currentUser) {
     this.currentUser = currentUser;
+
     viewModel = new ManagerActiveRentalsViewModel(
         currentUser,
         AppConfig.rentalService(),
         AppConfig.customerService(),
         AppConfig.bicycleService()
     );
+
     bind();
     setupFilters();
     setupList();
-    viewModel.loadRentalsAsync();
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    searchField.promptTextProperty().bind(viewModel.searchPromptText);
-    countLabel.textProperty().bind(viewModel.countText);
-    searchField.textProperty().bindBidirectional(viewModel.searchText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    searchField.promptTextProperty().bind(viewModel.searchPromptTextProperty());
+    countLabel.textProperty().bind(viewModel.countTextProperty());
+
+    searchField.textProperty().bindBidirectional(viewModel.searchTextProperty());
     rentalsListView.setItems(viewModel.getRentals());
   }
 
   private void setupFilters() {
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
+    searchField.textProperty().addListener((obs, oldVal, newVal) ->
+        viewModel.applyFiltersAsync()
+    );
   }
 
   private void setupList() {
     rentalsListView.setCellFactory(list -> new ListCell<>() {
       @Override
-      protected void updateItem(Rental rental, boolean empty) {
-        super.updateItem(rental, empty);
+      protected void updateItem(ActiveRentalItemViewModel item, boolean empty) {
+        super.updateItem(item, empty);
 
-        if (empty || rental == null) {
+        if (empty || item == null) {
           setGraphic(null);
           setText(null);
           return;
         }
 
-        VBox card = new VBox(8);
-        card.getStyleClass().add("user-card");
-
-        Label customerLabel = new Label(viewModel.getCustomerName(rental));
-        customerLabel.getStyleClass().add("user-card-title");
-
-        Label bicycleLabel = new Label(
-            LocalizationManager.getStringByKey("manager.rentals.active.card.bicycle")
-                + ": " + viewModel.getBicycleModel(rental)
-        );
-        bicycleLabel.getStyleClass().add("user-card-subtitle");
-
-        Label startLabel = new Label(
-            LocalizationManager.getStringByKey("manager.rentals.active.card.start")
-                + ": " + viewModel.getStartText(rental)
-        );
-        startLabel.getStyleClass().add("user-card-subtitle");
-
-        Button finishCardButton = new Button();
-        finishCardButton.textProperty().bind(viewModel.finishButtonText);
-        finishCardButton.getStyleClass().add("button-primary");
-        finishCardButton.setOnAction(e -> openFinishDialog(rental));
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        HBox actions = new HBox(10, spacer, finishCardButton);
-
-        card.getChildren().addAll(customerLabel, bicycleLabel, startLabel, actions);
-        setGraphic(card);
+        setGraphic(createCard(item));
       }
     });
   }
 
-  private void openFinishDialog(Rental rental) {
+  private VBox createCard(ActiveRentalItemViewModel item) {
+    VBox card = new VBox(8);
+    card.getStyleClass().add("user-card");
+
+    Label customerLabel = new Label();
+    customerLabel.getStyleClass().add("user-card-title");
+    customerLabel.textProperty().bind(item.customerTextProperty());
+
+    Label bicycleLabel = new Label();
+    bicycleLabel.getStyleClass().add("user-card-subtitle");
+    bicycleLabel.textProperty().bind(item.bicycleTextProperty());
+
+    Label startLabel = new Label();
+    startLabel.getStyleClass().add("user-card-subtitle");
+    startLabel.textProperty().bind(item.startTextProperty());
+
+    Button finishCardButton = new Button();
+    finishCardButton.textProperty().bind(viewModel.finishButtonTextProperty());
+    finishCardButton.getStyleClass().add("button-primary");
+    finishCardButton.setOnAction(e -> openFinishDialog(item));
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    HBox actions = new HBox(10, spacer, finishCardButton);
+
+    card.getChildren().addAll(customerLabel, bicycleLabel, startLabel, actions);
+    return card;
+  }
+
+  private void openFinishDialog(ActiveRentalItemViewModel item) {
     try {
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/manager/modalView/FinishRentalDialog.fxml",
-          (FinishRentalDialogController controller) -> controller.initData(
-              currentUser,
-              rental,
-              viewModel::refreshAsync
-          )
+          (FinishRentalDialogController controller) ->
+              controller.initData(
+                  item.getRental(),
+                  viewModel::refreshAsync
+              )
       );
 
     } catch (Exception e) {
-      DialogUtil.showError("error.operation.failed");
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.operation.failed"));
     }
   }
 }

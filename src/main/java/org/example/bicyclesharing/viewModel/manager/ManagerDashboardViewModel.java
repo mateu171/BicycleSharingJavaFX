@@ -31,52 +31,86 @@ public class ManagerDashboardViewModel extends BaseViewModel {
   private final CustomerService customerService;
   private final BicycleService bicycleService;
 
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+  private final DateTimeFormatter formatter =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-  public final StringProperty titleText =
+  private final StringProperty titleText =
       LocalizationManager.getStringProperty("manager.dashboard.title");
-  public final StringProperty subtitleText =
+
+  private final StringProperty subtitleText =
       LocalizationManager.getStringProperty("manager.dashboard.subtitle");
 
-  public final StringProperty activeRentalsTitle =
+  private final StringProperty activeRentalsTitle =
       LocalizationManager.getStringProperty("manager.dashboard.active_rentals");
-  public final StringProperty activeReservationsTitle =
+
+  private final StringProperty activeReservationsTitle =
       LocalizationManager.getStringProperty("manager.dashboard.active_reservations");
-  public final StringProperty totalCustomersTitle =
+
+  private final StringProperty totalCustomersTitle =
       LocalizationManager.getStringProperty("manager.dashboard.total_customers");
-  public final StringProperty availableBicyclesTitle =
+
+  private final StringProperty availableBicyclesTitle =
       LocalizationManager.getStringProperty("manager.dashboard.available_bicycles");
 
-  public final StringProperty activeRentalsValue = new SimpleStringProperty("...");
-  public final StringProperty activeReservationsValue = new SimpleStringProperty("...");
-  public final StringProperty totalCustomersValue = new SimpleStringProperty("...");
-  public final StringProperty availableBicyclesValue = new SimpleStringProperty("...");
+  private final StringProperty activeRentalsValue =
+      new SimpleStringProperty("...");
 
-  public final StringProperty attentionTitle =
+  private final StringProperty activeReservationsValue =
+      new SimpleStringProperty("...");
+
+  private final StringProperty totalCustomersValue =
+      new SimpleStringProperty("...");
+
+  private final StringProperty availableBicyclesValue =
+      new SimpleStringProperty("...");
+
+  private final StringProperty attentionTitle =
       LocalizationManager.getStringProperty("manager.dashboard.attention_title");
-  public final StringProperty latestActivityTitle =
+
+  private final StringProperty latestActivityTitle =
       LocalizationManager.getStringProperty("manager.dashboard.latest_activity_title");
-  public final StringProperty quickActionsTitle =
+
+  private final StringProperty quickActionsTitle =
       LocalizationManager.getStringProperty("manager.dashboard.quick_actions_title");
 
-  public final StringProperty issuedReservationsText = new SimpleStringProperty("...");
-  public final StringProperty newReservationsText = new SimpleStringProperty("...");
-  public final StringProperty rentedBicyclesText = new SimpleStringProperty("...");
-  public final StringProperty unavailableBicyclesText = new SimpleStringProperty("...");
-  public final StringProperty totalBicyclesText = new SimpleStringProperty("...");
+  private final StringProperty issuedReservationsText =
+      new SimpleStringProperty("...");
 
-  public final StringProperty latestRentalText = new SimpleStringProperty("...");
-  public final StringProperty latestReservationText = new SimpleStringProperty("...");
-  public final StringProperty latestCustomerText = new SimpleStringProperty("...");
+  private final StringProperty newReservationsText =
+      new SimpleStringProperty("...");
 
-  public final StringProperty openCustomersButtonText =
+  private final StringProperty rentedBicyclesText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty unavailableBicyclesText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty totalBicyclesText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty latestRentalText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty latestReservationText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty latestCustomerText =
+      new SimpleStringProperty("...");
+
+  private final StringProperty openCustomersButtonText =
       LocalizationManager.getStringProperty("manager.dashboard.open_customers");
-  public final StringProperty openRentalsButtonText =
+
+  private final StringProperty openRentalsButtonText =
       LocalizationManager.getStringProperty("manager.dashboard.open_rentals");
-  public final StringProperty openReservationsButtonText =
+
+  private final StringProperty openReservationsButtonText =
       LocalizationManager.getStringProperty("manager.dashboard.open_reservations");
 
-  public final BooleanProperty loading = new SimpleBooleanProperty(false);
+  private final BooleanProperty loading =
+      new SimpleBooleanProperty(false);
+
+  private final StringProperty errorText =
+      new SimpleStringProperty("");
 
   public ManagerDashboardViewModel(
       User currentUser,
@@ -92,7 +126,14 @@ public class ManagerDashboardViewModel extends BaseViewModel {
     this.bicycleService = bicycleService;
   }
 
+  public void initialize() {
+    loadAsync();
+  }
+
   public void loadAsync() {
+    loading.set(true);
+    errorText.set("");
+
     Task<ManagerDashboardData> task = new Task<>() {
       @Override
       protected ManagerDashboardData call() {
@@ -136,52 +177,53 @@ public class ManagerDashboardViewModel extends BaseViewModel {
                     || bicycle.getState() == StateBicycle.NEEDS_INSPECTION)
             .count();
 
-        String latestRental = buildLatestRentalText(rentals, customers, bicycles);
-        String latestReservation = buildLatestReservationText(reservations, customers, bicycles);
-        String latestCustomer = buildLatestCustomerText(customers);
-
         return new ManagerDashboardData(
             String.valueOf(activeRentals),
             String.valueOf(activeReservations),
             String.valueOf(customers.size()),
             String.valueOf(availableBicycles),
-            LocalizationManager.getStringByKey("manager.dashboard.issued_reservations") + ": " + issuedReservations,
-            LocalizationManager.getStringByKey("manager.dashboard.new_reservations") + ": " + newReservations,
-            LocalizationManager.getStringByKey("manager.dashboard.rented_bicycles") + ": " + rentedBicycles,
-            LocalizationManager.getStringByKey("manager.dashboard.unavailable_bicycles") + ": " + unavailableBicycles,
-            LocalizationManager.getStringByKey("manager.dashboard.total_bicycles") + ": " + bicycles.size(),
-            latestRental,
-            latestReservation,
-            latestCustomer
+            LocalizationManager.getStringByKey("manager.dashboard.issued_reservations")
+                + ": " + issuedReservations,
+            LocalizationManager.getStringByKey("manager.dashboard.new_reservations")
+                + ": " + newReservations,
+            LocalizationManager.getStringByKey("manager.dashboard.rented_bicycles")
+                + ": " + rentedBicycles,
+            LocalizationManager.getStringByKey("manager.dashboard.unavailable_bicycles")
+                + ": " + unavailableBicycles,
+            LocalizationManager.getStringByKey("manager.dashboard.total_bicycles")
+                + ": " + bicycles.size(),
+            buildLatestRentalText(rentals, customers, bicycles),
+            buildLatestReservationText(reservations, customers, bicycles),
+            buildLatestCustomerText(customers)
         );
       }
     };
 
-    loading.set(true);
-
     task.setOnSucceeded(event -> {
-      ManagerDashboardData data = task.getValue();
+      try {
+        ManagerDashboardData data = task.getValue();
 
-      activeRentalsValue.set(data.activeRentalsValue());
-      activeReservationsValue.set(data.activeReservationsValue());
-      totalCustomersValue.set(data.totalCustomersValue());
-      availableBicyclesValue.set(data.availableBicyclesValue());
+        activeRentalsValue.set(data.activeRentalsValue());
+        activeReservationsValue.set(data.activeReservationsValue());
+        totalCustomersValue.set(data.totalCustomersValue());
+        availableBicyclesValue.set(data.availableBicyclesValue());
 
-      issuedReservationsText.set(data.issuedReservationsText());
-      newReservationsText.set(data.newReservationsText());
-      rentedBicyclesText.set(data.rentedBicyclesText());
-      unavailableBicyclesText.set(data.unavailableBicyclesText());
-      totalBicyclesText.set(data.totalBicyclesText());
+        issuedReservationsText.set(data.issuedReservationsText());
+        newReservationsText.set(data.newReservationsText());
+        rentedBicyclesText.set(data.rentedBicyclesText());
+        unavailableBicyclesText.set(data.unavailableBicyclesText());
+        totalBicyclesText.set(data.totalBicyclesText());
 
-      latestRentalText.set(data.latestRentalText());
-      latestReservationText.set(data.latestReservationText());
-      latestCustomerText.set(data.latestCustomerText());
-
-      loading.set(false);
+        latestRentalText.set(data.latestRentalText());
+        latestReservationText.set(data.latestReservationText());
+        latestCustomerText.set(data.latestCustomerText());
+      } finally {
+        loading.set(false);
+      }
     });
 
     task.setOnFailed(event -> {
-      task.getException().printStackTrace();
+      errorText.set(LocalizationManager.getStringByKey("error.dashboard.load"));
       loading.set(false);
     });
 
@@ -196,7 +238,10 @@ public class ManagerDashboardViewModel extends BaseViewModel {
       List<Bicycle> bicycles
   ) {
     return rentals.stream()
-        .sorted(Comparator.comparing(Rental::getStart, Comparator.nullsLast(Comparator.reverseOrder())))
+        .sorted(Comparator.comparing(
+            Rental::getStart,
+            Comparator.nullsLast(Comparator.reverseOrder())
+        ))
         .findFirst()
         .map(rental ->
             LocalizationManager.getStringByKey("manager.dashboard.latest_rental")
@@ -216,7 +261,10 @@ public class ManagerDashboardViewModel extends BaseViewModel {
       List<Bicycle> bicycles
   ) {
     return reservations.stream()
-        .sorted(Comparator.comparing(Reservation::getStartTime, Comparator.nullsLast(Comparator.reverseOrder())))
+        .sorted(Comparator.comparing(
+            Reservation::getStartTime,
+            Comparator.nullsLast(Comparator.reverseOrder())
+        ))
         .findFirst()
         .map(reservation ->
             LocalizationManager.getStringByKey("manager.dashboard.latest_reservation")
@@ -232,7 +280,10 @@ public class ManagerDashboardViewModel extends BaseViewModel {
 
   private String buildLatestCustomerText(List<Customer> customers) {
     return customers.stream()
-        .sorted(Comparator.comparing(Customer::getFullName, Comparator.nullsLast(String::compareToIgnoreCase)))
+        .sorted(Comparator.comparing(
+            Customer::getFullName,
+            Comparator.nullsLast(String::compareToIgnoreCase)
+        ))
         .reduce((first, second) -> second)
         .map(customer ->
             LocalizationManager.getStringByKey("manager.dashboard.latest_customer")
@@ -276,6 +327,110 @@ public class ManagerDashboardViewModel extends BaseViewModel {
     return value == null || value.isBlank()
         ? LocalizationManager.getStringByKey("manager.dashboard.no_data")
         : value;
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty subtitleTextProperty() {
+    return subtitleText;
+  }
+
+  public StringProperty activeRentalsTitleProperty() {
+    return activeRentalsTitle;
+  }
+
+  public StringProperty activeReservationsTitleProperty() {
+    return activeReservationsTitle;
+  }
+
+  public StringProperty totalCustomersTitleProperty() {
+    return totalCustomersTitle;
+  }
+
+  public StringProperty availableBicyclesTitleProperty() {
+    return availableBicyclesTitle;
+  }
+
+  public StringProperty activeRentalsValueProperty() {
+    return activeRentalsValue;
+  }
+
+  public StringProperty activeReservationsValueProperty() {
+    return activeReservationsValue;
+  }
+
+  public StringProperty totalCustomersValueProperty() {
+    return totalCustomersValue;
+  }
+
+  public StringProperty availableBicyclesValueProperty() {
+    return availableBicyclesValue;
+  }
+
+  public StringProperty attentionTitleProperty() {
+    return attentionTitle;
+  }
+
+  public StringProperty latestActivityTitleProperty() {
+    return latestActivityTitle;
+  }
+
+  public StringProperty quickActionsTitleProperty() {
+    return quickActionsTitle;
+  }
+
+  public StringProperty issuedReservationsTextProperty() {
+    return issuedReservationsText;
+  }
+
+  public StringProperty newReservationsTextProperty() {
+    return newReservationsText;
+  }
+
+  public StringProperty rentedBicyclesTextProperty() {
+    return rentedBicyclesText;
+  }
+
+  public StringProperty unavailableBicyclesTextProperty() {
+    return unavailableBicyclesText;
+  }
+
+  public StringProperty totalBicyclesTextProperty() {
+    return totalBicyclesText;
+  }
+
+  public StringProperty latestRentalTextProperty() {
+    return latestRentalText;
+  }
+
+  public StringProperty latestReservationTextProperty() {
+    return latestReservationText;
+  }
+
+  public StringProperty latestCustomerTextProperty() {
+    return latestCustomerText;
+  }
+
+  public StringProperty openCustomersButtonTextProperty() {
+    return openCustomersButtonText;
+  }
+
+  public StringProperty openRentalsButtonTextProperty() {
+    return openRentalsButtonText;
+  }
+
+  public StringProperty openReservationsButtonTextProperty() {
+    return openReservationsButtonText;
+  }
+
+  public BooleanProperty loadingProperty() {
+    return loading;
+  }
+
+  public StringProperty errorTextProperty() {
+    return errorText;
   }
 
   private record ManagerDashboardData(

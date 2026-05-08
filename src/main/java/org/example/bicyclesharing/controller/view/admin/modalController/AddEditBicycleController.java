@@ -1,24 +1,17 @@
 package org.example.bicyclesharing.controller.view.admin.modalController;
 
 import java.io.File;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Station;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
 import org.example.bicyclesharing.exception.BusinessException;
-import org.example.bicyclesharing.util.AppConfig;
-import org.example.bicyclesharing.util.DialogUtil;
-import org.example.bicyclesharing.util.ImageStorageUtil;
-import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.*;
 import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditBicycleViewModel;
 
 public class AddEditBicycleController {
@@ -49,107 +42,82 @@ public class AddEditBicycleController {
 
   private AddEditBicycleViewModel viewModel;
   private Runnable onSaved;
-  private File selectedImage;
 
   public void initData(Bicycle bicycle, Runnable onSaved) {
     this.onSaved = onSaved;
-    this.viewModel = new AddEditBicycleViewModel(
+
+    viewModel = new AddEditBicycleViewModel(
         AppConfig.bicycleService(),
         AppConfig.stationService(),
         bicycle
     );
 
+    setupComboBoxes();
     bind();
-
-    typeComboBox.setItems(FXCollections.observableArrayList(TypeBicycle.values()));
-    typeComboBox.setValue(viewModel.selectedType);
-
-    typeComboBox.setCellFactory(cb -> new ListCell<>() {
-      @Override
-      protected void updateItem(TypeBicycle item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
-      }
-    });
-
-    typeComboBox.setButtonCell(new ListCell<>() {
-      @Override
-      protected void updateItem(TypeBicycle item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null : LocalizationManager.getStringByKey(item.getKey()));
-      }
-    });
-
-    stationComboBox.setItems(viewModel.stations);
-    stationComboBox.setValue(viewModel.selectedStation);
-
-    stationComboBox.setCellFactory(cb -> new ListCell<>() {
-      @Override
-      protected void updateItem(Station item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null : item.getName());
-      }
-    });
-
-    stationComboBox.setButtonCell(new ListCell<>() {
-      @Override
-      protected void updateItem(Station item, boolean empty) {
-        super.updateItem(item, empty);
-        setText(empty || item == null ? null : item.getName());
-      }
-    });
-
-    if (viewModel.isEditMode()) {
-      modelField.setPromptText(bicycle.getModel());
-      priceField.setPromptText(String.valueOf(bicycle.getPricePerMinute()));
-    }
-
-    var defaultImageUrl = getClass().getResource("/org/example/bicyclesharing/art/image/defaultImg.jpg");
-
-    Image image = new Image(defaultImageUrl.toExternalForm());
-
-    if (bicycle != null && bicycle.getImagePath() != null) {
-      File file = new File(bicycle.getImagePath());
-      if (file.exists()) {
-        image = new Image(file.toURI().toString());
-      }
-    }
-
-    photoPreview.setImage(image);
+    viewModel.initialize();
   }
 
   private void bind() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    modelLabel.textProperty().bind(viewModel.modelLabelText);
-    typeLabel.textProperty().bind(viewModel.typeLabelText);
-    priceLabel.textProperty().bind(viewModel.priceLabelText);
-    stationLabel.textProperty().bind(viewModel.stationLabelText);
-    photoLabel.textProperty().bind(viewModel.photoLabelText);
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    modelLabel.textProperty().bind(viewModel.modelLabelTextProperty());
+    typeLabel.textProperty().bind(viewModel.typeLabelTextProperty());
+    priceLabel.textProperty().bind(viewModel.priceLabelTextProperty());
+    stationLabel.textProperty().bind(viewModel.stationLabelTextProperty());
+    photoLabel.textProperty().bind(viewModel.photoLabelTextProperty());
 
-    cancelButton.textProperty().bind(viewModel.cancelButtonText);
-    saveButton.textProperty().bind(viewModel.saveButtonText);
-    uploadPhotoButton.textProperty().bind(viewModel.uploadButtonText);
+    cancelButton.textProperty().bind(viewModel.cancelButtonTextProperty());
+    saveButton.textProperty().bind(viewModel.saveButtonTextProperty());
+    uploadPhotoButton.textProperty().bind(viewModel.uploadButtonTextProperty());
 
-    modelField.textProperty().bindBidirectional(viewModel.model);
-    priceField.textProperty().bindBidirectional(viewModel.price);
+    modelField.textProperty().bindBidirectional(viewModel.modelProperty());
+    priceField.textProperty().bindBidirectional(viewModel.priceProperty());
 
-    modelErrorLabel.textProperty().bind(viewModel.modelError);
-    typeErrorLabel.textProperty().bind(viewModel.typeError);
-    priceErrorLabel.textProperty().bind(viewModel.priceError);
-    stationErrorLabel.textProperty().bind(viewModel.stationError);
-    photoErrorLabel.textProperty().bind(viewModel.photoError);
-    photoFileNameLabel.textProperty().bind(viewModel.photoFileNameText);
+    typeComboBox.itemsProperty().bind(viewModel.typesProperty());
+    stationComboBox.itemsProperty().bind(viewModel.stationsProperty());
+
+    typeComboBox.valueProperty().bindBidirectional(viewModel.selectedTypeProperty());
+    stationComboBox.valueProperty().bindBidirectional(viewModel.selectedStationProperty());
+
+    modelErrorLabel.textProperty().bind(viewModel.modelErrorProperty());
+    typeErrorLabel.textProperty().bind(viewModel.typeErrorProperty());
+    priceErrorLabel.textProperty().bind(viewModel.priceErrorProperty());
+    stationErrorLabel.textProperty().bind(viewModel.stationErrorProperty());
+    photoErrorLabel.textProperty().bind(viewModel.photoErrorProperty());
+    photoFileNameLabel.textProperty().bind(viewModel.photoFileNameTextProperty());
+
+    viewModel.photoPreviewPathProperty().addListener((obs, oldVal, newVal) -> updatePreview(newVal));
+    updatePreview(viewModel.photoPreviewPathProperty().get());
+  }
+
+  private void setupComboBoxes() {
+    typeComboBox.setConverter(new StringConverter<>() {
+      @Override
+      public String toString(TypeBicycle type) {
+        return type == null ? "" : LocalizationManager.getStringByKey(type.getKey());
+      }
+
+      @Override
+      public TypeBicycle fromString(String string) {
+        return null;
+      }
+    });
+
+    stationComboBox.setConverter(new StringConverter<>() {
+      @Override
+      public String toString(Station station) {
+        return station == null ? "" : station.getName();
+      }
+
+      @Override
+      public Station fromString(String string) {
+        return null;
+      }
+    });
   }
 
   @FXML
   private void onSave() {
-    viewModel.selectedType = typeComboBox.getValue();
-    viewModel.selectedStation = stationComboBox.getValue();
-
     try {
-      String imagePath = ImageStorageUtil.saveImage(selectedImage, "bicycles");
-      viewModel.setImagePath(imagePath);
-
       if (viewModel.save()) {
         if (onSaved != null) {
           onSaved.run();
@@ -159,7 +127,17 @@ public class AddEditBicycleController {
     } catch (BusinessException e) {
       DialogUtil.showError(e.getMessage());
     } catch (Exception e) {
-      DialogUtil.showError("error.save.failed");
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.save.failed"));
+    }
+  }
+
+  @FXML
+  private void onUploadPhoto() {
+    Stage stage = (Stage) cancelButton.getScene().getWindow();
+    File file = ImageStorageUtil.chooseImage(stage);
+
+    if (file != null) {
+      viewModel.selectPhoto(file);
     }
   }
 
@@ -172,16 +150,21 @@ public class AddEditBicycleController {
     ((Stage) saveButton.getScene().getWindow()).close();
   }
 
-  @FXML
-  private void onUploadPhoto() {
-    Stage stage = (Stage) cancelButton.getScene().getWindow();
-    File file = ImageStorageUtil.chooseImage(stage);
+  private void updatePreview(String path) {
+    if (path == null || path.isBlank()) {
+      return;
+    }
 
-    if (file != null) {
-      selectedImage = file;
-      viewModel.photoFileNameText.set(file.getName());
-      ImageStorageUtil.showPreview(file, photoPreview, 90, 90);
-      viewModel.setPhotoError("");
+    File file = new File(path);
+
+    if (file.exists()) {
+      photoPreview.setImage(new Image(file.toURI().toString()));
+      return;
+    }
+
+    var resource = getClass().getResource(path);
+    if (resource != null) {
+      photoPreview.setImage(new Image(resource.toExternalForm()));
     }
   }
 }

@@ -3,7 +3,9 @@ package org.example.bicyclesharing.viewModel.manager.modalViewModal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.example.bicyclesharing.domain.Impl.Rental;
@@ -17,65 +19,81 @@ public class FinishRentalDialogViewModel {
 
   private final RentalService rentalService;
   private final Rental rental;
-  private final User currentUser;
 
-  public final StringProperty titleText =
+  private final StringProperty titleText =
       LocalizationManager.getStringProperty("manager.rentals.finish.title");
-  public final StringProperty finishButtonText =
+
+  private final StringProperty finishButtonText =
       LocalizationManager.getStringProperty("button.finish");
-  public final StringProperty cancelButtonText =
+
+  private final StringProperty cancelButtonText =
       LocalizationManager.getStringProperty("cancel.button");
 
-  public final StringProperty problemText =
+  private final StringProperty problemText =
       LocalizationManager.getStringProperty("manager.rentals.finish.problem");
-  public final StringProperty technicalProblemText =
+
+  private final StringProperty technicalProblemText =
       LocalizationManager.getStringProperty("manager.rentals.finish.technical");
 
-  public final StringProperty problemTypeLabelText =
+  private final StringProperty problemTypeLabelText =
       LocalizationManager.getStringProperty("ride.problem.type.label");
-  public final StringProperty commentLabelText =
+
+  private final StringProperty commentLabelText =
       LocalizationManager.getStringProperty("ride.problem.comment.label");
 
-  public final BooleanProperty hasProblem = new SimpleBooleanProperty(false);
-  public final BooleanProperty technicalProblem = new SimpleBooleanProperty(false);
+  private final BooleanProperty hasProblem =
+      new SimpleBooleanProperty(false);
 
-  public final StringProperty selectedProblemType = new SimpleStringProperty("");
-  public final StringProperty comment = new SimpleStringProperty("");
+  private final BooleanProperty technicalProblem =
+      new SimpleBooleanProperty(false);
 
-  public final StringProperty problemTypeError = new SimpleStringProperty("");
-  public final StringProperty commentError = new SimpleStringProperty("");
-  public final StringProperty generalError = new SimpleStringProperty("");
+  private final StringProperty selectedProblemType =
+      new SimpleStringProperty("");
 
-  private double finalPrice;
+  private final StringProperty comment =
+      new SimpleStringProperty("");
+
+  private final StringProperty problemTypeError =
+      new SimpleStringProperty("");
+
+  private final StringProperty commentError =
+      new SimpleStringProperty("");
+
+  private final StringProperty generalError =
+      new SimpleStringProperty("");
+
+  private final DoubleProperty finalPrice =
+      new SimpleDoubleProperty(0);
+
+  private final List<String> problemTypes = List.of(
+      LocalizationManager.getStringByKey("ride.problem.type.damage"),
+      LocalizationManager.getStringByKey("ride.problem.type.brakes"),
+      LocalizationManager.getStringByKey("ride.problem.type.wheel"),
+      LocalizationManager.getStringByKey("ride.problem.type.other")
+  );
 
   public FinishRentalDialogViewModel(
-      User currentUser,
       Rental rental,
       RentalService rentalService
   ) {
-    this.currentUser = currentUser;
     this.rental = rental;
     this.rentalService = rentalService;
-  }
 
-  public List<String> getProblemTypes() {
-    return List.of(
-        LocalizationManager.getStringByKey("ride.problem.type.damage"),
-        LocalizationManager.getStringByKey("ride.problem.type.brakes"),
-        LocalizationManager.getStringByKey("ride.problem.type.wheel"),
-        LocalizationManager.getStringByKey("ride.problem.type.other")
-    );
-  }
+    hasProblem.addListener((obs, oldVal, newVal) -> {
+      if (!newVal) {
+        clearProblemFields();
+      }
+    });
 
-  public double getFinalPrice() {
-    return finalPrice;
+    selectedProblemType.addListener((obs, oldVal, newVal) -> problemTypeError.set(""));
+    comment.addListener((obs, oldVal, newVal) -> commentError.set(""));
   }
 
   public boolean finishRental() {
     clearErrors();
 
     try {
-      finalPrice = rentalService.finishRental(
+      double price = rentalService.finishRental(
           rental,
           hasProblem.get(),
           selectedProblemType.get(),
@@ -83,6 +101,7 @@ public class FinishRentalDialogViewModel {
           technicalProblem.get()
       );
 
+      finalPrice.set(price);
       return true;
 
     } catch (CustomEntityValidationExeption e) {
@@ -93,6 +112,14 @@ public class FinishRentalDialogViewModel {
       generalError.set(LocalizationManager.getStringByKey(e.getMessage()));
       return false;
     }
+  }
+
+  private void clearProblemFields() {
+    selectedProblemType.set("");
+    technicalProblem.set(false);
+    comment.set("");
+    problemTypeError.set("");
+    commentError.set("");
   }
 
   private void applyValidationErrors(CustomEntityValidationExeption e) {
@@ -113,5 +140,73 @@ public class FinishRentalDialogViewModel {
     problemTypeError.set("");
     commentError.set("");
     generalError.set("");
+  }
+
+  public List<String> getProblemTypes() {
+    return problemTypes;
+  }
+
+  public double getFinalPrice() {
+    return finalPrice.get();
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty finishButtonTextProperty() {
+    return finishButtonText;
+  }
+
+  public StringProperty cancelButtonTextProperty() {
+    return cancelButtonText;
+  }
+
+  public StringProperty problemTextProperty() {
+    return problemText;
+  }
+
+  public StringProperty technicalProblemTextProperty() {
+    return technicalProblemText;
+  }
+
+  public StringProperty problemTypeLabelTextProperty() {
+    return problemTypeLabelText;
+  }
+
+  public StringProperty commentLabelTextProperty() {
+    return commentLabelText;
+  }
+
+  public BooleanProperty hasProblemProperty() {
+    return hasProblem;
+  }
+
+  public BooleanProperty technicalProblemProperty() {
+    return technicalProblem;
+  }
+
+  public StringProperty selectedProblemTypeProperty() {
+    return selectedProblemType;
+  }
+
+  public StringProperty commentProperty() {
+    return comment;
+  }
+
+  public StringProperty problemTypeErrorProperty() {
+    return problemTypeError;
+  }
+
+  public StringProperty commentErrorProperty() {
+    return commentError;
+  }
+
+  public StringProperty generalErrorProperty() {
+    return generalError;
+  }
+
+  public DoubleProperty finalPriceProperty() {
+    return finalPrice;
   }
 }

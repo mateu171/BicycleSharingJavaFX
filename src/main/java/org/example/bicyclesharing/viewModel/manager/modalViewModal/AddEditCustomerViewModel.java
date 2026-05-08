@@ -13,104 +13,127 @@ public class AddEditCustomerViewModel {
   private final CustomerService customerService;
   private final Customer editingCustomer;
 
-  public final StringProperty titleText = new SimpleStringProperty();
-  public final StringProperty saveButtonText =
+  private final StringProperty titleText =
+      new SimpleStringProperty();
+
+  private final StringProperty saveButtonText =
       LocalizationManager.getStringProperty("save.button");
-  public final StringProperty cancelButtonText =
+
+  private final StringProperty cancelButtonText =
       LocalizationManager.getStringProperty("cancel.button");
 
-  public final StringProperty fullNameLabelText =
+  private final StringProperty fullNameLabelText =
       LocalizationManager.getStringProperty("manager.fullname");
-  public final StringProperty phoneNumberLabelText =
+
+  private final StringProperty phoneNumberLabelText =
       LocalizationManager.getStringProperty("manager.phonenumber");
-  public final StringProperty documentNumberLabelText =
+
+  private final StringProperty documentNumberLabelText =
       LocalizationManager.getStringProperty("manager.documentnumber");
 
-  public final StringProperty fullName = new SimpleStringProperty("");
-  public final StringProperty phoneNumber = new SimpleStringProperty("");
-  public final StringProperty documentNumber = new SimpleStringProperty("");
+  private final StringProperty fullName =
+      new SimpleStringProperty("");
 
-  public final StringProperty fullNameError = new SimpleStringProperty("");
-  public final StringProperty phoneNumberError = new SimpleStringProperty("");
-  public final StringProperty documentNumberError = new SimpleStringProperty("");
+  private final StringProperty phoneNumber =
+      new SimpleStringProperty("");
 
-  public AddEditCustomerViewModel(CustomerService customerService,Customer editingCustomer) {
+  private final StringProperty documentNumber =
+      new SimpleStringProperty("");
+
+  private final StringProperty fullNameError =
+      new SimpleStringProperty("");
+
+  private final StringProperty phoneNumberError =
+      new SimpleStringProperty("");
+
+  private final StringProperty documentNumberError =
+      new SimpleStringProperty("");
+
+  public AddEditCustomerViewModel(
+      CustomerService customerService,
+      Customer editingCustomer
+  ) {
     this.customerService = customerService;
     this.editingCustomer = editingCustomer;
+  }
 
-    if(editingCustomer == null)
-    {
-      titleText.set(LocalizationManager.getStringByKey("manager.customer.add.title"));
-    }
-    else
-    {
-      titleText.set(LocalizationManager.getStringByKey("manager.customer.edit.title"));
-
+  public void initialize() {
+    if (isEditMode()) {
+      initializeEditMode();
+    } else {
+      initializeAddMode();
     }
   }
 
-  public boolean save()
-  {
+  private void initializeAddMode() {
+    titleText.set(LocalizationManager.getStringByKey("manager.customer.add.title"));
+  }
+
+  private void initializeEditMode() {
+    titleText.set(LocalizationManager.getStringByKey("manager.customer.edit.title"));
+
+    fullName.set(editingCustomer.getFullName());
+    phoneNumber.set(editingCustomer.getPhoneNumber());
+    documentNumber.set(editingCustomer.getDocumentNumber());
+  }
+
+  public boolean save() {
     clearErrors();
 
     try {
-      if (editingCustomer == null) {
-      Customer customer = new Customer(fullName.get(), phoneNumber.get(), documentNumber.get());
-      customerService.add(customer);
-    } else
-      {
-        String fullNameValue = isBlank(fullName.get())
-            ? editingCustomer.getFullName()
-            : fullName.get().trim();
-
-        String phoneNumberValue = isBlank(phoneNumber.get())
-            ? editingCustomer.getPhoneNumber()
-            : phoneNumber.get().trim();
-
-        String documentNumberValue = isBlank(documentNumber.get())
-            ? editingCustomer.getDocumentNumber()
-            : documentNumber.get().trim();
-
-        Customer validated = new Customer(
-            fullNameValue,
-            phoneNumberValue,
-            documentNumberValue
-        );
-
-        editingCustomer.setFullName(validated.getFullName());
-        editingCustomer.setPhoneNumber(validated.getPhoneNumber());
-        editingCustomer.setDocumentNumber(validated.getDocumentNumber());
-        editingCustomer.setActiveRent(validated.getActiveRent());
-
-        if(!editingCustomer.isValid())
-        {
-          throw new CustomEntityValidationExeption(editingCustomer.getErrors());
-        }
-        customerService.update(editingCustomer);
+      if (isEditMode()) {
+        updateCustomer();
+      } else {
+        createCustomer();
       }
-      return true;
-    }
-    catch (CustomEntityValidationExeption e) {
-      e.getErrors().forEach((field, messages) -> {
-        String text = messages.stream()
-            .map(LocalizationManager::getStringByKey)
-            .collect(Collectors.joining("\n"));
 
-        switch (field) {
-          case "fullName" -> fullNameError.set(text);
-          case "phoneNumber" -> phoneNumberError.set(text);
-          case "documentNumber" -> documentNumberError.set(text);
-        }
-      });
+      return true;
+
+    } catch (CustomEntityValidationExeption e) {
+      applyValidationErrors(e);
       return false;
     }
   }
 
-  private boolean isBlank(String value) {
-    return value == null || value.trim().isEmpty();
+  private void createCustomer() {
+    Customer customer = new Customer(
+        fullName.get(),
+        phoneNumber.get(),
+        documentNumber.get()
+    );
+
+    customerService.add(customer);
   }
-  private void clearErrors()
-  {
+
+  private void updateCustomer() {
+    Customer validated = new Customer(
+        fullName.get(),
+        phoneNumber.get(),
+        documentNumber.get()
+    );
+
+    editingCustomer.setFullName(validated.getFullName());
+    editingCustomer.setPhoneNumber(validated.getPhoneNumber());
+    editingCustomer.setDocumentNumber(validated.getDocumentNumber());
+
+    customerService.update(editingCustomer);
+  }
+
+  private void applyValidationErrors(CustomEntityValidationExeption e) {
+    e.getErrors().forEach((field, messages) -> {
+      String text = messages.stream()
+          .map(LocalizationManager::getStringByKey)
+          .collect(Collectors.joining("\n"));
+
+      switch (field) {
+        case "fullName" -> fullNameError.set(text);
+        case "phoneNumber" -> phoneNumberError.set(text);
+        case "documentNumber" -> documentNumberError.set(text);
+      }
+    });
+  }
+
+  private void clearErrors() {
     fullNameError.set("");
     phoneNumberError.set("");
     documentNumberError.set("");
@@ -118,5 +141,53 @@ public class AddEditCustomerViewModel {
 
   public boolean isEditMode() {
     return editingCustomer != null;
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty saveButtonTextProperty() {
+    return saveButtonText;
+  }
+
+  public StringProperty cancelButtonTextProperty() {
+    return cancelButtonText;
+  }
+
+  public StringProperty fullNameLabelTextProperty() {
+    return fullNameLabelText;
+  }
+
+  public StringProperty phoneNumberLabelTextProperty() {
+    return phoneNumberLabelText;
+  }
+
+  public StringProperty documentNumberLabelTextProperty() {
+    return documentNumberLabelText;
+  }
+
+  public StringProperty fullNameProperty() {
+    return fullName;
+  }
+
+  public StringProperty phoneNumberProperty() {
+    return phoneNumber;
+  }
+
+  public StringProperty documentNumberProperty() {
+    return documentNumber;
+  }
+
+  public StringProperty fullNameErrorProperty() {
+    return fullNameError;
+  }
+
+  public StringProperty phoneNumberErrorProperty() {
+    return phoneNumberError;
+  }
+
+  public StringProperty documentNumberErrorProperty() {
+    return documentNumberError;
   }
 }

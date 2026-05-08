@@ -1,128 +1,98 @@
 package org.example.bicyclesharing.controller.view;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.example.bicyclesharing.services.NavigationService;
-import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.util.ThemeManager;
 import org.example.bicyclesharing.viewModel.SettingsViewModel;
 
 public class SettingsController {
 
-  @FXML
-  private Label titleLabel;
+  private static final String LIGHT_THEME = "light";
+  private static final String DARK_THEME = "dark";
 
-  @FXML
-  private Label languageLabel;
+  @FXML private Label titleLabel;
+  @FXML private Label languageLabel;
+  @FXML private Label themeLabel;
 
-  @FXML
-  private Label themeLabel;
+  @FXML private RadioButton lightThemeRadio;
+  @FXML private RadioButton darkThemeRadio;
 
-  @FXML
-  private RadioButton lightThemeRadio;
-  @FXML
-  private Button saveButton;
-
-  @FXML
-  private RadioButton darkThemeRadio;
-  @FXML
-  private ComboBox languageComboBox;
+  @FXML private Button saveButton;
+  @FXML private ComboBox<String> languageComboBox;
 
   private StackPane rootPane;
   private SettingsViewModel viewModel;
 
-  public void setRootPane(StackPane rootPane) {
+  @FXML
+  private void initialize() {
+    viewModel = new SettingsViewModel();
 
+    bind();
+  }
+
+  public void setRootPane(StackPane rootPane) {
     this.rootPane = rootPane;
-    loadTheme();
+    applyTheme();
+  }
+
+  private void bind() {
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    languageLabel.textProperty().bind(viewModel.languageTextProperty());
+    themeLabel.textProperty().bind(viewModel.themeTextProperty());
+
+    lightThemeRadio.textProperty().bind(viewModel.themeRadioTextLightProperty());
+    darkThemeRadio.textProperty().bind(viewModel.themeRadioTextDarkProperty());
+
+    saveButton.textProperty().bind(viewModel.saveChangeButtonTextProperty());
+
+    languageComboBox.setItems(viewModel.getLanguages());
+    languageComboBox.valueProperty().bindBidirectional(
+        viewModel.selectedLanguageProperty()
+    );
+
+    ToggleGroup themeGroup = new ToggleGroup();
+    lightThemeRadio.setToggleGroup(themeGroup);
+    darkThemeRadio.setToggleGroup(themeGroup);
+
+    if (DARK_THEME.equals(viewModel.selectedThemeProperty().get())) {
+      darkThemeRadio.setSelected(true);
+    } else {
+      lightThemeRadio.setSelected(true);
+    }
+
+    themeGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+      if (newVal == darkThemeRadio) {
+        viewModel.selectedThemeProperty().set(DARK_THEME);
+      } else if (newVal == lightThemeRadio) {
+        viewModel.selectedThemeProperty().set(LIGHT_THEME);
+      }
+    });
   }
 
   @FXML
-  private void initialize()
-  {
-    viewModel = new SettingsViewModel();
-
-    updateCombo();
-
-    if (LocalizationManager.getLocale().getLanguage().equals("uk")) {
-      languageComboBox.getSelectionModel().select(0);
-    } else {
-      languageComboBox.getSelectionModel().select(1);
-    }
-
-    LocalizationManager.localeProperty().addListener((obs, oldVal, newVal) -> {
-      updateCombo();
-    });
-
-    lightThemeRadio.textProperty().bind(viewModel.themeRadioTextLight);
-    darkThemeRadio.textProperty().bind(viewModel.themeRadioTextDark);
-    titleLabel.textProperty().bind(viewModel.titleText);
-    languageLabel.textProperty().bind(viewModel.languageText);
-    themeLabel.textProperty().bind(viewModel.themeText);
-    saveButton.textProperty().bind(viewModel.saveChangeButtonText);
-
+  private void saveChange() {
+    viewModel.saveChanges();
+    applyTheme();
   }
-
- public void saveChange() {
-   if(darkThemeRadio.isSelected())
-   {
-     ThemeManager.saveTheme("dark");
-   }else if(lightThemeRadio.isSelected())
-   {
-     ThemeManager.saveTheme("light");
-   }
-   int selectionIndex = languageComboBox.getSelectionModel().getSelectedIndex();
-
-   if(selectionIndex == 0)
-   {
-     LocalizationManager.setLocale("uk");
-   }else if(selectionIndex == 1)
-   {
-     LocalizationManager.setLocale("en");
-   }
-
-   applyTheme();
- }
-
- private void loadTheme()
- {
-   String savedTheme = ThemeManager.getCurrentTheme();
-   if(savedTheme.equals("dark"))
-   {
-     darkThemeRadio.setSelected(true);
-   }
-   else {
-     lightThemeRadio.setSelected(true);
-   }
-   applyTheme();
- }
 
   private void applyTheme() {
-     rootPane.getStylesheets().clear();
-      rootPane.getStylesheets().add(getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm());
-  }
-
-  private void updateCombo() {
-    int selectedIndex = languageComboBox.getSelectionModel().getSelectedIndex();
-
-    languageComboBox.getItems().setAll(
-        viewModel.comboItemUK.get(),
-        viewModel.comboItemEN.get()
-    );
-
-    if (selectedIndex >= 0) {
-      languageComboBox.getSelectionModel().select(selectedIndex);
+    if (rootPane == null || rootPane.getScene() == null) {
+      return;
     }
+
+    rootPane.getStylesheets().clear();
+    rootPane.getStylesheets().add(
+        getClass().getResource(ThemeManager.getSavedTheme()).toExternalForm()
+    );
   }
 
-  public void logout()
-  {
+  @FXML
+  public void logout() {
     new NavigationService().openStartWindow();
+
     Stage stage = (Stage) rootPane.getScene().getWindow();
     stage.close();
   }

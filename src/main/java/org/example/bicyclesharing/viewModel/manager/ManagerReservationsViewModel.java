@@ -1,6 +1,7 @@
 package org.example.bicyclesharing.viewModel.manager;
 
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -18,6 +19,7 @@ import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.services.ReservationService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.AsyncViewModel;
+import org.example.bicyclesharing.viewModel.manager.item.ReservationItemViewModel;
 
 public class ManagerReservationsViewModel extends AsyncViewModel {
 
@@ -26,27 +28,41 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
   private final CustomerService customerService;
   private final BicycleService bicycleService;
 
-  private final ObservableList<Reservation> reservations = FXCollections.observableArrayList();
+  private final ObservableList<ReservationItemViewModel> reservations =
+      FXCollections.observableArrayList();
 
-  public final StringProperty titleText =
+  private final ObservableList<String> statusFilters =
+      FXCollections.observableArrayList();
+
+  private final StringProperty titleText =
       LocalizationManager.getStringProperty("manager.reservations.title");
-  public final StringProperty searchPromptText =
-      LocalizationManager.getStringProperty("manager.reservations.search");
-  public final StringProperty addButtonText =
-      LocalizationManager.getStringProperty("manager.reservations.add");
-  public final StringProperty issueButtonText =
-      LocalizationManager.getStringProperty("manager.reservations.issue");
-  public final StringProperty cancelButtonText =
-      LocalizationManager.getStringProperty("manager.reservations.cancel");
-  public final StringProperty editButtonText =
-      LocalizationManager.getStringProperty("edit.button");
-  public final StringProperty countText = new SimpleStringProperty("");
-  public final StringProperty searchText = new SimpleStringProperty("");
-  public final StringProperty statusFilterText = new SimpleStringProperty(
-      LocalizationManager.getStringByKey("manager.reservations.filter.all")
-  );
 
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+  private final StringProperty searchPromptText =
+      LocalizationManager.getStringProperty("manager.reservations.search");
+
+  private final StringProperty addButtonText =
+      LocalizationManager.getStringProperty("manager.reservations.add");
+
+  private final StringProperty issueButtonText =
+      LocalizationManager.getStringProperty("manager.reservations.issue");
+
+  private final StringProperty cancelButtonText =
+      LocalizationManager.getStringProperty("manager.reservations.cancel");
+
+  private final StringProperty editButtonText =
+      LocalizationManager.getStringProperty("edit.button");
+
+  private final StringProperty countText =
+      new SimpleStringProperty("");
+
+  private final StringProperty searchText =
+      new SimpleStringProperty("");
+
+  private final StringProperty statusFilterText =
+      new SimpleStringProperty();
+
+  private final DateTimeFormatter formatter =
+      DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
   public ManagerReservationsViewModel(
       User currentUser,
@@ -60,10 +76,33 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
     this.rentalService = rentalService;
     this.customerService = customerService;
     this.bicycleService = bicycleService;
+
+    initializeStatusFilters();
   }
 
-  public ObservableList<Reservation> getReservations() {
+  public void initialize() {
+    loadReservationsAsync();
+  }
+
+  private void initializeStatusFilters() {
+    statusFilters.setAll(
+        LocalizationManager.getStringByKey("manager.reservations.filter.all"),
+        LocalizationManager.getStringByKey("reservation.status.new"),
+        LocalizationManager.getStringByKey("reservation.status.issued"),
+        LocalizationManager.getStringByKey("reservation.status.cancelled")
+    );
+
+    statusFilterText.set(
+        LocalizationManager.getStringByKey("manager.reservations.filter.all")
+    );
+  }
+
+  public ObservableList<ReservationItemViewModel> getReservations() {
     return reservations;
+  }
+
+  public ObservableList<String> getStatusFilters() {
+    return statusFilters;
   }
 
   public void loadReservationsAsync() {
@@ -72,10 +111,7 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
           reservationService.updateStatuses();
           return reservationService.findByFilters("", null);
         },
-        result -> {
-          reservations.setAll(result);
-          updateCount();
-        }
+        this::setReservations
     );
   }
 
@@ -88,10 +124,7 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
           reservationService.updateStatuses();
           return reservationService.findByFilters(search, status);
         },
-        result -> {
-          reservations.setAll(result);
-          updateCount();
-        }
+        this::setReservations
     );
   }
 
@@ -99,53 +132,30 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
     String search = searchText.get() == null ? "" : searchText.get().trim();
     ReservationStatus status = resolveSelectedStatus();
 
-    boolean noFilters = search.isBlank() && status == null;
-
-    if (noFilters) {
+    if (search.isBlank() && status == null) {
       loadReservationsAsync();
     } else {
       applyFiltersAsync();
     }
   }
 
-  private void updateCount() {
-    countText.set(
-        LocalizationManager.getStringByKey("manager.reservations.count") + ": " + reservations.size()
-    );
+  public void cancelReservation(ReservationItemViewModel item) {
+    if (item == null) {
+      return;
+    }
+
+    cancelReservation(item.getReservation());
   }
 
-  public String getCustomerName(Reservation reservation) {
-    Customer customer = customerService.getById(reservation.getCustomerId()).orElse(null);
-    return customer != null ? customer.getFullName() : "-";
+  public void issueReservation(ReservationItemViewModel item) {
+    if (item == null) {
+      return;
+    }
+
+    issueReservation(item.getReservation());
   }
 
-  public String getBicycleModel(Reservation reservation) {
-    Bicycle bicycle = bicycleService.getById(reservation.getBicycleId()).orElse(null);
-    return bicycle != null ? bicycle.getModel() : "-";
-  }
-
-  public String getStartText(Reservation reservation) {
-    return reservation.getStartTime() != null ? reservation.getStartTime().format(formatter) : "-";
-  }
-
-  public String getEndText(Reservation reservation) {
-    return reservation.getEndTime() != null ? reservation.getEndTime().format(formatter) : "-";
-  }
-
-  public String getDocumentText(Reservation reservation) {
-    String docType = LocalizationManager.getStringByKey(reservation.getDocumentType().getKey());
-    return docType + ": " + reservation.getDocumentNumber();
-  }
-
-  public String getDepositText(Reservation reservation) {
-    return reservation.getDepositAmount() + " " + LocalizationManager.getStringByKey("label.currency");
-  }
-
-  public String getStatusText(Reservation reservation) {
-    return LocalizationManager.getStringByKey(reservation.getStatus().getKey());
-  }
-
-  public void cancelReservation(Reservation reservation) {
+  private void cancelReservation(Reservation reservation) {
     if (reservation == null) {
       return;
     }
@@ -153,6 +163,7 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
     reservation.setStatus(ReservationStatus.CANCELLED);
 
     Customer customer = customerService.getById(reservation.getCustomerId()).orElse(null);
+
     if (customer != null) {
       customer.setActiveReservation(null);
       customerService.update(customer);
@@ -162,37 +173,125 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
     refreshAsync();
   }
 
-  public void issueReservation(Reservation reservation) {
+  private void issueReservation(Reservation reservation) {
     if (reservation == null) {
       return;
     }
 
-    Bicycle currentBicycle = bicycleService.getById(reservation.getBicycleId()).orElse(null);
-    Customer currentCustomer = customerService.getById(reservation.getCustomerId()).orElse(null);
+    Bicycle bicycle = bicycleService.getById(reservation.getBicycleId()).orElse(null);
+    Customer customer = customerService.getById(reservation.getCustomerId()).orElse(null);
 
-    if (currentBicycle == null || currentCustomer == null) {
+    if (bicycle == null || customer == null) {
       return;
     }
 
-    Rental rental = new Rental(reservation.getCustomerId(), reservation.getBicycleId());
+    Rental rental = new Rental(
+        reservation.getCustomerId(),
+        reservation.getBicycleId()
+    );
+
     reservation.setStatus(ReservationStatus.ISSUED);
-    currentBicycle.setState(StateBicycle.RENTED);
-    currentCustomer.setActiveRent(rental.getId());
-    currentCustomer.setActiveReservation(null);
+    bicycle.setState(StateBicycle.RENTED);
+    customer.setActiveRent(rental.getId());
+    customer.setActiveReservation(null);
 
     rentalService.add(rental);
-    bicycleService.update(currentBicycle);
-    customerService.update(currentCustomer);
+    bicycleService.update(bicycle);
+    customerService.update(customer);
     reservationService.update(reservation);
 
     refreshAsync();
   }
 
-  public boolean canIssue(Reservation reservation) {
-    return reservation != null && reservation.getStatus() == ReservationStatus.NEW;
+  private void setReservations(List<Reservation> result) {
+    reservations.setAll(
+        result.stream()
+            .map(this::toItemViewModel)
+            .toList()
+    );
+
+    updateCount();
   }
 
-  public boolean canCancel(Reservation reservation) {
+  private ReservationItemViewModel toItemViewModel(Reservation reservation) {
+    return new ReservationItemViewModel(
+        reservation,
+        getCustomerName(reservation),
+        getBicycleText(reservation),
+        getPeriodText(reservation),
+        getDocumentText(reservation),
+        getDepositText(reservation),
+        getStatusText(reservation),
+        canIssue(reservation),
+        canCancel(reservation)
+    );
+  }
+
+  private String getCustomerName(Reservation reservation) {
+    Customer customer = customerService.getById(reservation.getCustomerId()).orElse(null);
+    return customer == null ? "-" : customer.getFullName();
+  }
+
+  private String getBicycleText(Reservation reservation) {
+    Bicycle bicycle = bicycleService.getById(reservation.getBicycleId()).orElse(null);
+
+    return LocalizationManager.getStringByKey("manager.reservations.card.bicycle")
+        + ": "
+        + (bicycle == null ? "-" : bicycle.getModel());
+  }
+
+  private String getPeriodText(Reservation reservation) {
+    return LocalizationManager.getStringByKey("manager.reservations.card.period")
+        + ": "
+        + getStartText(reservation)
+        + " - "
+        + getEndText(reservation);
+  }
+
+  private String getStartText(Reservation reservation) {
+    return reservation.getStartTime() == null
+        ? "-"
+        : reservation.getStartTime().format(formatter);
+  }
+
+  private String getEndText(Reservation reservation) {
+    return reservation.getEndTime() == null
+        ? "-"
+        : reservation.getEndTime().format(formatter);
+  }
+
+  private String getDocumentText(Reservation reservation) {
+    String documentType = reservation.getDocumentType() == null
+        ? "-"
+        : LocalizationManager.getStringByKey(reservation.getDocumentType().getKey());
+
+    return LocalizationManager.getStringByKey("manager.reservations.card.document")
+        + ": "
+        + documentType
+        + ": "
+        + reservation.getDocumentNumber();
+  }
+
+  private String getDepositText(Reservation reservation) {
+    return LocalizationManager.getStringByKey("manager.reservations.card.deposit")
+        + ": "
+        + reservation.getDepositAmount()
+        + " "
+        + LocalizationManager.getStringByKey("label.currency");
+  }
+
+  private String getStatusText(Reservation reservation) {
+    return reservation.getStatus() == null
+        ? "-"
+        : LocalizationManager.getStringByKey(reservation.getStatus().getKey());
+  }
+
+  private boolean canIssue(Reservation reservation) {
+    return reservation != null
+        && reservation.getStatus() == ReservationStatus.NEW;
+  }
+
+  private boolean canCancel(Reservation reservation) {
     return reservation != null
         && reservation.getStatus() != ReservationStatus.CANCELLED
         && reservation.getStatus() != ReservationStatus.ISSUED;
@@ -207,12 +306,57 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
     }
 
     for (ReservationStatus status : ReservationStatus.values()) {
-      String localized = LocalizationManager.getStringByKey(status.getKey());
-      if (localized.equals(statusText)) {
+      String localizedStatus = LocalizationManager.getStringByKey(status.getKey());
+
+      if (localizedStatus.equals(statusText)) {
         return status;
       }
     }
 
     return null;
+  }
+
+  private void updateCount() {
+    countText.set(
+        LocalizationManager.getStringByKey("manager.reservations.count")
+            + ": "
+            + reservations.size()
+    );
+  }
+
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty searchPromptTextProperty() {
+    return searchPromptText;
+  }
+
+  public StringProperty addButtonTextProperty() {
+    return addButtonText;
+  }
+
+  public StringProperty issueButtonTextProperty() {
+    return issueButtonText;
+  }
+
+  public StringProperty cancelButtonTextProperty() {
+    return cancelButtonText;
+  }
+
+  public StringProperty editButtonTextProperty() {
+    return editButtonText;
+  }
+
+  public StringProperty countTextProperty() {
+    return countText;
+  }
+
+  public StringProperty searchTextProperty() {
+    return searchText;
+  }
+
+  public StringProperty statusFilterTextProperty() {
+    return statusFilterText;
   }
 }

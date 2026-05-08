@@ -1,9 +1,9 @@
 package org.example.bicyclesharing.viewModel.admin.modalViewModal;
 
+import java.io.File;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
@@ -12,39 +12,62 @@ import org.example.bicyclesharing.domain.enums.TypeBicycle;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.StationService;
+import org.example.bicyclesharing.util.ImageStorageUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class AddEditBicycleViewModel {
+
+  private static final String DEFAULT_IMAGE =
+      "/org/example/bicyclesharing/art/image/defaultImg.jpg";
 
   private final BicycleService bicycleService;
   private final StationService stationService;
   private final Bicycle editingBicycle;
 
-  public final StringProperty titleText = new SimpleStringProperty();
-  public final StringProperty saveButtonText = LocalizationManager.getStringProperty("save.button");
-  public final StringProperty cancelButtonText = LocalizationManager.getStringProperty("cancel.button");
-  public final StringProperty uploadButtonText = LocalizationManager.getStringProperty("uploadPhoto.button.text");
+  private final StringProperty titleText = new SimpleStringProperty();
 
-  public final StringProperty modelLabelText = LocalizationManager.getStringProperty("admin.bicycles.model");
-  public final StringProperty typeLabelText = LocalizationManager.getStringProperty("admin.bicycles.type");
-  public final StringProperty priceLabelText = LocalizationManager.getStringProperty("admin.bicycles.price");
-  public final StringProperty stationLabelText = LocalizationManager.getStringProperty("admin.bicycles.station");
-  public final StringProperty photoLabelText = LocalizationManager.getStringProperty("admin.users.photo");
-  public final StringProperty photoFileNameText = LocalizationManager.getStringProperty("file.not.selected");
+  private final StringProperty saveButtonText =
+      LocalizationManager.getStringProperty("save.button");
+  private final StringProperty cancelButtonText =
+      LocalizationManager.getStringProperty("cancel.button");
+  private final StringProperty uploadButtonText =
+      LocalizationManager.getStringProperty("uploadPhoto.button.text");
 
-  public final StringProperty model = new SimpleStringProperty("");
-  public final StringProperty price = new SimpleStringProperty("");
+  private final StringProperty modelLabelText =
+      LocalizationManager.getStringProperty("admin.bicycles.model");
+  private final StringProperty typeLabelText =
+      LocalizationManager.getStringProperty("admin.bicycles.type");
+  private final StringProperty priceLabelText =
+      LocalizationManager.getStringProperty("admin.bicycles.price");
+  private final StringProperty stationLabelText =
+      LocalizationManager.getStringProperty("admin.bicycles.station");
+  private final StringProperty photoLabelText =
+      LocalizationManager.getStringProperty("admin.users.photo");
 
-  public final StringProperty modelError = new SimpleStringProperty("");
-  public final StringProperty typeError = new SimpleStringProperty("");
-  public final StringProperty priceError = new SimpleStringProperty("");
-  public final StringProperty stationError = new SimpleStringProperty("");
-  public final StringProperty photoError = new SimpleStringProperty("");
+  private final StringProperty model = new SimpleStringProperty("");
+  private final StringProperty price = new SimpleStringProperty("");
 
-  public final ObservableList<Station> stations = FXCollections.observableArrayList();
+  private final ObjectProperty<TypeBicycle> selectedType = new SimpleObjectProperty<>();
+  private final ObjectProperty<Station> selectedStation = new SimpleObjectProperty<>();
 
-  public TypeBicycle selectedType;
-  public Station selectedStation;
+  private final ObjectProperty<ObservableList<TypeBicycle>> types =
+      new SimpleObjectProperty<>(FXCollections.observableArrayList(TypeBicycle.values()));
+
+  private final ObjectProperty<ObservableList<Station>> stations =
+      new SimpleObjectProperty<>(FXCollections.observableArrayList());
+
+  private final StringProperty modelError = new SimpleStringProperty("");
+  private final StringProperty typeError = new SimpleStringProperty("");
+  private final StringProperty priceError = new SimpleStringProperty("");
+  private final StringProperty stationError = new SimpleStringProperty("");
+  private final StringProperty photoError = new SimpleStringProperty("");
+
+  private final StringProperty photoFileNameText =
+      LocalizationManager.getStringProperty("file.not.selected");
+
+  private final StringProperty photoPreviewPath = new SimpleStringProperty(DEFAULT_IMAGE);
+
+  private File selectedPhotoFile;
   private String imagePath;
 
   public AddEditBicycleViewModel(
@@ -55,143 +78,170 @@ public class AddEditBicycleViewModel {
     this.bicycleService = bicycleService;
     this.stationService = stationService;
     this.editingBicycle = editingBicycle;
+  }
 
-    stations.setAll(stationService.getAll());
+  public void initialize() {
+    stations.get().setAll(stationService.getAll());
 
-    if (!stations.isEmpty()) {
-      selectedStation = stations.get(0);
-    }
-
-    if (editingBicycle == null) {
-      titleText.set(LocalizationManager.getStringByKey("admin.bicycles.add.title"));
-      selectedType = TypeBicycle.URBAN;
+    if (isEditMode()) {
+      initializeEditMode();
     } else {
-      titleText.set(LocalizationManager.getStringByKey("admin.bicycles.edit.title"));
-      selectedType = editingBicycle.getTypeBicycle();
-
-      stations.stream()
-          .filter(station -> station.getId().equals(editingBicycle.getStationId()))
-          .findFirst()
-          .ifPresent(station -> selectedStation = station);
+      initializeAddMode();
     }
   }
 
-  public boolean isEditMode() {
-    return editingBicycle != null;
+  private void initializeAddMode() {
+    titleText.set(LocalizationManager.getStringByKey("admin.bicycles.add.title"));
+    selectedType.set(TypeBicycle.URBAN);
+
+    if (!stations.get().isEmpty()) {
+      selectedStation.set(stations.get().get(0));
+    }
+
+    photoPreviewPath.set(DEFAULT_IMAGE);
+  }
+
+  private void initializeEditMode() {
+    titleText.set(LocalizationManager.getStringByKey("admin.bicycles.edit.title"));
+
+    model.set(editingBicycle.getModel());
+    price.set(String.valueOf(editingBicycle.getPricePerMinute()));
+    selectedType.set(editingBicycle.getTypeBicycle());
+
+    stations.get().stream()
+        .filter(station -> station.getId().equals(editingBicycle.getStationId()))
+        .findFirst()
+        .ifPresent(selectedStation::set);
+
+    if (editingBicycle.getImagePath() != null && !editingBicycle.getImagePath().isBlank()) {
+      photoPreviewPath.set(editingBicycle.getImagePath());
+      photoFileNameText.set(new File(editingBicycle.getImagePath()).getName());
+    } else {
+      photoPreviewPath.set(DEFAULT_IMAGE);
+    }
   }
 
   public boolean save() {
     clearErrors();
 
+    saveSelectedPhotoIfNeeded();
+
     try {
-      if (editingBicycle == null) {
-        Bicycle bicycle = new Bicycle(
-            model.get(),
-            selectedType,
-            price.get(),
-            selectedStation == null ? null : selectedStation.getId()
-        );
-
-        bicycle.setImagePath(imagePath);
-
-        if (selectedStation != null) {
-          selectedStation.addBicycleId(bicycle.getId());
-          stationService.update(selectedStation);
-        }
-
-        bicycleService.add(bicycle);
-
+      if (isEditMode()) {
+        updateBicycle();
       } else {
-        bicycleService.validateCanEdit(editingBicycle);
-
-        UUID oldStationId = editingBicycle.getStationId();
-        UUID newStationId = selectedStation == null ? null : selectedStation.getId();
-
-        String modelValue = isBlank(model.get())
-            ? editingBicycle.getModel()
-            : model.get().trim();
-
-        String priceValue = isBlank(price.get())
-            ? String.valueOf(editingBicycle.getPricePerMinute())
-            : price.get().trim();
-
-        TypeBicycle typeValue = selectedType == null
-            ? editingBicycle.getTypeBicycle()
-            : selectedType;
-
-        String finalImagePath = (imagePath != null && !imagePath.trim().isEmpty())
-            ? imagePath
-            : editingBicycle.getImagePath();
-
-        Bicycle validated = new Bicycle(
-            modelValue,
-            typeValue,
-            priceValue,
-            newStationId
-        );
-
-        editingBicycle.setModel(validated.getModel());
-        editingBicycle.setTypeBicycle(validated.getTypeBicycle());
-        editingBicycle.setPricePerMinute(String.valueOf(validated.getPricePerMinute()));
-        editingBicycle.setStationId(newStationId);
-        editingBicycle.setImagePath(finalImagePath);
-
-        if (oldStationId != null && newStationId != null) {
-          if (!oldStationId.equals(newStationId)) {
-            Station oldStation = stationService.getById(oldStationId);
-            Station newStation = stationService.getById(newStationId);
-
-            if (oldStation != null) {
-              oldStation.removeBicycleId(editingBicycle.getId());
-              stationService.update(oldStation);
-            }
-
-            if (newStation != null) {
-              newStation.addBicycleId(editingBicycle.getId());
-              stationService.update(newStation);
-            }
-          }
-        } else if (oldStationId == null && newStationId != null) {
-          Station newStation = stationService.getById(newStationId);
-
-          if (newStation != null) {
-            newStation.addBicycleId(editingBicycle.getId());
-            stationService.update(newStation);
-          }
-        } else if (oldStationId != null && newStationId == null) {
-          Station oldStation = stationService.getById(oldStationId);
-
-          if (oldStation != null) {
-            oldStation.removeBicycleId(editingBicycle.getId());
-            stationService.update(oldStation);
-          }
-        }
-
-        bicycleService.update(editingBicycle);
+        createBicycle();
       }
 
       return true;
-
     } catch (CustomEntityValidationExeption e) {
-      e.getErrors().forEach((field, messages) -> {
-        String text = messages.stream()
-            .map(LocalizationManager::getStringByKey)
-            .collect(Collectors.joining("\n"));
-
-        switch (field) {
-          case "model" -> modelError.set(text);
-          case "typeBicycle" -> typeError.set(text);
-          case "pricePerMinute" -> priceError.set(text);
-          case "stationId" -> stationError.set(text);
-          case "imagePath" -> photoError.set(text);
-        }
-      });
+      applyValidationErrors(e);
       return false;
     }
   }
 
-  private boolean isBlank(String value) {
-    return value == null || value.trim().isEmpty();
+  private void createBicycle() {
+    Bicycle bicycle = new Bicycle(
+        model.get(),
+        selectedType.get(),
+        price.get(),
+        selectedStation.get() == null ? null : selectedStation.get().getId()
+    );
+
+    bicycle.setImagePath(imagePath);
+
+    if (selectedStation.get() != null) {
+      selectedStation.get().addBicycleId(bicycle.getId());
+      stationService.update(selectedStation.get());
+    }
+
+    bicycleService.add(bicycle);
+  }
+
+  private void updateBicycle() {
+    bicycleService.validateCanEdit(editingBicycle);
+
+    UUID oldStationId = editingBicycle.getStationId();
+    UUID newStationId = selectedStation.get() == null ? null : selectedStation.get().getId();
+
+    Bicycle validated = new Bicycle(
+        model.get(),
+        selectedType.get(),
+        price.get(),
+        newStationId
+    );
+
+    editingBicycle.setModel(validated.getModel());
+    editingBicycle.setTypeBicycle(validated.getTypeBicycle());
+    editingBicycle.setPricePerMinute(String.valueOf(validated.getPricePerMinute()));
+    editingBicycle.setStationId(newStationId);
+    editingBicycle.setImagePath(resolveFinalImagePath());
+
+    updateStationRelations(oldStationId, newStationId);
+    bicycleService.update(editingBicycle);
+  }
+
+  private void updateStationRelations(UUID oldStationId, UUID newStationId) {
+    if (oldStationId != null && !oldStationId.equals(newStationId)) {
+      Station oldStation = stationService.getById(oldStationId);
+      if (oldStation != null) {
+        oldStation.removeBicycleId(editingBicycle.getId());
+        stationService.update(oldStation);
+      }
+    }
+
+    if (newStationId != null && !newStationId.equals(oldStationId)) {
+      Station newStation = stationService.getById(newStationId);
+      if (newStation != null) {
+        newStation.addBicycleId(editingBicycle.getId());
+        stationService.update(newStation);
+      }
+    }
+  }
+
+  private boolean saveSelectedPhotoIfNeeded() {
+    if (selectedPhotoFile == null) {
+      return false;
+    }
+
+    try {
+      imagePath = ImageStorageUtil.saveImage(selectedPhotoFile, "bicycles");
+      return true;
+    } catch (Exception e) {
+      photoError.set(LocalizationManager.getStringByKey("error.image.save.failed"));
+      return true;
+    }
+  }
+
+  private String resolveFinalImagePath() {
+    if (imagePath != null && !imagePath.isBlank()) {
+      return imagePath;
+    }
+
+    return editingBicycle.getImagePath();
+  }
+
+  public void selectPhoto(File file) {
+    selectedPhotoFile = file;
+    photoFileNameText.set(file.getName());
+    photoPreviewPath.set(file.getAbsolutePath());
+    photoError.set("");
+  }
+
+  private void applyValidationErrors(CustomEntityValidationExeption e) {
+    e.getErrors().forEach((field, messages) -> {
+      String text = messages.stream()
+          .map(LocalizationManager::getStringByKey)
+          .collect(Collectors.joining("\n"));
+
+      switch (field) {
+        case "model" -> modelError.set(text);
+        case "typeBicycle" -> typeError.set(text);
+        case "pricePerMinute" -> priceError.set(text);
+        case "stationId" -> stationError.set(text);
+        case "imagePath" -> photoError.set(text);
+      }
+    });
   }
 
   private void clearErrors() {
@@ -202,11 +252,95 @@ public class AddEditBicycleViewModel {
     photoError.set("");
   }
 
-  public void setImagePath(String imagePath) {
-    this.imagePath = imagePath;
+  public boolean isEditMode() {
+    return editingBicycle != null;
   }
 
-  public void setPhotoError(String message) {
-    photoError.set(message);
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
+
+  public StringProperty saveButtonTextProperty() {
+    return saveButtonText;
+  }
+
+  public StringProperty cancelButtonTextProperty() {
+    return cancelButtonText;
+  }
+
+  public StringProperty uploadButtonTextProperty() {
+    return uploadButtonText;
+  }
+
+  public StringProperty modelLabelTextProperty() {
+    return modelLabelText;
+  }
+
+  public StringProperty typeLabelTextProperty() {
+    return typeLabelText;
+  }
+
+  public StringProperty priceLabelTextProperty() {
+    return priceLabelText;
+  }
+
+  public StringProperty stationLabelTextProperty() {
+    return stationLabelText;
+  }
+
+  public StringProperty photoLabelTextProperty() {
+    return photoLabelText;
+  }
+
+  public StringProperty modelProperty() {
+    return model;
+  }
+
+  public StringProperty priceProperty() {
+    return price;
+  }
+
+  public ObjectProperty<TypeBicycle> selectedTypeProperty() {
+    return selectedType;
+  }
+
+  public ObjectProperty<Station> selectedStationProperty() {
+    return selectedStation;
+  }
+
+  public ObjectProperty<ObservableList<TypeBicycle>> typesProperty() {
+    return types;
+  }
+
+  public ObjectProperty<ObservableList<Station>> stationsProperty() {
+    return stations;
+  }
+
+  public StringProperty modelErrorProperty() {
+    return modelError;
+  }
+
+  public StringProperty typeErrorProperty() {
+    return typeError;
+  }
+
+  public StringProperty priceErrorProperty() {
+    return priceError;
+  }
+
+  public StringProperty stationErrorProperty() {
+    return stationError;
+  }
+
+  public StringProperty photoErrorProperty() {
+    return photoError;
+  }
+
+  public StringProperty photoFileNameTextProperty() {
+    return photoFileNameText;
+  }
+
+  public StringProperty photoPreviewPathProperty() {
+    return photoPreviewPath;
   }
 }

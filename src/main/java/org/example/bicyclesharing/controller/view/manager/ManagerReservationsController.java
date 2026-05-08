@@ -13,12 +13,13 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.manager.modalController.AddEditReservationController;
-import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
+import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.manager.ManagerReservationsViewModel;
+import org.example.bicyclesharing.viewModel.manager.item.ReservationItemViewModel;
 
 public class ManagerReservationsController extends BaseController {
 
@@ -27,7 +28,7 @@ public class ManagerReservationsController extends BaseController {
   @FXML private TextField searchField;
   @FXML private ComboBox<String> statusFilterCombo;
   @FXML private Label countLabel;
-  @FXML private ListView<Reservation> reservationsListView;
+  @FXML private ListView<ReservationItemViewModel> reservationsListView;
 
   private ManagerReservationsViewModel viewModel;
   private User currentUser;
@@ -44,121 +45,116 @@ public class ManagerReservationsController extends BaseController {
         AppConfig.bicycleService()
     );
 
-    binds();
-    setupFilters();
+    bind();
     setupList();
-    viewModel.loadReservationsAsync();
+    setupFilters();
+    viewModel.initialize();
   }
 
-  private void binds() {
-    titleLabel.textProperty().bind(viewModel.titleText);
-    searchField.promptTextProperty().bind(viewModel.searchPromptText);
-    countLabel.textProperty().bind(viewModel.countText);
-    searchField.textProperty().bindBidirectional(viewModel.searchText);
+  private void bind() {
+    titleLabel.textProperty().bind(viewModel.titleTextProperty());
+    searchField.promptTextProperty().bind(viewModel.searchPromptTextProperty());
+    countLabel.textProperty().bind(viewModel.countTextProperty());
+    addReservationButton.textProperty().bind(viewModel.addButtonTextProperty());
+
+    searchField.textProperty().bindBidirectional(viewModel.searchTextProperty());
+    statusFilterCombo.valueProperty().bindBidirectional(viewModel.statusFilterTextProperty());
+
     reservationsListView.setItems(viewModel.getReservations());
-
-    addReservationButton.textProperty().bind(viewModel.addButtonText);
-
-    statusFilterCombo.getItems().setAll(
-        LocalizationManager.getStringByKey("manager.reservations.filter.all"),
-        LocalizationManager.getStringByKey("reservation.status.new"),
-        LocalizationManager.getStringByKey("reservation.status.issued"),
-        LocalizationManager.getStringByKey("reservation.status.cancelled")
-    );
-    statusFilterCombo.getSelectionModel().selectFirst();
   }
 
   private void setupFilters() {
-    searchField.textProperty().addListener((obs, oldVal, newVal) -> viewModel.applyFiltersAsync());
+    statusFilterCombo.setItems(viewModel.getStatusFilters());
+    statusFilterCombo.getSelectionModel().selectFirst();
 
-    statusFilterCombo.valueProperty().addListener((obs, oldVal, newVal) -> {
-      viewModel.statusFilterText.set(newVal);
-      viewModel.applyFiltersAsync();
-    });
+    searchField.textProperty().addListener((obs, oldVal, newVal) ->
+        viewModel.applyFiltersAsync()
+    );
+
+    statusFilterCombo.valueProperty().addListener((obs, oldVal, newVal) ->
+        viewModel.applyFiltersAsync()
+    );
   }
 
   private void setupList() {
     reservationsListView.setCellFactory(list -> new ListCell<>() {
       @Override
-      protected void updateItem(Reservation reservation, boolean empty) {
-        super.updateItem(reservation, empty);
+      protected void updateItem(ReservationItemViewModel item, boolean empty) {
+        super.updateItem(item, empty);
 
-        if (empty || reservation == null) {
+        if (empty || item == null) {
           setGraphic(null);
           setText(null);
           return;
         }
 
-        VBox card = new VBox(8);
-        card.getStyleClass().add("user-card");
-
-        Label customerLabel = new Label(viewModel.getCustomerName(reservation));
-        customerLabel.getStyleClass().add("user-card-title");
-
-        Label bicycleLabel = new Label(
-            LocalizationManager.getStringByKey("manager.reservations.card.bicycle")
-                + ": " + viewModel.getBicycleModel(reservation)
-        );
-        bicycleLabel.getStyleClass().add("user-card-subtitle");
-
-        Label periodLabel = new Label(
-            LocalizationManager.getStringByKey("manager.reservations.card.period")
-                + ": " + viewModel.getStartText(reservation)
-                + " - " + viewModel.getEndText(reservation)
-        );
-        periodLabel.getStyleClass().add("user-card-subtitle");
-
-        Label documentLabel = new Label(
-            LocalizationManager.getStringByKey("manager.reservations.card.document")
-                + ": " + viewModel.getDocumentText(reservation)
-        );
-        documentLabel.getStyleClass().add("user-card-subtitle");
-
-        Label depositLabel = new Label(
-            LocalizationManager.getStringByKey("manager.reservations.card.deposit")
-                + ": " + viewModel.getDepositText(reservation)
-        );
-        depositLabel.getStyleClass().add("user-card-subtitle");
-
-        Label statusLabel = new Label(viewModel.getStatusText(reservation));
-        statusLabel.getStyleClass().add("user-card-role");
-
-        Button issueCardButton = new Button();
-        issueCardButton.textProperty().bind(viewModel.issueButtonText);
-        issueCardButton.getStyleClass().add("button-edit");
-        issueCardButton.setDisable(!viewModel.canIssue(reservation));
-        issueCardButton.setOnAction(e -> viewModel.issueReservation(reservation));
-
-        Button editCardButton = new Button();
-        editCardButton.textProperty().bind(viewModel.editButtonText);
-        editCardButton.getStyleClass().add("button-edit");
-        editCardButton.setDisable(!viewModel.canIssue(reservation));
-        editCardButton.setOnAction(e -> openReservationDialog(reservation));
-
-        Button cancelCardButton = new Button();
-        cancelCardButton.textProperty().bind(viewModel.cancelButtonText);
-        cancelCardButton.getStyleClass().add("button-danger");
-        cancelCardButton.setDisable(!viewModel.canCancel(reservation));
-        cancelCardButton.setOnAction(e -> viewModel.cancelReservation(reservation));
-
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        HBox actions = new HBox(10, issueCardButton, editCardButton, cancelCardButton);
-        HBox bottomRow = new HBox(10, statusLabel, spacer, actions);
-
-        card.getChildren().addAll(
-            customerLabel,
-            bicycleLabel,
-            periodLabel,
-            documentLabel,
-            depositLabel,
-            bottomRow
-        );
-
-        setGraphic(card);
+        setGraphic(createCard(item));
       }
     });
+  }
+
+  private VBox createCard(ReservationItemViewModel item) {
+    VBox card = new VBox(8);
+    card.getStyleClass().add("user-card");
+
+    Label customerLabel = new Label();
+    customerLabel.getStyleClass().add("user-card-title");
+    customerLabel.textProperty().bind(item.customerTextProperty());
+
+    Label bicycleLabel = new Label();
+    bicycleLabel.getStyleClass().add("user-card-subtitle");
+    bicycleLabel.textProperty().bind(item.bicycleTextProperty());
+
+    Label periodLabel = new Label();
+    periodLabel.getStyleClass().add("user-card-subtitle");
+    periodLabel.textProperty().bind(item.periodTextProperty());
+
+    Label documentLabel = new Label();
+    documentLabel.getStyleClass().add("user-card-subtitle");
+    documentLabel.textProperty().bind(item.documentTextProperty());
+
+    Label depositLabel = new Label();
+    depositLabel.getStyleClass().add("user-card-subtitle");
+    depositLabel.textProperty().bind(item.depositTextProperty());
+
+    Label statusLabel = new Label();
+    statusLabel.getStyleClass().add("user-card-role");
+    statusLabel.textProperty().bind(item.statusTextProperty());
+
+    Button issueButton = new Button();
+    issueButton.textProperty().bind(viewModel.issueButtonTextProperty());
+    issueButton.getStyleClass().add("button-edit");
+    issueButton.disableProperty().bind(item.canIssueProperty().not());
+    issueButton.setOnAction(e -> viewModel.issueReservation(item));
+
+    Button editButton = new Button();
+    editButton.textProperty().bind(viewModel.editButtonTextProperty());
+    editButton.getStyleClass().add("button-edit");
+    editButton.disableProperty().bind(item.canIssueProperty().not());
+    editButton.setOnAction(e -> openReservationDialog(item));
+
+    Button cancelButton = new Button();
+    cancelButton.textProperty().bind(viewModel.cancelButtonTextProperty());
+    cancelButton.getStyleClass().add("button-danger");
+    cancelButton.disableProperty().bind(item.canCancelProperty().not());
+    cancelButton.setOnAction(e -> viewModel.cancelReservation(item));
+
+    Region spacer = new Region();
+    HBox.setHgrow(spacer, Priority.ALWAYS);
+
+    HBox actions = new HBox(10, issueButton, editButton, cancelButton);
+    HBox bottomRow = new HBox(10, statusLabel, spacer, actions);
+
+    card.getChildren().addAll(
+        customerLabel,
+        bicycleLabel,
+        periodLabel,
+        documentLabel,
+        depositLabel,
+        bottomRow
+    );
+
+    return card;
   }
 
   @FXML
@@ -166,18 +162,19 @@ public class ManagerReservationsController extends BaseController {
     openReservationDialog(null);
   }
 
-  private void openReservationDialog(Reservation reservation) {
+  private void openReservationDialog(ReservationItemViewModel item) {
     try {
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/manager/modalView/AddEditReservationView.fxml",
-          (AddEditReservationController controller) -> controller.initData(
-              currentUser,
-              reservation,
-              viewModel::refreshAsync
-          )
+          (AddEditReservationController controller) ->
+              controller.initData(
+                  currentUser,
+                  item == null ? null : item.getReservation(),
+                  viewModel::refreshAsync
+              )
       );
     } catch (Exception e) {
-      e.printStackTrace();
+      DialogUtil.showError(LocalizationManager.getStringByKey("error.operation.failed"));
     }
   }
 }

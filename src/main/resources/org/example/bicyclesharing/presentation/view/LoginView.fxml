@@ -19,7 +19,7 @@
   <children>
     <VBox alignment="CENTER" fillWidth="false" spacing="5">
 
-      <Label styleClass="label-title" fx:id="title" />
+      <Label styleClass="label-title" fx:id="titleLabel" />
 
       <VBox alignment="CENTER" spacing="2">
         <StackPane>
@@ -41,10 +41,10 @@
             </image>
           </ImageView>
         </StackPane>
-        <Label fx:id="errorMessage" maxWidth="250" styleClass="label-error" textFill="red" wrapText="true" />
+        <Label fx:id="errorLabel" maxWidth="250" styleClass="label-error" textFill="red" wrapText="true" />
       </VBox>
 
-      <Button fx:id="loginButton" onAction="#onLogin" prefHeight="25.0" prefWidth="100.0" styleClass="button-primary"/>
+      <Button fx:id="signInButton" onAction="#onLogin" prefHeight="25.0" prefWidth="100.0" styleClass="button-primary"/>
 
     </VBox>
   </children>

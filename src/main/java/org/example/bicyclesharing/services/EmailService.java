@@ -7,15 +7,34 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
+
 import org.example.bicyclesharing.exception.EmailExeption;
 
 public class EmailService {
 
-  private static final String FROM_EMAIL = "morgus288@gmail.com";
-  private static final String PASSWORD = "zbnb qxcn qpmm deks";
+  private final String fromEmail;
+  private final String password;
 
   public EmailService() {
+
+    Properties config = new Properties();
+
+    try (InputStream input = Files.newInputStream(
+        Paths.get("config", "email.properties")
+    )) {
+      config.load(input);
+
+      fromEmail = config.getProperty("email.username");
+      password = config.getProperty("email.password");
+
+    } catch (Exception e) {
+      throw new RuntimeException("Помилка завантаження email конфігурації", e);
+    }
   }
 
   public void send(String to, String subject, String text) {
@@ -30,17 +49,18 @@ public class EmailService {
       Session session = Session.getInstance(properties, new Authenticator() {
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
-          return new PasswordAuthentication(FROM_EMAIL, PASSWORD);
+          return new PasswordAuthentication(fromEmail, password);
         }
       });
 
       MimeMessage message = new MimeMessage(session);
-      message.setFrom(new InternetAddress(FROM_EMAIL));
+      message.setFrom(new InternetAddress(fromEmail));
       message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
       message.setSubject(subject, "UTF-8");
       message.setText(text, "UTF-8");
 
       Transport.send(message);
+
     } catch (Exception e) {
       throw new EmailExeption("Помилка надсилання email", e);
     }

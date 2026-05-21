@@ -167,7 +167,7 @@ public class RentalRepositoryDBTest extends AbstractRepositoryTest {
   }
 
   @Test
-  void findActiveByFilters_shouldReturnActiveRentals_whenSearchMatchesCustomerOrBicycle() {
+  void findActiveByFilters_shouldReturnRentals_whenSearchMatchesCustomerOrBicycle() {
     UUID customerId = UUID.randomUUID();
     UUID bicycleId = UUID.randomUUID();
 
@@ -182,7 +182,7 @@ public class RentalRepositoryDBTest extends AbstractRepositoryTest {
 
     repository.save(activeRental);
 
-    List<Rental> result = repository.findActiveByFilters("John");
+    List<Rental> result = repository.findByFilters("John");
 
     assertThat(result).hasSize(1);
     assertThat(result.get(0).getId()).isEqualTo(activeRental.getId());

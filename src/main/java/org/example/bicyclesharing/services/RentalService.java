@@ -46,7 +46,7 @@ public class RentalService extends BaseService<Rental, UUID> {
   }
 
   public List<Rental> findActiveByFilters(String search) {
-    return repository.findActiveByFilters(search);
+    return repository.findByFilters(search);
   }
 
   public double finishRental(

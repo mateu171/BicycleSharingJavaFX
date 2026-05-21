@@ -13,24 +13,24 @@ import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.util.WindowUtil;
-import org.example.bicyclesharing.viewModel.manager.ManagerActiveRentalsViewModel;
-import org.example.bicyclesharing.viewModel.manager.item.ActiveRentalItemViewModel;
+import org.example.bicyclesharing.viewModel.manager.ManagerRentalsViewModel;
+import org.example.bicyclesharing.viewModel.manager.item.RentalItemViewModel;
 
-public class ManagerActiveRentalsController extends BaseController {
+public class ManagerRentalsController extends BaseController {
 
   @FXML private Label titleLabel;
   @FXML private TextField searchField;
   @FXML private Label countLabel;
-  @FXML private ListView<ActiveRentalItemViewModel> rentalsListView;
+  @FXML private ListView<RentalItemViewModel> rentalsListView;
 
-  private ManagerActiveRentalsViewModel viewModel;
+  private ManagerRentalsViewModel viewModel;
   private User currentUser;
 
   @Override
   public void setCurrentUser(User currentUser) {
     this.currentUser = currentUser;
 
-    viewModel = new ManagerActiveRentalsViewModel(
+    viewModel = new ManagerRentalsViewModel(
         currentUser,
         AppConfig.rentalService(),
         AppConfig.customerService(),
@@ -61,7 +61,7 @@ public class ManagerActiveRentalsController extends BaseController {
   private void setupList() {
     rentalsListView.setCellFactory(list -> new ListCell<>() {
       @Override
-      protected void updateItem(ActiveRentalItemViewModel item, boolean empty) {
+      protected void updateItem(RentalItemViewModel item, boolean empty) {
         super.updateItem(item, empty);
 
         if (empty || item == null) {
@@ -75,7 +75,7 @@ public class ManagerActiveRentalsController extends BaseController {
     });
   }
 
-  private VBox createCard(ActiveRentalItemViewModel item) {
+  private VBox createCard(RentalItemViewModel item) {
     VBox card = new VBox(8);
     card.getStyleClass().add("user-card");
 
@@ -94,6 +94,10 @@ public class ManagerActiveRentalsController extends BaseController {
     Button finishCardButton = new Button();
     finishCardButton.textProperty().bind(viewModel.finishButtonTextProperty());
     finishCardButton.getStyleClass().add("button-primary");
+
+    finishCardButton.visibleProperty().bind(item.activeProperty());
+    finishCardButton.managedProperty().bind(item.activeProperty());
+
     finishCardButton.setOnAction(e -> openFinishDialog(item));
 
     Region spacer = new Region();
@@ -105,7 +109,7 @@ public class ManagerActiveRentalsController extends BaseController {
     return card;
   }
 
-  private void openFinishDialog(ActiveRentalItemViewModel item) {
+  private void openFinishDialog(RentalItemViewModel item) {
     try {
       WindowUtil.openModal(
           "/org/example/bicyclesharing/presentation/view/manager/modalView/FinishRentalDialog.fxml",

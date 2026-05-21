@@ -113,7 +113,7 @@ public final class AppConfig {
       new MaintenanceRecordService(MAINTENANCE_RECORD_REPOSITORY);
 
   private static final ReservationService RESERVATION_SERVICE =
-      new ReservationService(RESERVATION_REPOSITORY);
+      new ReservationService(RESERVATION_REPOSITORY,BICYCLE_REPOSITORY,CUSTOMER_REPOSITORY);
 
   private static final CustomerService CUSTOMER_SERVICE =
       new CustomerService(CUSTOMER_REPOSITORY);

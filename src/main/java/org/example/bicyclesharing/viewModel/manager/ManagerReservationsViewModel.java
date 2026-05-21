@@ -155,6 +155,10 @@ public class ManagerReservationsViewModel extends AsyncViewModel {
     issueReservation(item.getReservation());
   }
 
+  public void validateCanCreateReservation() {
+    reservationService.validateCanCreateReservation();
+  }
+
   private void cancelReservation(Reservation reservation) {
     if (reservation == null) {
       return;

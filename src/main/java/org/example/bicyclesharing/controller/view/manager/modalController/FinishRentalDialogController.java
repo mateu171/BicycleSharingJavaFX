@@ -1,19 +1,26 @@
 package org.example.bicyclesharing.controller.view.manager.modalController;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
+import org.example.bicyclesharing.util.WindowUtil;
 import org.example.bicyclesharing.viewModel.manager.modalViewModal.FinishRentalDialogViewModel;
 
 public class FinishRentalDialogController {
@@ -99,15 +106,17 @@ public class FinishRentalDialogController {
   }
 
   private void showFinalPrice(double finalPrice) {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle(LocalizationManager.getStringByKey("manager.rentals.finish.success.title"));
-    alert.setHeaderText(LocalizationManager.getStringByKey("manager.rentals.finish.success.header"));
-    alert.setContentText(
-        LocalizationManager.getStringByKey("manager.rentals.finish.success.price")
-            + ": " + String.format("%.2f", finalPrice) + " "
-            + LocalizationManager.getStringByKey("label.currency")
-    );
-    alert.showAndWait();
+    try {
+      WindowUtil.openModal(
+          "/org/example/bicyclesharing/presentation/view/manager/modalView/FinalPriceDialog.fxml",
+          (FinalPriceDialogController controller) ->
+              controller.initData(finalPrice)
+      );
+    } catch (Exception e) {
+      DialogUtil.showError(
+          LocalizationManager.getStringByKey("error.rental.finish.failed")
+      );
+    }
   }
 
   @FXML

@@ -5,16 +5,26 @@ import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
+import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.exception.BusinessException;
+import org.example.bicyclesharing.repository.BicycleRepository;
+import org.example.bicyclesharing.repository.CustomerRepository;
 import org.example.bicyclesharing.repository.Repository;
 import org.example.bicyclesharing.repository.ReservationRepository;
 import org.example.bicyclesharing.repository.db.ReservationRepositoryDB;
+import org.example.bicyclesharing.util.LocalizationManager;
 
 public class ReservationService extends BaseService<Reservation, UUID>{
 
   private ReservationRepository reservationRepository;
+  private BicycleRepository bicycleRepository;
+  private CustomerRepository customerRepository;
 
-  public ReservationService(ReservationRepository reservationRepository) {
+  public ReservationService(ReservationRepository reservationRepository,
+      BicycleRepository bicycleRepository, CustomerRepository customerRepository) {
     this.reservationRepository = reservationRepository;
+    this.bicycleRepository = bicycleRepository;
+    this.customerRepository = customerRepository;
   }
 
   @Override
@@ -37,5 +47,18 @@ public class ReservationService extends BaseService<Reservation, UUID>{
         reservationRepository.update(r);
       }
     });
+  }
+
+  public void validateCanCreateReservation() {
+    boolean hasAvailableBicycle = bicycleRepository.countByState(StateBicycle.AVAILABLE) > 0;
+
+    boolean hasCustomers = customerRepository.count() > 0;
+    if (!hasAvailableBicycle) {
+      throw new BusinessException(
+          "error.reservation.no.available.bicycles"
+      );
+    } else if (!hasCustomers) {
+      throw new BusinessException("error.reservation.no.customers");
+    }
   }
 }

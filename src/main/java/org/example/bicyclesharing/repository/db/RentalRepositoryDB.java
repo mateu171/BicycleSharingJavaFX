@@ -109,13 +109,12 @@ public class RentalRepositoryDB
   }
 
   @Override
-  public List<Rental> findActiveByFilters(String search) {
+  public List<Rental> findByFilters(String search) {
     QueryData query = new QueryData("""
         SELECT r.*
         FROM RENTALS r
         JOIN CUSTOMERS c ON c.id = r.customer_Id
         JOIN BICYCLES b ON b.id = r.bicycleId
-        WHERE r.endTime IS NULL
         """);
 
     if (search != null && !search.isBlank()) {

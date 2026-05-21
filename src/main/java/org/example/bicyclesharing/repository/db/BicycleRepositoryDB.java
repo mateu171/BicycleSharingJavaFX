@@ -126,4 +126,16 @@ public class BicycleRepositoryDB
     String sql = "SELECT * FROM BICYCLES WHERE state = ?";
     return jdbcTemplate.query(sql, rowMapper(), stateBicycle.name());
   }
+
+  @Override
+  public long countByState(StateBicycle state) {
+    String sql = "SELECT COUNT(*) FROM " + getTableName() + " WHERE state = ?";
+    Long result = getCurrentJdbcTemplate().queryForObject(
+        sql,
+        Long.class,
+        state.name()
+    );
+
+    return result == null ? 0 : result;
+  }
 }

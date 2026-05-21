@@ -15,15 +15,15 @@ import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.services.RentalService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.AsyncViewModel;
-import org.example.bicyclesharing.viewModel.manager.item.ActiveRentalItemViewModel;
+import org.example.bicyclesharing.viewModel.manager.item.RentalItemViewModel;
 
-public class ManagerActiveRentalsViewModel extends AsyncViewModel {
+public class ManagerRentalsViewModel extends AsyncViewModel {
 
   private final RentalService rentalService;
   private final CustomerService customerService;
   private final BicycleService bicycleService;
 
-  private final ObservableList<ActiveRentalItemViewModel> rentals =
+  private final ObservableList<RentalItemViewModel> rentals =
       FXCollections.observableArrayList();
 
   private final StringProperty titleText =
@@ -44,7 +44,7 @@ public class ManagerActiveRentalsViewModel extends AsyncViewModel {
 
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-  public ManagerActiveRentalsViewModel(
+  public ManagerRentalsViewModel(
       User currentUser,
       RentalService rentalService,
       CustomerService customerService,
@@ -60,7 +60,7 @@ public class ManagerActiveRentalsViewModel extends AsyncViewModel {
   {
     loadRentalsAsync();
   }
-  public ObservableList<ActiveRentalItemViewModel> getRentals() {
+  public ObservableList<RentalItemViewModel> getRentals() {
     return rentals;
   }
 
@@ -96,12 +96,12 @@ public class ManagerActiveRentalsViewModel extends AsyncViewModel {
     updateCount();
   }
 
-  private ActiveRentalItemViewModel toItemViewModel(Rental rental)
+  private RentalItemViewModel toItemViewModel(Rental rental)
   {
     Customer customer = customerService.getById(rental.getCustomerId()).orElse(null);
     Bicycle bicycle = bicycleService.getById(rental.getBicycleId()).orElse(null);
 
-    return new ActiveRentalItemViewModel(rental,customer,bicycle);
+    return new RentalItemViewModel(rental,customer,bicycle);
   }
 
   private void updateCount() {

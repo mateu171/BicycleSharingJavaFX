@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.manager.modalController.AddEditReservationController;
 import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
@@ -159,7 +160,18 @@ public class ManagerReservationsController extends BaseController {
 
   @FXML
   private void onAddReservation() {
-    openReservationDialog(null);
+    try {
+      viewModel.validateCanCreateReservation();
+      openReservationDialog(null);
+
+    } catch (BusinessException e) {
+      DialogUtil.showError(e.getMessage());
+
+    } catch (Exception e) {
+      DialogUtil.showError(
+          "error.operation.failed"
+      );
+    }
   }
 
   private void openReservationDialog(ReservationItemViewModel item) {
@@ -174,7 +186,7 @@ public class ManagerReservationsController extends BaseController {
               )
       );
     } catch (Exception e) {
-      DialogUtil.showError(LocalizationManager.getStringByKey("error.operation.failed"));
+      DialogUtil.showError("error.operation.failed");
     }
   }
 }

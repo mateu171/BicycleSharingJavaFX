@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.enums.DocumentType;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
+import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.repository.ReservationRepository;
 import org.springframework.jdbc.core.RowMapper;
 

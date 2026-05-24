@@ -1,24 +1,25 @@
 package org.example.bicyclesharing.viewModel.admin;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
-import org.example.bicyclesharing.domain.Impl.Bicycle;
-import org.example.bicyclesharing.domain.Impl.BikeIssue;
-import org.example.bicyclesharing.domain.Impl.Customer;
-import org.example.bicyclesharing.domain.Impl.Rental;
-import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
-import org.example.bicyclesharing.services.*;
+import org.example.bicyclesharing.dto.LatestIssueInfo;
+import org.example.bicyclesharing.dto.LatestRentalInfo;
+import org.example.bicyclesharing.dto.LatestReservationInfo;
+import org.example.bicyclesharing.services.BicycleService;
+import org.example.bicyclesharing.services.BikeIssueService;
+import org.example.bicyclesharing.services.CustomerService;
+import org.example.bicyclesharing.services.RentalService;
+import org.example.bicyclesharing.services.ReservationService;
+import org.example.bicyclesharing.services.StationService;
+import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.BaseViewModel;
 
@@ -139,77 +140,108 @@ public class AdminDashboardViewModel extends BaseViewModel {
   }
 
   public void loadAsync() {
+
     loading.set(true);
     errorText.set("");
 
     Task<AdminDashboardData> task = new Task<>() {
+
       @Override
       protected AdminDashboardData call() {
 
         reservationService.updateStatuses();
 
-        List<User> users = userService.getAll();
-        List<Bicycle> bicycles = bicycleService.getAll();
-        List<Rental> rentals = rentalService.getAll();
-        List<Reservation> reservations = reservationService.getAll();
-        List<BikeIssue> issues = bikeIssueService.getAll();
-        List<Customer> customers = customerService.getAll();
+        long totalUsers =
+            userService.count();
 
-        long activeRentals = rentals.stream()
-            .filter(rental -> rental.getEnd() == null)
-            .count();
+        long totalBicycles =
+            bicycleService.count();
 
-        long activeReservations = reservations.stream()
-            .filter(reservation ->
-                reservation.getStatus() == ReservationStatus.NEW
-                    || reservation.getStatus() == ReservationStatus.ISSUED)
-            .count();
+        long totalStations =
+            stationService.count();
 
-        long needsInspection = bicycles.stream()
-            .filter(bicycle -> bicycle.getState() == StateBicycle.NEEDS_INSPECTION)
-            .count();
+        long activeRentals =
+            rentalService.countActiveRentals();
 
-        long onMaintenance = bicycles.stream()
-            .filter(bicycle -> bicycle.getState() == StateBicycle.ON_MAINTENANCE)
-            .count();
+        long activeReservations =
+            reservationService.countByStatuses(
+                ReservationStatus.NEW,
+                ReservationStatus.ISSUED
+            );
 
-        long unavailable = bicycles.stream()
-            .filter(bicycle -> bicycle.getState() == StateBicycle.UNAVAILABLE)
-            .count();
+        long needsInspection =
+            bicycleService.countByState(
+                StateBicycle.NEEDS_INSPECTION
+            );
 
-        long newIssues = issues.stream()
-            .filter(issue -> issue.getStatus() == IssueStatus.NEW)
-            .count();
+        long onMaintenance =
+            bicycleService.countByState(
+                StateBicycle.ON_MAINTENANCE
+            );
+
+        long unavailable =
+            bicycleService.countByState(
+                StateBicycle.UNAVAILABLE
+            );
+
+        long newIssues =
+            bikeIssueService.countByIssueStatus(
+                IssueStatus.NEW
+            );
+
+        LatestRentalInfo latestRental =
+            rentalService.getLatestRentalInfo();
+
+        LatestReservationInfo latestReservation =
+            reservationService.getLatestReservationInfo();
+
+        LatestIssueInfo latestIssue =
+            bikeIssueService.getLatestIssueInfo();
+
+        String latestRentalValue =
+            buildLatestRentalText(latestRental);
+
+        String latestReservationValue =
+            buildLatestReservationText(latestReservation);
+
+        String latestIssueValue =
+            buildLatestIssueText(latestIssue);
 
         return new AdminDashboardData(
-            String.valueOf(users.size()),
-            String.valueOf(bicycles.size()),
+            String.valueOf(totalUsers),
+            String.valueOf(totalBicycles),
             String.valueOf(activeRentals),
             String.valueOf(activeReservations),
 
-            LocalizationManager.getStringByKey("admin.dashboard.needs_inspection")
-                + ": " + needsInspection,
+            LocalizationManager.getStringByKey(
+                "admin.dashboard.needs_inspection"
+            ) + ": " + needsInspection,
 
-            LocalizationManager.getStringByKey("admin.dashboard.on_maintenance")
-                + ": " + onMaintenance,
+            LocalizationManager.getStringByKey(
+                "admin.dashboard.on_maintenance"
+            ) + ": " + onMaintenance,
 
-            LocalizationManager.getStringByKey("admin.dashboard.unavailable_bicycles")
-                + ": " + unavailable,
+            LocalizationManager.getStringByKey(
+                "admin.dashboard.unavailable_bicycles"
+            ) + ": " + unavailable,
 
-            LocalizationManager.getStringByKey("admin.dashboard.new_issues")
-                + ": " + newIssues,
+            LocalizationManager.getStringByKey(
+                "admin.dashboard.new_issues"
+            ) + ": " + newIssues,
 
-            LocalizationManager.getStringByKey("admin.dashboard.total_stations")
-                + ": " + stationService.getAll().size(),
+            LocalizationManager.getStringByKey(
+                "admin.dashboard.total_stations"
+            ) + ": " + totalStations,
 
-            buildLatestRentalText(rentals, customers, bicycles),
-            buildLatestReservationText(reservations, customers, bicycles),
-            buildLatestIssueText(issues, bicycles)
+            latestRentalValue,
+            latestReservationValue,
+            latestIssueValue
         );
       }
     };
 
     task.setOnSucceeded(event -> {
+
       AdminDashboardData data = task.getValue();
 
       totalUsersValue.set(data.totalUsers());
@@ -231,9 +263,19 @@ public class AdminDashboardViewModel extends BaseViewModel {
     });
 
     task.setOnFailed(event -> {
+
+      Throwable exception = task.getException();
+
+      if (exception != null) {
+        exception.printStackTrace();
+      }
+
       errorText.set(
-          LocalizationManager.getStringByKey("error.dashboard.load")
+          LocalizationManager.getStringByKey(
+              "error.dashboard.load"
+          )
       );
+
       loading.set(false);
     });
 
@@ -243,129 +285,180 @@ public class AdminDashboardViewModel extends BaseViewModel {
   }
 
   private String buildLatestRentalText(
-      List<Rental> rentals,
-      List<Customer> customers,
-      List<Bicycle> bicycles
+      LatestRentalInfo rental
   ) {
-    return rentals.stream()
-        .sorted(Comparator.comparing(Rental::getStart).reversed())
-        .findFirst()
-        .map(rental ->
-            LocalizationManager.getStringByKey("admin.dashboard.latest_rental")
-                + ": "
-                + getCustomerName(rental.getCustomerId(), customers)
-                + " — "
-                + getBicycleModel(rental.getBicycleId(), bicycles)
-                + " — "
-                + rental.getStart().format(formatter)
-        )
-        .orElse(LocalizationManager.getStringByKey("admin.dashboard.no_data"));
+
+    if (rental == null) {
+      return LocalizationManager.getStringByKey(
+          "admin.dashboard.no_data"
+      );
+    }
+
+    return LocalizationManager.getStringByKey(
+        "admin.dashboard.latest_rental"
+    )
+        + ": "
+        + rental.customerName()
+        + " — "
+        + rental.bicycleModel()
+        + " — "
+        + rental.start().format(formatter);
   }
 
   private String buildLatestReservationText(
-      List<Reservation> reservations,
-      List<Customer> customers,
-      List<Bicycle> bicycles
+      LatestReservationInfo reservation
   ) {
-    return reservations.stream()
-        .sorted(Comparator.comparing(Reservation::getStartTime).reversed())
-        .findFirst()
-        .map(reservation ->
-            LocalizationManager.getStringByKey("admin.dashboard.latest_reservation")
-                + ": "
-                + getCustomerName(reservation.getCustomerId(), customers)
-                + " — "
-                + getBicycleModel(reservation.getBicycleId(), bicycles)
-                + " — "
-                + reservation.getStartTime().format(formatter)
-        )
-        .orElse(LocalizationManager.getStringByKey("admin.dashboard.no_data"));
-  }
 
-  private String buildLatestIssueText(List<BikeIssue> issues, List<Bicycle> bicycles) {
-    return issues.stream()
-        .sorted(Comparator.comparing(BikeIssue::getCreatedAt).reversed())
-        .findFirst()
-        .map(issue ->
-            LocalizationManager.getStringByKey("admin.dashboard.latest_issue")
-                + ": "
-                + getBicycleModel(issue.getBicycleId(), bicycles)
-                + " — "
-                + safe(issue.getProblemType())
-                + " — "
-                + issue.getCreatedAt().format(formatter)
-        )
-        .orElse(LocalizationManager.getStringByKey("admin.dashboard.no_data"));
-  }
-
-  private String getCustomerName(UUID customerId, List<Customer> customers) {
-    if (customerId == null) {
-      return LocalizationManager.getStringByKey("admin.dashboard.unknown_customer");
+    if (reservation == null) {
+      return LocalizationManager.getStringByKey(
+          "admin.dashboard.no_data"
+      );
     }
 
-    return customers.stream()
-        .filter(customer -> customerId.equals(customer.getId()))
-        .map(Customer::getFullName)
-        .findFirst()
-        .orElse(
-            LocalizationManager.getStringByKey("admin.dashboard.unknown_customer")
-        );
+    return LocalizationManager.getStringByKey(
+        "admin.dashboard.latest_reservation"
+    )
+        + ": "
+        + reservation.customerName()
+        + " — "
+        + reservation.bicycleModel()
+        + " — "
+        + reservation.start().format(formatter);
   }
 
-  private String getBicycleModel(UUID bicycleId, List<Bicycle> bicycles) {
-    if (bicycleId == null) {
-      return LocalizationManager.getStringByKey("admin.dashboard.unknown_bicycle");
+  private String buildLatestIssueText(
+      LatestIssueInfo issue
+  ) {
+
+    if (issue == null) {
+      return LocalizationManager.getStringByKey(
+          "admin.dashboard.no_data"
+      );
     }
 
-    return bicycles.stream()
-        .filter(bicycle -> bicycleId.equals(bicycle.getId()))
-        .map(Bicycle::getModel)
-        .findFirst()
-        .orElse(
-            LocalizationManager.getStringByKey("admin.dashboard.unknown_bicycle")
-        );
+    return LocalizationManager.getStringByKey(
+        "admin.dashboard.latest_issue"
+    )
+        + ": "
+        + issue.bicycleModel()
+        + " — "
+        + safe(issue.problemType())
+        + " — "
+        + issue.createdAt().format(formatter);
   }
 
   private String safe(String value) {
+
     return value == null || value.isBlank()
-        ? LocalizationManager.getStringByKey("admin.dashboard.no_data")
+        ? LocalizationManager.getStringByKey(
+        "admin.dashboard.no_data"
+    )
         : value;
   }
 
-  public StringProperty titleTextProperty() { return titleText; }
-  public StringProperty subtitleTextProperty() { return subtitleText; }
+  public StringProperty titleTextProperty() {
+    return titleText;
+  }
 
-  public StringProperty totalUsersTitleProperty() { return totalUsersTitle; }
-  public StringProperty totalBicyclesTitleProperty() { return totalBicyclesTitle; }
-  public StringProperty activeRentalsTitleProperty() { return activeRentalsTitle; }
-  public StringProperty activeReservationsTitleProperty() { return activeReservationsTitle; }
+  public StringProperty subtitleTextProperty() {
+    return subtitleText;
+  }
 
-  public StringProperty totalUsersValueProperty() { return totalUsersValue; }
-  public StringProperty totalBicyclesValueProperty() { return totalBicyclesValue; }
-  public StringProperty activeRentalsValueProperty() { return activeRentalsValue; }
-  public StringProperty activeReservationsValueProperty() { return activeReservationsValue; }
+  public StringProperty totalUsersTitleProperty() {
+    return totalUsersTitle;
+  }
 
-  public StringProperty attentionTitleProperty() { return attentionTitle; }
-  public StringProperty latestActivityTitleProperty() { return latestActivityTitle; }
-  public StringProperty quickActionsTitleProperty() { return quickActionsTitle; }
+  public StringProperty totalBicyclesTitleProperty() {
+    return totalBicyclesTitle;
+  }
 
-  public StringProperty needsInspectionTextProperty() { return needsInspectionText; }
-  public StringProperty onMaintenanceTextProperty() { return onMaintenanceText; }
-  public StringProperty unavailableTextProperty() { return unavailableText; }
-  public StringProperty newIssuesTextProperty() { return newIssuesText; }
-  public StringProperty totalStationsTextProperty() { return totalStationsText; }
+  public StringProperty activeRentalsTitleProperty() {
+    return activeRentalsTitle;
+  }
 
-  public StringProperty latestRentalTextProperty() { return latestRentalText; }
-  public StringProperty latestReservationTextProperty() { return latestReservationText; }
-  public StringProperty latestIssueTextProperty() { return latestIssueText; }
+  public StringProperty activeReservationsTitleProperty() {
+    return activeReservationsTitle;
+  }
 
-  public StringProperty openUsersButtonTextProperty() { return openUsersButtonText; }
-  public StringProperty openBicyclesButtonTextProperty() { return openBicyclesButtonText; }
-  public StringProperty openStationsButtonTextProperty() { return openStationsButtonText; }
+  public StringProperty totalUsersValueProperty() {
+    return totalUsersValue;
+  }
 
-  public BooleanProperty loadingProperty() { return loading; }
+  public StringProperty totalBicyclesValueProperty() {
+    return totalBicyclesValue;
+  }
 
-  public StringProperty errorTextProperty() { return errorText; }
+  public StringProperty activeRentalsValueProperty() {
+    return activeRentalsValue;
+  }
+
+  public StringProperty activeReservationsValueProperty() {
+    return activeReservationsValue;
+  }
+
+  public StringProperty attentionTitleProperty() {
+    return attentionTitle;
+  }
+
+  public StringProperty latestActivityTitleProperty() {
+    return latestActivityTitle;
+  }
+
+  public StringProperty quickActionsTitleProperty() {
+    return quickActionsTitle;
+  }
+
+  public StringProperty needsInspectionTextProperty() {
+    return needsInspectionText;
+  }
+
+  public StringProperty onMaintenanceTextProperty() {
+    return onMaintenanceText;
+  }
+
+  public StringProperty unavailableTextProperty() {
+    return unavailableText;
+  }
+
+  public StringProperty newIssuesTextProperty() {
+    return newIssuesText;
+  }
+
+  public StringProperty totalStationsTextProperty() {
+    return totalStationsText;
+  }
+
+  public StringProperty latestRentalTextProperty() {
+    return latestRentalText;
+  }
+
+  public StringProperty latestReservationTextProperty() {
+    return latestReservationText;
+  }
+
+  public StringProperty latestIssueTextProperty() {
+    return latestIssueText;
+  }
+
+  public StringProperty openUsersButtonTextProperty() {
+    return openUsersButtonText;
+  }
+
+  public StringProperty openBicyclesButtonTextProperty() {
+    return openBicyclesButtonText;
+  }
+
+  public StringProperty openStationsButtonTextProperty() {
+    return openStationsButtonText;
+  }
+
+  public BooleanProperty loadingProperty() {
+    return loading;
+  }
+
+  public StringProperty errorTextProperty() {
+    return errorText;
+  }
 
   private record AdminDashboardData(
       String totalUsers,

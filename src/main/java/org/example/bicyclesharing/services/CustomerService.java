@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.Impl.Customer;
+import org.example.bicyclesharing.dto.LatestCustomerInfo;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.repository.CustomerRepository;
 import org.example.bicyclesharing.repository.Repository;
@@ -43,5 +44,9 @@ public class CustomerService extends BaseService<Customer, UUID>{
     if (customer.getActiveReservation() != null) {
       throw new BusinessException("error.customer.delete.active_reservation");
     }
+  }
+
+  public LatestCustomerInfo getLatestCustomerInfo() {
+    return repository.getLatestCustomerInfo();
   }
 }

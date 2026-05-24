@@ -3,9 +3,11 @@ package org.example.bicyclesharing.repository.db;
 import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
+
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
 import org.example.bicyclesharing.domain.enums.TypeBicycle;
+import org.example.bicyclesharing.dto.LatestInspectionInfo;
 import org.example.bicyclesharing.repository.BicycleRepository;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -23,7 +25,22 @@ public class BicycleRepositoryDB
 
   @Override
   protected String getTableName() {
-    return "BICYCLES";
+    return "bicycles";
+  }
+
+  @Override
+  protected String getCreateTableSQL() {
+    return """
+      CREATE TABLE IF NOT EXISTS bicycles (
+        id VARCHAR(36) PRIMARY KEY,
+        model VARCHAR(255) NOT NULL,
+        type_bicycle VARCHAR(50) NOT NULL,
+        state VARCHAR(50) NOT NULL,
+        price_per_minute DOUBLE NOT NULL,
+        station_id VARCHAR(36),
+        image_path VARCHAR(255)
+      )
+    """;
   }
 
   @Override
@@ -34,10 +51,8 @@ public class BicycleRepositoryDB
   @Override
   protected RowMapper<Bicycle> rowMapper() {
     return (rs, rowNum) -> {
-      String stationIdRaw = rs.getString("station_id");
-      UUID stationId = stationIdRaw != null && !stationIdRaw.isBlank()
-          ? UUID.fromString(stationIdRaw)
-          : null;
+
+      String stationId = rs.getString("station_id");
 
       return Bicycle.fromDatabase(
           UUID.fromString(rs.getString("id")),
@@ -45,7 +60,9 @@ public class BicycleRepositoryDB
           TypeBicycle.valueOf(rs.getString("type_bicycle")),
           StateBicycle.valueOf(rs.getString("state")),
           rs.getDouble("price_per_minute"),
-          stationId,
+          stationId != null
+              ? UUID.fromString(stationId)
+              : null,
           rs.getString("image_path")
       );
     };
@@ -53,38 +70,37 @@ public class BicycleRepositoryDB
 
   @Override
   protected Object[] getInsertValues(Bicycle entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getId().toString(),
         entity.getModel(),
         entity.getTypeBicycle().name(),
         entity.getState().name(),
         entity.getPricePerMinute(),
-        entity.getStationId() != null ? entity.getStationId().toString() : null,
+        entity.getStationId() != null
+            ? entity.getStationId().toString()
+            : null,
         entity.getImagePath()
     };
   }
 
   @Override
   protected Object[] getUpdateValues(Bicycle entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getModel(),
         entity.getTypeBicycle().name(),
         entity.getState().name(),
         entity.getPricePerMinute(),
-        entity.getStationId() != null ? entity.getStationId().toString() : null,
+        entity.getStationId() != null
+            ? entity.getStationId().toString()
+            : null,
         entity.getImagePath(),
         entity.getId().toString()
     };
   }
 
   @Override
-  protected String getIdColumn() {
-    return "id";
-  }
-
-  @Override
   protected String[] getUpdateColumns() {
-    return new String[] {
+    return new String[]{
         "model",
         "type_bicycle",
         "state",
@@ -95,47 +111,85 @@ public class BicycleRepositoryDB
   }
 
   @Override
-  protected String getCreateTableSQL() {
-    return "CREATE TABLE IF NOT EXISTS BICYCLES (" +
-        "id VARCHAR(36) PRIMARY KEY, " +
-        "model VARCHAR(255) NOT NULL, " +
-        "type_bicycle VARCHAR(50) NOT NULL, " +
-        "state VARCHAR(50) NOT NULL, " +
-        "price_per_minute DOUBLE NOT NULL, " +
-        "station_id VARCHAR(36)," +
-        "image_path VARCHAR(255)" + ")";
+  protected String getIdColumn() {
+    return "id";
   }
 
   @Override
-  public List<Bicycle> findByFilters(String search, StateBicycle state) {
-    QueryData query = new QueryData("SELECT * FROM BICYCLES WHERE 1=1");
+  public List<Bicycle> findByFilters(
+      String search,
+      StateBicycle state
+  ) {
+
+    QueryData query = new QueryData(
+        "SELECT * FROM bicycles WHERE 1=1"
+    );
 
     query.addLikeCondition("model", search);
 
     if (state != null) {
-      query.addEqualsCondition("state", state.name());
+      query.addEqualsCondition(
+          "state",
+          state.name()
+      );
     }
 
-    query.addOrderBy("model" ,"ASC");
+    query.addOrderBy("model", "ASC");
 
-    return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
+    return jdbcTemplate.query(
+        query.getSql(),
+        rowMapper(),
+        query.getParams()
+    );
   }
 
   @Override
-  public List<Bicycle> findByState(StateBicycle stateBicycle) {
-    String sql = "SELECT * FROM BICYCLES WHERE state = ?";
-    return jdbcTemplate.query(sql, rowMapper(), stateBicycle.name());
+  public List<Bicycle> findByState(StateBicycle state) {
+
+    return jdbcTemplate.query(
+        "SELECT * FROM bicycles WHERE state = ?",
+        rowMapper(),
+        state.name()
+    );
   }
 
   @Override
   public long countByState(StateBicycle state) {
-    String sql = "SELECT COUNT(*) FROM " + getTableName() + " WHERE state = ?";
-    Long result = getCurrentJdbcTemplate().queryForObject(
-        sql,
+
+    Long result = jdbcTemplate.queryForObject(
+        "SELECT COUNT(*) FROM bicycles WHERE state = ?",
         Long.class,
         state.name()
     );
 
-    return result == null ? 0 : result;
+    return result == null
+        ? 0
+        : result;
+  }
+
+  @Override
+  public LatestInspectionInfo getLatestInspectionInfo() {
+
+    String sql = """
+      SELECT model
+      FROM bicycles
+      WHERE state = ?
+      ORDER BY model ASC
+      LIMIT 1
+      """;
+
+    List<LatestInspectionInfo> list =
+        jdbcTemplate.query(
+            sql,
+            (rs, rowNum) ->
+                new LatestInspectionInfo(
+                    rs.getString("model")
+                ),
+            StateBicycle.NEEDS_INSPECTION.name()
+        );
+
+    return list.isEmpty()
+        ? null
+        : list.getFirst();
   }
 }

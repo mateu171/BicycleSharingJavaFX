@@ -9,6 +9,8 @@ import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.enums.DocumentType;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.dto.LatestRentalInfo;
+import org.example.bicyclesharing.dto.LatestReservationInfo;
 import org.example.bicyclesharing.repository.ReservationRepository;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -158,5 +160,55 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
       """;
 
     return jdbcTemplate.query(sql, rowMapper(), Timestamp.valueOf(now));
+  }
+
+  @Override
+  public long countByStatuses(ReservationStatus reservationStatus,
+      ReservationStatus reservationStatus1) {
+    String sql = """
+        SELECT COUNT(*) FROM RESERVATIONS WHERE status = ? OR status = ?
+      """;
+
+    Long count = jdbcTemplate.queryForObject(
+        sql,
+        Long.class,
+        reservationStatus.name(),
+        reservationStatus1.name()
+    );
+
+    return count != null ? count : 0;
+  }
+
+  @Override
+  public LatestReservationInfo getLatestReservationInfo() {
+
+    String sql = """
+    SELECT
+        c.full_name,
+        b.model,
+        r.start_time
+    FROM RESERVATIONS r
+    JOIN CUSTOMERS c
+        ON c.id = r.customer_id
+    JOIN BICYCLES b
+        ON b.id = r.bicycle_id
+    ORDER BY r.start_time DESC
+    LIMIT 1
+""";
+
+    List<LatestReservationInfo> result = jdbcTemplate.query(
+        sql,
+        (rs, rowNum) ->
+            new LatestReservationInfo(
+                rs.getString("full_name"),
+                rs.getString("model"),
+                rs.getTimestamp("start_time")
+                    .toLocalDateTime()
+            )
+    );
+
+    return result.isEmpty()
+        ? null
+        : result.getFirst();
   }
 }

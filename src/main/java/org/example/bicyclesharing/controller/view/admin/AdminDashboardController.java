@@ -1,21 +1,13 @@
 package org.example.bicyclesharing.controller.view.admin;
 
-import java.util.Comparator;
-import java.util.List;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import org.example.bicyclesharing.controller.view.BaseController;
 import org.example.bicyclesharing.controller.view.Navigable;
-import org.example.bicyclesharing.domain.Impl.Bicycle;
-import org.example.bicyclesharing.domain.Impl.BikeIssue;
-import org.example.bicyclesharing.domain.Impl.Customer;
-import org.example.bicyclesharing.domain.Impl.Rental;
-import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.services.NavigationService;
 import org.example.bicyclesharing.util.AppConfig;
-import org.example.bicyclesharing.util.LocalizationManager;
 import org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel;
 
 public class AdminDashboardController extends BaseController implements Navigable {

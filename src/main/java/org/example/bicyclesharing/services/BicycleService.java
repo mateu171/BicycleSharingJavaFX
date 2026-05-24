@@ -7,6 +7,7 @@ import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.dto.LatestInspectionInfo;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.repository.BicycleRepository;
 import org.example.bicyclesharing.repository.Repository;
@@ -55,6 +56,10 @@ public class BicycleService extends BaseService<Bicycle, UUID> {
     validateCanModify(bicycle, false);
   }
 
+  public long countByState(StateBicycle stateBicycle)
+  {
+    return repository.countByState(stateBicycle);
+  }
   private void validateCanModify(Bicycle bicycle, boolean isEdit) {
     if (bicycle == null || bicycle.getId() == null) {
       throw new BusinessException("error.bicycle.not_found");
@@ -122,5 +127,7 @@ public class BicycleService extends BaseService<Bicycle, UUID> {
     }
   }
 
-
+  public LatestInspectionInfo getLatestInspectionInfo() {
+    return repository.getLatestInspectionInfo();
+  }
 }

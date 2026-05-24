@@ -3,6 +3,7 @@ package org.example.bicyclesharing.services;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
+import org.example.bicyclesharing.dto.LatestMaintenanceInfo;
 import org.example.bicyclesharing.repository.MaintenanceRecordRepository;
 import org.example.bicyclesharing.repository.Repository;
 
@@ -22,5 +23,13 @@ public class MaintenanceRecordService extends BaseService<MaintenanceRecord, UUI
   @Override
   protected Repository<MaintenanceRecord, UUID> getRepository() {
     return maintenanceRecordRepository;
+  }
+
+  public long countByMechanicId(UUID mechanicId) {
+    return maintenanceRecordRepository.countByMechanicId(mechanicId);
+  }
+
+  public LatestMaintenanceInfo getLatestMaintenanceInfo() {
+    return maintenanceRecordRepository.getLatestMaintenanceInfo();
   }
 }

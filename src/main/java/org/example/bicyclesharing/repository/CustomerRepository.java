@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Customer;
+import org.example.bicyclesharing.dto.LatestCustomerInfo;
 
 public interface CustomerRepository extends Repository<Customer, UUID> {
 
   List<Customer> findByFilters(String search);
+  LatestCustomerInfo getLatestCustomerInfo();
 }

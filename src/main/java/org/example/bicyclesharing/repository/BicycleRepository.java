@@ -5,10 +5,12 @@ import java.util.Optional;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Bicycle;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.dto.LatestInspectionInfo;
 
 public interface BicycleRepository extends Repository<Bicycle, UUID> {
 
   List<Bicycle> findByFilters(String search, StateBicycle state);
   List<Bicycle> findByState(StateBicycle state);
   long countByState(StateBicycle state);
+  LatestInspectionInfo getLatestInspectionInfo();
 }

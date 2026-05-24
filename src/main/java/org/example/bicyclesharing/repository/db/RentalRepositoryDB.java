@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Rental;
+import org.example.bicyclesharing.dto.LatestRentalInfo;
 import org.example.bicyclesharing.repository.RentalRepository;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -22,7 +23,7 @@ public class RentalRepositoryDB
 
   @Override
   public List<Rental> findByCustomerId(UUID id) {
-    String sql = "SELECT * FROM RENTALS WHERE customer_Id = ?";
+    String sql = "SELECT * FROM" + getTableName() + "  WHERE customer_Id = ?";
     return jdbcTemplate.query(sql, rowMapper(), id.toString());
   }
 
@@ -98,14 +99,65 @@ public class RentalRepositoryDB
 
   @Override
   protected String getCreateTableSQL() {
-    return "CREATE TABLE IF NOT EXISTS RENTALS (" +
-        "id VARCHAR(36) PRIMARY KEY," +
-        "customer_Id VARCHAR(36) NOT NULL," +
-        "bicycleId VARCHAR(36) NOT NULL," +
-        "start TIMESTAMP NOT NULL," +
-        "endTime TIMESTAMP," +
-        "totalCost DOUBLE" +
-        ")";
+    return """
+    CREATE TABLE IF NOT EXISTS rentals (
+        id VARCHAR(36) PRIMARY KEY,
+        customer_id VARCHAR(36) NOT NULL,
+        bicycle_id VARCHAR(36) NOT NULL,
+        start_time TIMESTAMP NOT NULL,
+        end_time TIMESTAMP,
+        total_cost DOUBLE
+    )
+    """;
+  }
+
+  @Override
+  public long countActiveRentals() {
+    String sql = """
+      SELECT COUNT(*)
+      FROM RENTALS
+      WHERE endTime IS NULL
+      """;
+
+    Long count = jdbcTemplate.queryForObject(
+        sql,
+        Long.class
+    );
+
+    return count != null ? count : 0;
+  }
+
+  @Override
+  public LatestRentalInfo getLatestRentalInfo() {
+
+    String sql = """
+      SELECT
+          c.full_name,
+          b.model,
+          r.start
+      FROM RENTALS r
+      JOIN CUSTOMERS c
+          ON c.id = r.customer_Id
+      JOIN BICYCLES b
+          ON b.id = r.bicycleId
+      ORDER BY r.start DESC
+      LIMIT 1
+      """;
+
+    List<LatestRentalInfo> result = jdbcTemplate.query(
+        sql,
+        (rs, rowNum) ->
+            new LatestRentalInfo(
+                rs.getString("full_name"),
+                rs.getString("model"),
+                rs.getTimestamp("start")
+                    .toLocalDateTime()
+            )
+    );
+
+    return result.isEmpty()
+        ? null
+        : result.getFirst();
   }
 
   @Override

@@ -3,58 +3,47 @@ package org.example.bicyclesharing.repository.db;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-import javax.sql.DataSource;
+
 import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
+import org.example.bicyclesharing.dto.LatestIssueInfo;
 import org.example.bicyclesharing.repository.BikeIssueRepository;
 import org.springframework.jdbc.core.RowMapper;
 
-public class BikeIssueRepositoryDB
-    extends BaseRepositoryDB<BikeIssue, UUID>
-    implements BikeIssueRepository {
+public class BikeIssueRepositoryDB extends BaseRepositoryDB<BikeIssue, UUID> implements BikeIssueRepository {
 
   public BikeIssueRepositoryDB() {
     super();
   }
 
-  public BikeIssueRepositoryDB(DataSource dataSource) {
+  public BikeIssueRepositoryDB(javax.sql.DataSource dataSource) {
     super(dataSource);
   }
 
   @Override
-  public List<BikeIssue> findByStatus(IssueStatus status) {
-    String sql = "SELECT * FROM BIKE_ISSUES WHERE status = ?";
-    return jdbcTemplate.query(sql, rowMapper(), status.name());
-  }
-
-  @Override
-  public List<BikeIssue> findByBicycleId(UUID bicycleId) {
-    String sql = "SELECT * FROM BIKE_ISSUES WHERE bicycle_id = ?";
-    return jdbcTemplate.query(sql, rowMapper(), bicycleId.toString());
+  protected String getTableName() {
+    return "bike_issues";
   }
 
   @Override
   protected String getCreateTableSQL() {
-    return "CREATE TABLE IF NOT EXISTS BIKE_ISSUES (" +
-        "id VARCHAR(36) PRIMARY KEY," +
-        "rental_id VARCHAR(36) NOT NULL," +
-        "bicycle_id VARCHAR(36) NOT NULL," +
-        "problem_type VARCHAR(100) NOT NULL," +
-        "comment VARCHAR(500)," +
-        "technical_problem BOOLEAN NOT NULL," +
-        "created_at TIMESTAMP NOT NULL," +
-        "status VARCHAR(50) NOT NULL" +
-        ")";
+    return """
+      CREATE TABLE IF NOT EXISTS bike_issues (
+        id VARCHAR(36) PRIMARY KEY,
+        rental_id VARCHAR(36) NOT NULL,
+        bicycle_id VARCHAR(36) NOT NULL,
+        problem_type VARCHAR(100) NOT NULL,
+        comment VARCHAR(500),
+        technical_problem BOOLEAN NOT NULL,
+        created_at TIMESTAMP NOT NULL,
+        status VARCHAR(50) NOT NULL
+      )
+    """;
   }
 
   @Override
-  protected String getTableName() {
-    return "BIKE_ISSUES";
-  }
-
-  @Override
-  protected UUID getId(BikeIssue entity) {
-    return entity.getId();
+  protected UUID getId(BikeIssue e) {
+    return e.getId();
   }
 
   @Override
@@ -72,36 +61,36 @@ public class BikeIssueRepositoryDB
   }
 
   @Override
-  protected Object[] getInsertValues(BikeIssue entity) {
-    return new Object[] {
-        entity.getId().toString(),
-        entity.getRentalId().toString(),
-        entity.getBicycleId().toString(),
-        entity.getProblemType(),
-        entity.getComment(),
-        entity.isTechnicalProblem(),
-        Timestamp.valueOf(entity.getCreatedAt()),
-        entity.getStatus().name()
+  protected Object[] getInsertValues(BikeIssue e) {
+    return new Object[]{
+        e.getId().toString(),
+        e.getRentalId().toString(),
+        e.getBicycleId().toString(),
+        e.getProblemType(),
+        e.getComment(),
+        e.isTechnicalProblem(),
+        Timestamp.valueOf(e.getCreatedAt()),
+        e.getStatus().name()
     };
   }
 
   @Override
-  protected Object[] getUpdateValues(BikeIssue entity) {
-    return new Object[] {
-        entity.getRentalId().toString(),
-        entity.getBicycleId().toString(),
-        entity.getProblemType(),
-        entity.getComment(),
-        entity.isTechnicalProblem(),
-        Timestamp.valueOf(entity.getCreatedAt()),
-        entity.getStatus().name(),
-        entity.getId().toString()
+  protected Object[] getUpdateValues(BikeIssue e) {
+    return new Object[]{
+        e.getRentalId().toString(),
+        e.getBicycleId().toString(),
+        e.getProblemType(),
+        e.getComment(),
+        e.isTechnicalProblem(),
+        Timestamp.valueOf(e.getCreatedAt()),
+        e.getStatus().name(),
+        e.getId().toString()
     };
   }
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[] {
+    return new String[]{
         "rental_id",
         "bicycle_id",
         "problem_type",
@@ -115,5 +104,74 @@ public class BikeIssueRepositoryDB
   @Override
   protected String getIdColumn() {
     return "id";
+  }
+
+  @Override
+  public LatestIssueInfo getLatestIssueInfo() {
+
+    String sql = """
+      SELECT
+          b.model,
+          i.problem_type,
+          i.created_at
+      FROM bike_issues i
+      JOIN bicycles b ON b.id = i.bicycle_id
+      ORDER BY i.created_at DESC
+      LIMIT 1
+    """;
+
+    List<LatestIssueInfo> list = jdbcTemplate.query(sql, (rs, rowNum) ->
+        new LatestIssueInfo(
+            rs.getString("model"),
+            rs.getString("problem_type"),
+            rs.getTimestamp("created_at").toLocalDateTime()
+        )
+    );
+
+    return list.isEmpty() ? null : list.getFirst();
+  }
+
+  @Override
+  public long countTechnicalIssues() {
+    String sql = """
+    SELECT COUNT(*)
+    FROM bike_issues
+    WHERE technical_problem = TRUE
+    """;
+
+    Long res = jdbcTemplate.queryForObject(
+        sql,
+        Long.class
+    );
+
+    return res == null ? 0 : res;
+  }
+
+  @Override
+  public List<BikeIssue> findByStatus(IssueStatus status) {
+    return jdbcTemplate.query(
+        "SELECT * FROM bike_issues WHERE status = ?",
+        rowMapper(),
+        status.name()
+    );
+  }
+
+  @Override
+  public List<BikeIssue> findByBicycleId(UUID bicycleId) {
+    return jdbcTemplate.query(
+        "SELECT * FROM bike_issues WHERE bicycle_id = ?",
+        rowMapper(),
+        bicycleId.toString()
+    );
+  }
+
+  @Override
+  public long countByIssueStatus(IssueStatus status) {
+    Long res = jdbcTemplate.queryForObject(
+        "SELECT COUNT(*) FROM bike_issues WHERE status = ?",
+        Long.class,
+        status.name()
+    );
+    return res == null ? 0 : res;
   }
 }

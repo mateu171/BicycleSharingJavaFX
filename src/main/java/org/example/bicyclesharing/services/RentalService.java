@@ -9,6 +9,7 @@ import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.domain.Impl.Rental;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.dto.LatestRentalInfo;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.repository.RentalRepository;
 import org.example.bicyclesharing.repository.Repository;
@@ -47,6 +48,14 @@ public class RentalService extends BaseService<Rental, UUID> {
 
   public List<Rental> findActiveByFilters(String search) {
     return repository.findByFilters(search);
+  }
+
+  public long countActiveRentals() {
+    return repository.countActiveRentals();
+  }
+
+  public LatestRentalInfo getLatestRentalInfo() {
+    return repository.getLatestRentalInfo();
   }
 
   public double finishRental(

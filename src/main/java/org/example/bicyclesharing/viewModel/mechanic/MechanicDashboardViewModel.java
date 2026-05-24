@@ -1,21 +1,17 @@
 package org.example.bicyclesharing.viewModel.mechanic;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
-import org.example.bicyclesharing.domain.Impl.Bicycle;
-import org.example.bicyclesharing.domain.Impl.BikeIssue;
-import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.dto.LatestInspectionInfo;
+import org.example.bicyclesharing.dto.LatestIssueInfo;
+import org.example.bicyclesharing.dto.LatestMaintenanceInfo;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.BikeIssueService;
 import org.example.bicyclesharing.services.MaintenanceRecordService;
@@ -126,44 +122,25 @@ public class MechanicDashboardViewModel extends BaseViewModel {
     Task<MechanicDashboardData> task = new Task<>() {
       @Override
       protected MechanicDashboardData call() {
+        long newIssues = bikeIssueService.countByIssueStatus(IssueStatus.NEW);
 
-        List<Bicycle> bicycles = bicycleService.getAll();
-        List<BikeIssue> issues = bikeIssueService.getAll();
-        List<MaintenanceRecord> records = maintenanceRecordService.getAll();
+        long inProgressIssues = bikeIssueService.countByIssueStatus(IssueStatus.IN_PROGRESS);
 
-        long newIssues = issues.stream()
-            .filter(issue -> issue.getStatus() == IssueStatus.NEW)
-            .count();
+        long resolvedIssues = bikeIssueService.countByIssueStatus(IssueStatus.RESOLVED);
 
-        long inProgressIssues = issues.stream()
-            .filter(issue -> issue.getStatus() == IssueStatus.IN_PROGRESS)
-            .count();
+        long technicalIssues = bikeIssueService.countTechnicalIssues();
 
-        long resolvedIssues = issues.stream()
-            .filter(issue -> issue.getStatus() == IssueStatus.RESOLVED)
-            .count();
+        long onMaintenance = bicycleService.countByState(StateBicycle.ON_MAINTENANCE);
 
-        long technicalIssues = issues.stream()
-            .filter(BikeIssue::isTechnicalProblem)
-            .count();
+        long needsInspection = bicycleService.countByState(StateBicycle.NEEDS_INSPECTION);
 
-        long onMaintenance = bicycles.stream()
-            .filter(bicycle -> bicycle.getState() == StateBicycle.ON_MAINTENANCE)
-            .count();
+        long unavailable = bicycleService.countByState(StateBicycle.UNAVAILABLE);
 
-        long needsInspection = bicycles.stream()
-            .filter(bicycle -> bicycle.getState() == StateBicycle.NEEDS_INSPECTION)
-            .count();
+        long myRecordsCount = maintenanceRecordService.countByMechanicId(currentUser.getId());
 
-        long unavailable = bicycles.stream()
-            .filter(bicycle -> bicycle.getState() == StateBicycle.UNAVAILABLE)
-            .count();
-
-        long myRecordsCount = records.stream()
-            .filter(record ->
-                currentUser != null
-                    && currentUser.getId().equals(record.getMechanicId()))
-            .count();
+        LatestIssueInfo latestIssueInfo = bikeIssueService.getLatestIssueInfo();
+        LatestMaintenanceInfo latestMaintenanceInfo = maintenanceRecordService.getLatestMaintenanceInfo();
+        LatestInspectionInfo latestInspectionInfo = bicycleService.getLatestInspectionInfo();
 
         return new MechanicDashboardData(
             String.valueOf(newIssues),
@@ -186,9 +163,9 @@ public class MechanicDashboardViewModel extends BaseViewModel {
             LocalizationManager.getStringByKey("mechanic.dashboard.unavailable_bicycles")
                 + ": " + unavailable,
 
-            buildLatestIssueText(issues, bicycles),
-            buildLatestMaintenanceText(records, bicycles),
-            buildLatestInspectionText(bicycles)
+            buildLatestIssueText(latestIssueInfo),
+            buildLatestMaintenanceText(latestMaintenanceInfo),
+            buildLatestInspectionText(latestInspectionInfo)
         );
       }
     };
@@ -224,85 +201,64 @@ public class MechanicDashboardViewModel extends BaseViewModel {
   }
 
   private String buildLatestIssueText(
-      List<BikeIssue> issues,
-      List<Bicycle> bicycles
+      LatestIssueInfo issue
   ) {
-    return issues.stream()
-        .sorted(Comparator.comparing(
-            BikeIssue::getCreatedAt,
-            Comparator.nullsLast(Comparator.reverseOrder())
-        ))
-        .findFirst()
-        .map(issue ->
-            LocalizationManager.getStringByKey("mechanic.dashboard.latest_issue")
-                + ": "
-                + getBicycleModel(issue.getBicycleId(), bicycles)
-                + " — "
-                + safe(issue.getProblemType())
-                + " — "
-                + formatDate(issue.getCreatedAt())
-        )
-        .orElse(LocalizationManager.getStringByKey("mechanic.dashboard.no_data"));
-  }
 
-  private String buildLatestMaintenanceText(
-      List<MaintenanceRecord> records,
-      List<Bicycle> bicycles
-  ) {
-    return records.stream()
-        .sorted(Comparator.comparing(
-            MaintenanceRecord::getCreatedAt,
-            Comparator.nullsLast(Comparator.reverseOrder())
-        ))
-        .findFirst()
-        .map(record ->
-            LocalizationManager.getStringByKey("mechanic.dashboard.latest_maintenance")
-                + ": "
-                + getBicycleModel(record.getBicycleId(), bicycles)
-                + " — "
-                + LocalizationManager.getStringByKey(record.getType().getKey())
-                + " — "
-                + formatDate(record.getCreatedAt())
-        )
-        .orElse(LocalizationManager.getStringByKey("mechanic.dashboard.no_data"));
-  }
-
-  private String buildLatestInspectionText(List<Bicycle> bicycles) {
-    return bicycles.stream()
-        .filter(bicycle ->
-            bicycle.getState() == StateBicycle.NEEDS_INSPECTION)
-        .findFirst()
-        .map(bicycle ->
-            LocalizationManager.getStringByKey("mechanic.dashboard.latest_inspection")
-                + ": "
-                + safe(bicycle.getModel())
-        )
-        .orElse(LocalizationManager.getStringByKey("mechanic.dashboard.no_data"));
-  }
-
-  private String getBicycleModel(
-      UUID bicycleId,
-      List<Bicycle> bicycles
-  ) {
-    if (bicycleId == null) {
+    if (issue == null) {
       return LocalizationManager.getStringByKey(
-          "mechanic.dashboard.unknown_bicycle"
+          "mechanic.dashboard.no_data"
       );
     }
 
-    return bicycles.stream()
-        .filter(bicycle -> bicycleId.equals(bicycle.getId()))
-        .map(Bicycle::getModel)
-        .findFirst()
-        .orElse(LocalizationManager.getStringByKey(
-            "mechanic.dashboard.unknown_bicycle"
-        ));
+    return LocalizationManager.getStringByKey(
+        "mechanic.dashboard.latest_issue"
+    )
+        + ": "
+        + issue.bicycleModel()
+        + " — "
+        + safe(issue.problemType())
+        + " — "
+        + issue.createdAt().format(formatter);
   }
 
-  private String formatDate(LocalDateTime value) {
-    return value == null
-        ? LocalizationManager.getStringByKey("mechanic.dashboard.no_data")
-        : value.format(formatter);
+  private String buildLatestMaintenanceText(
+      LatestMaintenanceInfo maintenance
+  ) {
+
+    if (maintenance == null) {
+      return LocalizationManager.getStringByKey(
+          "mechanic.dashboard.no_data"
+      );
+    }
+
+    return LocalizationManager.getStringByKey(
+        "mechanic.dashboard.latest_maintenance"
+    )
+        + ": "
+        + maintenance.bicycleModel()
+        + " — "
+        + LocalizationManager.getStringByKey(
+        maintenance.maintenanceTypeKey()
+    )
+        + " — "
+        + maintenance.createdAt().format(formatter);
+  }
+
+  private String buildLatestInspectionText(
+      LatestInspectionInfo inspection
+  ) {
+
+    if (inspection == null) {
+      return LocalizationManager.getStringByKey(
+          "mechanic.dashboard.no_data"
+      );
+    }
+
+    return LocalizationManager.getStringByKey(
+        "mechanic.dashboard.latest_inspection"
+    )
+        + ": "
+        + safe(inspection.bicycleModel());
   }
 
   private String safe(String value) {

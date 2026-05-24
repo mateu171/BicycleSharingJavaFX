@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
 import org.example.bicyclesharing.domain.enums.MaintenanceAction;
 import org.example.bicyclesharing.domain.enums.MaintenanceType;
+import org.example.bicyclesharing.dto.LatestMaintenanceInfo;
 import org.example.bicyclesharing.repository.MaintenanceRecordRepository;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -26,6 +27,53 @@ public class MaintenanceRecordRepositoryDB
   public List<MaintenanceRecord> findByBicycleId(UUID bicycleId) {
     String sql = "SELECT * FROM MAINTENANCE_RECORDS WHERE bicycle_id = ?";
     return jdbcTemplate.query(sql, rowMapper(), bicycleId.toString());
+  }
+
+  @Override
+  public long countByMechanicId(UUID mechanicId) {
+
+    String sql = """
+      SELECT COUNT(*)
+      FROM maintenance_records
+      WHERE mechanic_id = ?
+      """;
+
+    Long res = jdbcTemplate.queryForObject(
+        sql,
+        Long.class,
+        mechanicId.toString()
+    );
+
+    return res == null ? 0 : res;
+  }
+
+  @Override
+  public LatestMaintenanceInfo getLatestMaintenanceInfo() {
+
+    String sql = """
+      SELECT
+          b.model,
+          mr.type,
+          mr.created_at
+      FROM maintenance_records mr
+      JOIN bicycles b
+          ON b.id = mr.bicycle_id
+      ORDER BY mr.created_at DESC
+      LIMIT 1
+      """;
+
+    List<LatestMaintenanceInfo> list = jdbcTemplate.query(
+        sql,
+        (rs, rowNum) -> new LatestMaintenanceInfo(
+            rs.getString("model"),
+            rs.getString("type"),
+            rs.getTimestamp("created_at").toLocalDateTime()
+        )
+    );
+
+    return list.isEmpty()
+        ? null
+        : list.get(0);
   }
 
   @Override

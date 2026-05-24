@@ -1,22 +1,17 @@
 package org.example.bicyclesharing.viewModel.manager;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
-import org.example.bicyclesharing.domain.Impl.Bicycle;
-import org.example.bicyclesharing.domain.Impl.Customer;
-import org.example.bicyclesharing.domain.Impl.Rental;
-import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.dto.LatestCustomerInfo;
+import org.example.bicyclesharing.dto.LatestRentalInfo;
+import org.example.bicyclesharing.dto.LatestReservationInfo;
 import org.example.bicyclesharing.services.BicycleService;
 import org.example.bicyclesharing.services.CustomerService;
 import org.example.bicyclesharing.services.RentalService;
@@ -139,48 +134,24 @@ public class ManagerDashboardViewModel extends BaseViewModel {
       protected ManagerDashboardData call() {
         reservationService.updateStatuses();
 
-        List<Rental> rentals = rentalService.getAll();
-        List<Reservation> reservations = reservationService.getAll();
-        List<Customer> customers = customerService.getAll();
-        List<Bicycle> bicycles = bicycleService.getAll();
+        long totalBicycles = bicycleService.count();
+        long totalCustomers = customerService.count();
+        long activeRentals = rentalService.countActiveRentals();
+        long activeReservations = reservationService.countByStatuses(ReservationStatus.NEW,ReservationStatus.ISSUED);
+        long issuedReservations = reservationService.countByStatuses(ReservationStatus.ISSUED,ReservationStatus.ISSUED);
+        long newReservations = reservationService.countByStatuses(ReservationStatus.NEW,ReservationStatus.NEW);
+        long availableBicycles = bicycleService.countByState(StateBicycle.AVAILABLE);
+        long rentedBicycles = bicycleService.countByState(StateBicycle.RENTED);
+        long unavailableBicycles = bicycleService.countByState(StateBicycle.UNAVAILABLE);
 
-        long activeRentals = rentals.stream()
-            .filter(rental -> rental.getEnd() == null)
-            .count();
-
-        long activeReservations = reservations.stream()
-            .filter(reservation ->
-                reservation.getStatus() == ReservationStatus.NEW
-                    || reservation.getStatus() == ReservationStatus.ISSUED)
-            .count();
-
-        long issuedReservations = reservations.stream()
-            .filter(reservation -> reservation.getStatus() == ReservationStatus.ISSUED)
-            .count();
-
-        long newReservations = reservations.stream()
-            .filter(reservation -> reservation.getStatus() == ReservationStatus.NEW)
-            .count();
-
-        long availableBicycles = bicycles.stream()
-            .filter(bicycle -> bicycle.getState() == StateBicycle.AVAILABLE)
-            .count();
-
-        long rentedBicycles = bicycles.stream()
-            .filter(bicycle -> bicycle.getState() == StateBicycle.RENTED)
-            .count();
-
-        long unavailableBicycles = bicycles.stream()
-            .filter(bicycle ->
-                bicycle.getState() == StateBicycle.UNAVAILABLE
-                    || bicycle.getState() == StateBicycle.ON_MAINTENANCE
-                    || bicycle.getState() == StateBicycle.NEEDS_INSPECTION)
-            .count();
+        LatestRentalInfo latestRental = rentalService.getLatestRentalInfo();
+        LatestReservationInfo latestReservation = reservationService.getLatestReservationInfo();
+        LatestCustomerInfo latestCustomer = customerService.getLatestCustomerInfo();
 
         return new ManagerDashboardData(
             String.valueOf(activeRentals),
             String.valueOf(activeReservations),
-            String.valueOf(customers.size()),
+            String.valueOf(totalCustomers),
             String.valueOf(availableBicycles),
             LocalizationManager.getStringByKey("manager.dashboard.issued_reservations")
                 + ": " + issuedReservations,
@@ -191,10 +162,10 @@ public class ManagerDashboardViewModel extends BaseViewModel {
             LocalizationManager.getStringByKey("manager.dashboard.unavailable_bicycles")
                 + ": " + unavailableBicycles,
             LocalizationManager.getStringByKey("manager.dashboard.total_bicycles")
-                + ": " + bicycles.size(),
-            buildLatestRentalText(rentals, customers, bicycles),
-            buildLatestReservationText(reservations, customers, bicycles),
-            buildLatestCustomerText(customers)
+                + ": " + totalBicycles,
+            buildLatestRentalText(latestRental),
+            buildLatestReservationText(latestReservation),
+            buildLatestCustomerText(latestCustomer)
         );
       }
     };
@@ -233,94 +204,62 @@ public class ManagerDashboardViewModel extends BaseViewModel {
   }
 
   private String buildLatestRentalText(
-      List<Rental> rentals,
-      List<Customer> customers,
-      List<Bicycle> bicycles
+      LatestRentalInfo rental
   ) {
-    return rentals.stream()
-        .sorted(Comparator.comparing(
-            Rental::getStart,
-            Comparator.nullsLast(Comparator.reverseOrder())
-        ))
-        .findFirst()
-        .map(rental ->
-            LocalizationManager.getStringByKey("manager.dashboard.latest_rental")
-                + ": "
-                + getCustomerName(rental.getCustomerId(), customers)
-                + " — "
-                + getBicycleModel(rental.getBicycleId(), bicycles)
-                + " — "
-                + formatDate(rental.getStart())
-        )
-        .orElse(LocalizationManager.getStringByKey("manager.dashboard.no_data"));
+
+    if (rental == null) {
+      return LocalizationManager.getStringByKey(
+          "admin.dashboard.no_data"
+      );
+    }
+
+    return LocalizationManager.getStringByKey(
+        "manager.dashboard.latest_rental"
+    )
+        + ": "
+        + rental.customerName()
+        + " — "
+        + rental.bicycleModel()
+        + " — "
+        + rental.start().format(formatter);
   }
 
   private String buildLatestReservationText(
-      List<Reservation> reservations,
-      List<Customer> customers,
-      List<Bicycle> bicycles
+      LatestReservationInfo reservation
   ) {
-    return reservations.stream()
-        .sorted(Comparator.comparing(
-            Reservation::getStartTime,
-            Comparator.nullsLast(Comparator.reverseOrder())
-        ))
-        .findFirst()
-        .map(reservation ->
-            LocalizationManager.getStringByKey("manager.dashboard.latest_reservation")
-                + ": "
-                + getCustomerName(reservation.getCustomerId(), customers)
-                + " — "
-                + getBicycleModel(reservation.getBicycleId(), bicycles)
-                + " — "
-                + formatDate(reservation.getStartTime())
-        )
-        .orElse(LocalizationManager.getStringByKey("manager.dashboard.no_data"));
-  }
 
-  private String buildLatestCustomerText(List<Customer> customers) {
-    return customers.stream()
-        .sorted(Comparator.comparing(
-            Customer::getFullName,
-            Comparator.nullsLast(String::compareToIgnoreCase)
-        ))
-        .reduce((first, second) -> second)
-        .map(customer ->
-            LocalizationManager.getStringByKey("manager.dashboard.latest_customer")
-                + ": "
-                + safe(customer.getFullName())
-        )
-        .orElse(LocalizationManager.getStringByKey("manager.dashboard.no_data"));
-  }
-
-  private String getCustomerName(UUID customerId, List<Customer> customers) {
-    if (customerId == null) {
-      return LocalizationManager.getStringByKey("manager.dashboard.unknown_customer");
+    if (reservation == null) {
+      return LocalizationManager.getStringByKey(
+          "admin.dashboard.no_data"
+      );
     }
 
-    return customers.stream()
-        .filter(customer -> customerId.equals(customer.getId()))
-        .map(Customer::getFullName)
-        .findFirst()
-        .orElse(LocalizationManager.getStringByKey("manager.dashboard.unknown_customer"));
+    return LocalizationManager.getStringByKey(
+        "manager.dashboard.latest_reservation"
+    )
+        + ": "
+        + reservation.customerName()
+        + " — "
+        + reservation.bicycleModel()
+        + " — "
+        + reservation.start().format(formatter);
   }
 
-  private String getBicycleModel(UUID bicycleId, List<Bicycle> bicycles) {
-    if (bicycleId == null) {
-      return LocalizationManager.getStringByKey("manager.dashboard.unknown_bicycle");
+  private String buildLatestCustomerText(
+      LatestCustomerInfo customer
+  ) {
+
+    if (customer == null) {
+      return LocalizationManager.getStringByKey(
+          "manager.dashboard.no_data"
+      );
     }
 
-    return bicycles.stream()
-        .filter(bicycle -> bicycleId.equals(bicycle.getId()))
-        .map(Bicycle::getModel)
-        .findFirst()
-        .orElse(LocalizationManager.getStringByKey("manager.dashboard.unknown_bicycle"));
-  }
-
-  private String formatDate(LocalDateTime value) {
-    return value == null
-        ? LocalizationManager.getStringByKey("manager.dashboard.no_data")
-        : value.format(formatter);
+    return LocalizationManager.getStringByKey(
+        "manager.dashboard.latest_customer"
+    )
+        + ": "
+        + safe(customer.fullName());
   }
 
   private String safe(String value) {

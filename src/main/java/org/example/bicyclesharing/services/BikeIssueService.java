@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
+import org.example.bicyclesharing.dto.LatestIssueInfo;
 import org.example.bicyclesharing.repository.BikeIssueRepository;
 import org.example.bicyclesharing.repository.Repository;
 
@@ -27,5 +28,18 @@ public class BikeIssueService extends BaseService<BikeIssue, UUID> {
 
   public List<BikeIssue> getByBicycleId(UUID bicycleId) {
     return repository.findByBicycleId(bicycleId);
+  }
+
+  public LatestIssueInfo getLatestIssueInfo() {
+    return repository.getLatestIssueInfo();
+  }
+
+  public long countByIssueStatus(IssueStatus status)
+  {
+    return repository.countByIssueStatus(status);
+  }
+
+  public long countTechnicalIssues() {
+    return repository.countTechnicalIssues();
   }
 }

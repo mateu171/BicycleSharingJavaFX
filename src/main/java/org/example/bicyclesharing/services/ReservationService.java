@@ -6,13 +6,12 @@ import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
 import org.example.bicyclesharing.domain.enums.StateBicycle;
+import org.example.bicyclesharing.dto.LatestReservationInfo;
 import org.example.bicyclesharing.exception.BusinessException;
 import org.example.bicyclesharing.repository.BicycleRepository;
 import org.example.bicyclesharing.repository.CustomerRepository;
 import org.example.bicyclesharing.repository.Repository;
 import org.example.bicyclesharing.repository.ReservationRepository;
-import org.example.bicyclesharing.repository.db.ReservationRepositoryDB;
-import org.example.bicyclesharing.util.LocalizationManager;
 
 public class ReservationService extends BaseService<Reservation, UUID>{
 
@@ -34,6 +33,10 @@ public class ReservationService extends BaseService<Reservation, UUID>{
 
   public List<Reservation> findByFilters(String search, ReservationStatus status) {
     return reservationRepository.findByFilters(search, status);
+  }
+
+  public LatestReservationInfo getLatestReservationInfo() {
+    return reservationRepository.getLatestReservationInfo();
   }
 
   public void updateStatuses() {
@@ -60,5 +63,9 @@ public class ReservationService extends BaseService<Reservation, UUID>{
     } else if (!hasCustomers) {
       throw new BusinessException("error.reservation.no.customers");
     }
+  }
+
+  public long countByStatuses(ReservationStatus reservationStatus, ReservationStatus reservationStatus1) {
+    return  reservationRepository.countByStatuses(reservationStatus,reservationStatus1);
   }
 }

@@ -3,7 +3,10 @@ package org.example.bicyclesharing.repository;
 import java.util.List;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.MaintenanceRecord;
+import org.example.bicyclesharing.dto.LatestMaintenanceInfo;
 
 public interface MaintenanceRecordRepository extends Repository<MaintenanceRecord, UUID>{
    List<MaintenanceRecord> findByBicycleId(UUID bicycleId);
+   long countByMechanicId(UUID mechanicId);
+   LatestMaintenanceInfo getLatestMaintenanceInfo();
 }

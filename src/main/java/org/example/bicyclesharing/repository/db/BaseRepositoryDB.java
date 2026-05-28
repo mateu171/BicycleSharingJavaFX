@@ -125,8 +125,8 @@ public abstract class BaseRepositoryDB<T, ID> implements Repository<T, ID> {
 
   @Override
   public boolean existsById(ID id) {
-    String sql = "SELECT COUNT(*) FROM " + getTableName()
-        + " WHERE " + getIdColumn() + "=?";
+    String sql = "SELECT COUNT(*) FROM " + getTableName() +
+        " WHERE is_deleted = FALSE AND " + getIdColumn() + "= ?";
     Long count = getCurrentJdbcTemplate().queryForObject(sql, Long.class, id);
     return count != null && count > 0;
   }
@@ -151,28 +151,27 @@ public abstract class BaseRepositoryDB<T, ID> implements Repository<T, ID> {
 
   @Override
   public List<T> findAll() {
-    return jdbcTemplate.query("SELECT * FROM " + getTableName(), rowMapper());
+    String sql = "SELECT * FROM " + getTableName() + " WHERE is_deleted = FALSE";
+    return jdbcTemplate.query(sql, rowMapper());
   }
 
   @Override
   public Optional<T> findById(ID id) {
     String sql = "SELECT * FROM " + getTableName() +
-        " WHERE " + getIdColumn() + "=?";
+        " WHERE is_deleted = FALSE AND " + getIdColumn() + " = ?";
     return jdbcTemplate.query(sql, rowMapper(), id).stream().findFirst();
   }
 
   @Override
   public boolean deleteById(ID id) {
-    return jdbcTemplate.update(
-        "DELETE FROM " + getTableName() + " WHERE " + getIdColumn() + "=?",
-        id
-    ) > 0;
+    String sql = "UPDATE " + getTableName() + " SET is_deleted = TRUE WHERE " + getIdColumn() + " = ?";
+    return getCurrentJdbcTemplate().update(sql, id) > 0;
   }
 
   @Override
   public long count() {
     Long res = jdbcTemplate.queryForObject(
-        "SELECT COUNT(*) FROM " + getTableName(),
+        "SELECT COUNT(*) FROM " + getTableName() + " WHERE is_deleted = FALSE",
         Long.class
     );
     return res == null ? 0 : res;

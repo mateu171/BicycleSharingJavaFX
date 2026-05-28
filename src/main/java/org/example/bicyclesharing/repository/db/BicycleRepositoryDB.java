@@ -31,16 +31,17 @@ public class BicycleRepositoryDB
   @Override
   protected String getCreateTableSQL() {
     return """
-      CREATE TABLE IF NOT EXISTS bicycles (
-        id VARCHAR(36) PRIMARY KEY,
-        model VARCHAR(255) NOT NULL,
-        type_bicycle VARCHAR(50) NOT NULL,
-        state VARCHAR(50) NOT NULL,
-        price_per_minute DOUBLE NOT NULL,
-        station_id VARCHAR(36),
-        image_path VARCHAR(255)
-      )
-    """;
+            CREATE TABLE IF NOT EXISTS bicycles (
+                id VARCHAR(36) PRIMARY KEY,
+                model VARCHAR(255) NOT NULL,
+                type_bicycle VARCHAR(50) NOT NULL,
+                state VARCHAR(50) NOT NULL,
+                price_per_minute DOUBLE NOT NULL,
+                station_id VARCHAR(36),
+                image_path VARCHAR(255),
+                is_deleted BOOLEAN DEFAULT FALSE NOT NULL
+            )
+            """;
   }
 
   @Override
@@ -60,9 +61,7 @@ public class BicycleRepositoryDB
           TypeBicycle.valueOf(rs.getString("type_bicycle")),
           StateBicycle.valueOf(rs.getString("state")),
           rs.getDouble("price_per_minute"),
-          stationId != null
-              ? UUID.fromString(stationId)
-              : null,
+          stationId != null ? UUID.fromString(stationId) : null,
           rs.getString("image_path")
       );
     };
@@ -76,10 +75,9 @@ public class BicycleRepositoryDB
         entity.getTypeBicycle().name(),
         entity.getState().name(),
         entity.getPricePerMinute(),
-        entity.getStationId() != null
-            ? entity.getStationId().toString()
-            : null,
-        entity.getImagePath()
+        entity.getStationId() != null ? entity.getStationId().toString() : null,
+        entity.getImagePath(),
+        false
     };
   }
 
@@ -116,38 +114,20 @@ public class BicycleRepositoryDB
   }
 
   @Override
-  public List<Bicycle> findByFilters(
-      String search,
-      StateBicycle state
-  ) {
-
-    QueryData query = new QueryData(
-        "SELECT * FROM bicycles WHERE 1=1"
-    );
-
+  public List<Bicycle> findByFilters(String search, StateBicycle state) {
+    QueryData query = new QueryData("SELECT * FROM bicycles WHERE is_deleted = FALSE");
     query.addLikeCondition("model", search);
-
     if (state != null) {
-      query.addEqualsCondition(
-          "state",
-          state.name()
-      );
+      query.addEqualsCondition("state", state.name());
     }
-
     query.addOrderBy("model", "ASC");
-
-    return jdbcTemplate.query(
-        query.getSql(),
-        rowMapper(),
-        query.getParams()
-    );
+    return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
 
   @Override
   public List<Bicycle> findByState(StateBicycle state) {
-
     return jdbcTemplate.query(
-        "SELECT * FROM bicycles WHERE state = ?",
+        "SELECT * FROM bicycles WHERE is_deleted = FALSE AND state = ?",
         rowMapper(),
         state.name()
     );
@@ -155,41 +135,29 @@ public class BicycleRepositoryDB
 
   @Override
   public long countByState(StateBicycle state) {
-
     Long result = jdbcTemplate.queryForObject(
-        "SELECT COUNT(*) FROM bicycles WHERE state = ?",
+        "SELECT COUNT(*) FROM bicycles WHERE is_deleted = FALSE AND state = ?",
         Long.class,
         state.name()
     );
-
-    return result == null
-        ? 0
-        : result;
+    return result == null ? 0 : result;
   }
 
   @Override
   public LatestInspectionInfo getLatestInspectionInfo() {
-
     String sql = """
-      SELECT model
-      FROM bicycles
-      WHERE state = ?
-      ORDER BY model ASC
-      LIMIT 1
-      """;
+            SELECT model 
+            FROM bicycles 
+            WHERE is_deleted = FALSE AND state = ? 
+            ORDER BY model ASC LIMIT 1
+            """;
 
-    List<LatestInspectionInfo> list =
-        jdbcTemplate.query(
-            sql,
-            (rs, rowNum) ->
-                new LatestInspectionInfo(
-                    rs.getString("model")
-                ),
-            StateBicycle.NEEDS_INSPECTION.name()
-        );
+    List<LatestInspectionInfo> list = jdbcTemplate.query(
+        sql,
+        (rs, rowNum) -> new LatestInspectionInfo(rs.getString("model")),
+        StateBicycle.NEEDS_INSPECTION.name()
+    );
 
-    return list.isEmpty()
-        ? null
-        : list.getFirst();
+    return list.isEmpty() ? null : list.getFirst();
   }
 }

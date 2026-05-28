@@ -1,508 +1,4 @@
-2026-05-23 20:36:41.725198+03:00 jdbc[23]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "R.STARTTIME" not found; SQL statement:
-SELECT
-    c.full_name,
-    b.model,
-    r.startTime
-FROM RESERVATIONS r
-JOIN CUSTOMERS c
-    ON c.id = r.customer_Id
-JOIN BICYCLES b
-    ON b.id = r.bicycleId
-ORDER BY r.startTime DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.ReservationRepositoryDB.getLatestReservationInfo(ReservationRepositoryDB.java:199)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy10.getLatestReservationInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.ReservationService.getLatestReservationInfo(ReservationService.java:39)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:196)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:37:46.819277+03:00 jdbc[23]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "R.STARTTIME" not found; SQL statement:
-SELECT
-    c.full_name,
-    b.model,
-    r.startTime
-FROM RESERVATIONS r
-JOIN CUSTOMERS c
-    ON c.id = r.customer_Id
-JOIN BICYCLES b
-    ON b.id = r.bicycleId
-ORDER BY r.startTime DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.ReservationRepositoryDB.getLatestReservationInfo(ReservationRepositoryDB.java:199)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy9.getLatestReservationInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.ReservationService.getLatestReservationInfo(ReservationService.java:39)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:196)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:38:06.271237+03:00 jdbc[37]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "R.STARTTIME" not found; SQL statement:
-SELECT
-    c.full_name,
-    b.model,
-    r.startTime
-FROM RESERVATIONS r
-JOIN CUSTOMERS c
-    ON c.id = r.customer_Id
-JOIN BICYCLES b
-    ON b.id = r.bicycleId
-ORDER BY r.startTime DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.ReservationRepositoryDB.getLatestReservationInfo(ReservationRepositoryDB.java:199)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy9.getLatestReservationInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.ReservationService.getLatestReservationInfo(ReservationService.java:39)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:196)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:38:33.115516+03:00 jdbc[48]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "R.STARTTIME" not found; SQL statement:
-SELECT
-    c.full_name,
-    b.model,
-    r.startTime
-FROM RESERVATIONS r
-JOIN CUSTOMERS c
-    ON c.id = r.customer_Id
-JOIN BICYCLES b
-    ON b.id = r.bicycleId
-ORDER BY r.startTime DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.ReservationRepositoryDB.getLatestReservationInfo(ReservationRepositoryDB.java:199)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy9.getLatestReservationInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.ReservationService.getLatestReservationInfo(ReservationService.java:39)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:196)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:39:39.282485+03:00 jdbc[23]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "R.STARTTIME" not found; SQL statement:
-SELECT
-    c.full_name,
-    b.model,
-    r.startTime
-FROM RESERVATIONS r
-JOIN CUSTOMERS c
-    ON c.id = r.customer_Id
-JOIN BICYCLES b
-    ON b.id = r.bicycleId
-ORDER BY r.startTime DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.ReservationRepositoryDB.getLatestReservationInfo(ReservationRepositoryDB.java:199)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy9.getLatestReservationInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.ReservationService.getLatestReservationInfo(ReservationService.java:39)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:196)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:39:45.999090+03:00 jdbc[35]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "R.STARTTIME" not found; SQL statement:
-SELECT
-    c.full_name,
-    b.model,
-    r.startTime
-FROM RESERVATIONS r
-JOIN CUSTOMERS c
-    ON c.id = r.customer_Id
-JOIN BICYCLES b
-    ON b.id = r.bicycleId
-ORDER BY r.startTime DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.ReservationRepositoryDB.getLatestReservationInfo(ReservationRepositoryDB.java:199)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy9.getLatestReservationInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.ReservationService.getLatestReservationInfo(ReservationService.java:39)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:196)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:41:53.293523+03:00 jdbc[23]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "R.STARTTIME" not found; SQL statement:
-SELECT
-    c.full_name,
-    b.model,
-    r.startTime
-FROM RESERVATIONS r
-JOIN CUSTOMERS c
-    ON c.id = r.customer_Id
-JOIN BICYCLES b
-    ON b.id = r.bicycleId
-ORDER BY r.startTime DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.ReservationRepositoryDB.getLatestReservationInfo(ReservationRepositoryDB.java:199)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy9.getLatestReservationInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.ReservationService.getLatestReservationInfo(ReservationService.java:39)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:196)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:46:56.995940+03:00 jdbc[17]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "RESERVATIONSWHERE" not found; SQL statement:
-  SELECT COUNT(*) FROM RESERVATIONSWHERE status = ? OR status = ?
- [42102-224]
-2026-05-23 20:50:56.655356+03:00 jdbc[24]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "I.PROBLEMTYPE" not found; SQL statement:
-SELECT
-    b.model,
-    i.problemType,
-    i.createdAt
-FROM BIKE_ISSUES i
-JOIN BICYCLES b
-    ON b.id = i.bicycleId
-ORDER BY i.createdAt DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB.getLatestIssueInfo(BikeIssueRepositoryDB.java:64)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy10.getLatestIssueInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.BikeIssueService.getLatestIssueInfo(BikeIssueService.java:34)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:199)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:54:35.452294+03:00 jdbc[24]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "I.CREATEDAT" not found; SQL statement:
-SELECT
-    b.model,
-    i.problem_Type,
-    i.createdAt
-FROM BIKE_ISSUES i
-JOIN BICYCLES b
-    ON b.id = i.bicycleId
-ORDER BY i.createdAt DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1170)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB.getLatestIssueInfo(BikeIssueRepositoryDB.java:64)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy10.getLatestIssueInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.BikeIssueService.getLatestIssueInfo(BikeIssueService.java:34)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:199)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:57:46.111500+03:00 jdbc[24]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "I.BICYCLEID" not found; SQL statement:
-SELECT
-    b.model,
-    i.problem_type,
-    i.created_at
-FROM BIKE_ISSUES i
-JOIN BICYCLES b
-    ON b.id = i.bicycleId
-ORDER BY i.created_at DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.expression.condition.Comparison.optimize(Comparison.java:148)
-	at org.h2.expression.Expression.optimizeCondition(Expression.java:148)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1177)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB.getLatestIssueInfo(BikeIssueRepositoryDB.java:64)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy10.getLatestIssueInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.BikeIssueService.getLatestIssueInfo(BikeIssueService.java:34)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:199)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:58:48.852680+03:00 jdbc[24]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "I.BICYCLEID" not found; SQL statement:
-SELECT
-    b.model,
-    i.problem_type,
-    i.created_at
-FROM BIKE_ISSUES i
-JOIN BICYCLES b
-    ON b.id = i.bicycleId
-ORDER BY i.created_at DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.expression.condition.Comparison.optimize(Comparison.java:148)
-	at org.h2.expression.Expression.optimizeCondition(Expression.java:148)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1177)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB.getLatestIssueInfo(BikeIssueRepositoryDB.java:64)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy10.getLatestIssueInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.BikeIssueService.getLatestIssueInfo(BikeIssueService.java:34)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:199)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 20:59:12.959854+03:00 jdbc[24]: exception
-org.h2.jdbc.JdbcSQLSyntaxErrorException: Column "I.BICYCLEID" not found; SQL statement:
-SELECT
-    b.model,
-    i.problem_type,
-    i.created_at
-FROM BIKE_ISSUES i
-JOIN BICYCLES b
-    ON b.id = i.bicycleId
-ORDER BY i.created_at DESC
-LIMIT 1 [42122-224]
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
-	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
-	at org.h2.message.DbException.get(DbException.java:223)
-	at org.h2.message.DbException.get(DbException.java:199)
-	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
-	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
-	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
-	at org.h2.expression.condition.Comparison.optimize(Comparison.java:148)
-	at org.h2.expression.Expression.optimizeCondition(Expression.java:148)
-	at org.h2.command.query.Select.prepareExpressions(Select.java:1177)
-	at org.h2.command.query.Query.prepare(Query.java:218)
-	at org.h2.command.Parser.prepareCommand(Parser.java:489)
-	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:639)
-	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:559)
-	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1166)
-	at org.h2.jdbc.JdbcStatement.executeQuery(JdbcStatement.java:94)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate$1QueryStatementCallback.doInStatement(JdbcTemplate.java:478)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:412)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:491)
-	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.query(JdbcTemplate.java:501)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.BikeIssueRepositoryDB.getLatestIssueInfo(BikeIssueRepositoryDB.java:64)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
-	at org.example.bicyclesharing/org.example.bicyclesharing.repository.cache.CachedRepositoryProxy$CacheRepositoryInvocationHandler.invoke(CachedRepositoryProxy.java:75)
-	at jdk.proxy2/com.sun.proxy.jdk.proxy2.$Proxy10.getLatestIssueInfo(Unknown Source)
-	at org.example.bicyclesharing/org.example.bicyclesharing.services.BikeIssueService.getLatestIssueInfo(BikeIssueService.java:34)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:199)
-	at org.example.bicyclesharing/org.example.bicyclesharing.viewModel.admin.AdminDashboardViewModel$1.call(AdminDashboardViewModel.java:147)
-	at javafx.graphics@21.0.6/javafx.concurrent.Task$TaskCallable.call(Task.java:1399)
-	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:328)
-	at java.base/java.lang.Thread.run(Thread.java:1474)
-2026-05-23 21:22:44.689715+03:00 database: flush
+2026-05-28 11:03:45.193859+03:00 database: flush
 org.h2.message.DbException: General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/Asus/IdeaProjects/BicycleSharing/db/bicyclesharing.mv.db [2.4.240/7]" [50000-240]
 	at org.h2.message.DbException.get(DbException.java:212)
 	at org.h2.message.DbException.convert(DbException.java:407)
@@ -537,3 +33,119 @@ Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/Asus/Id
 	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:291)
 	... 16 more
+2026-05-28 12:09:35.391362+03:00 database: flush
+org.h2.message.DbException: General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/Asus/IdeaProjects/BicycleSharing/db/bicyclesharing.mv.db [2.2.224/7]" [50000-224]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:407)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:122)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:1546)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:371)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:291)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:2035)
+	at org.h2.mvstore.db.Store.<init>(Store.java:133)
+	at org.h2.engine.Database.<init>(Database.java:326)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:343)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:125)
+	at org.h2.Driver.connect(Driver.java:59)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:613)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:160)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.datasource.DriverManagerDataSource.getConnectionFromDriverManager(DriverManagerDataSource.java:155)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.datasource.DriverManagerDataSource.getConnectionFromDriver(DriverManagerDataSource.java:146)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnectionFromDriver(AbstractDriverBasedDataSource.java:193)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.datasource.AbstractDriverBasedDataSource.getConnection(AbstractDriverBasedDataSource.java:157)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.datasource.DataSourceUtils.fetchConnection(DataSourceUtils.java:160)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.datasource.DataSourceUtils.doGetConnection(DataSourceUtils.java:118)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.datasource.DataSourceUtils.getConnection(DataSourceUtils.java:81)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:407)
+	at spring.jdbc@7.0.5/org.springframework.jdbc.core.JdbcTemplate.execute(JdbcTemplate.java:461)
+	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.BaseRepositoryDB.initTable(BaseRepositoryDB.java:51)
+	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.BaseRepositoryDB.<init>(BaseRepositoryDB.java:42)
+	at org.example.bicyclesharing/org.example.bicyclesharing.repository.db.UserRepositoryDB.<init>(UserRepositoryDB.java:14)
+	at org.example.bicyclesharing/org.example.bicyclesharing.util.AppConfig.<clinit>(AppConfig.java:50)
+	at org.example.bicyclesharing/org.example.bicyclesharing.controller.view.LoginController.initialize(LoginController.java:32)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:72)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at javafx.base@21.0.6/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:270)
+	at javafx.fxml@21.0.6/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:84)
+	at javafx.fxml@21.0.6/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2688)
+	at javafx.fxml@21.0.6/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2563)
+	at javafx.fxml@21.0.6/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2531)
+	at org.example.bicyclesharing/org.example.bicyclesharing.services.NavigationService.load(NavigationService.java:35)
+	at org.example.bicyclesharing/org.example.bicyclesharing.controller.window.StartController.showLogin(StartController.java:9)
+	at org.example.bicyclesharing/org.example.bicyclesharing.controller.window.StartController.initialize(StartController.java:17)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at com.sun.javafx.reflect.Trampoline.invoke(MethodUtil.java:72)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:565)
+	at javafx.base@21.0.6/com.sun.javafx.reflect.MethodUtil.invoke(MethodUtil.java:270)
+	at javafx.fxml@21.0.6/com.sun.javafx.fxml.MethodHelper.invoke(MethodHelper.java:84)
+	at javafx.fxml@21.0.6/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2688)
+	at javafx.fxml@21.0.6/javafx.fxml.FXMLLoader.loadImpl(FXMLLoader.java:2563)
+	at javafx.fxml@21.0.6/javafx.fxml.FXMLLoader.load(FXMLLoader.java:2531)
+	at org.example.bicyclesharing/org.example.bicyclesharing.HelloApplication.start(HelloApplication.java:18)
+	at javafx.graphics@21.0.6/com.sun.javafx.application.LauncherImpl.lambda$launchApplication1$9(LauncherImpl.java:839)
+	at javafx.graphics@21.0.6/com.sun.javafx.application.PlatformImpl.lambda$runAndWait$12(PlatformImpl.java:483)
+	at javafx.graphics@21.0.6/com.sun.javafx.application.PlatformImpl.lambda$runLater$10(PlatformImpl.java:456)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:138)
+	at javafx.graphics@21.0.6/com.sun.javafx.application.PlatformImpl.lambda$runLater$11(PlatformImpl.java:455)
+	at javafx.graphics@21.0.6/com.sun.glass.ui.InvokeLaterDispatcher$Future.run(InvokeLaterDispatcher.java:95)
+	at javafx.graphics@21.0.6/com.sun.glass.ui.win.WinApplication._runLoop(Native Method)
+	at javafx.graphics@21.0.6/com.sun.glass.ui.win.WinApplication.lambda$runLoop$3(WinApplication.java:185)
+	at java.base/java.lang.Thread.run(Thread.java:1474)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: General error: "org.h2.mvstore.MVStoreException: The file is locked: C:/Users/Asus/IdeaProjects/BicycleSharing/db/bicyclesharing.mv.db [2.2.224/7]" [50000-224]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:566)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	... 64 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: C:/Users/Asus/IdeaProjects/BicycleSharing/db/bicyclesharing.mv.db [2.2.224/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:996)
+	at org.h2.mvstore.SingleFileStore.lockFileChannel(SingleFileStore.java:143)
+	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:117)
+	at org.h2.mvstore.SingleFileStore.open(SingleFileStore.java:81)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:286)
+	... 58 more
+2026-05-28 12:10:47.864394+03:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "INSERT INTO USERS (\000d\000a    id,\000d\000a    login,\000d\000a    password,\000d\000a    email,\000d\000a    role,\000d\000a    image_path,\000d\000a    is_deleted\000d\000a)\000d\000aVALUES\000d\000a(\000d\000a    RANDOM_UUID(),\000d\000a    'manager1',\000d\000a    'hashed_password_1',\000d\000a    'manager1@gmail.com',\000d\000a    'MANAGER',\000d\000a    NULL,\000d\000a    FALSE\000d\000a),\000d\000a(\000d\000a    RANDOM_UUID(),\000d\000a    'manager2',\000d\000a    'hashed_password_2',\000d\000a    'manager2@gmail.com',\000d\000a    'MANAGER',\000d\000a    NULL,\000d\000a    FALSE\000d\000a),\000d\000a(\000d\000a    RANDOM_UUID(),\000d\000a    'mechanic1',\000d\000a    'hashed_password_3',\000d\000a    'mechanic1@gmail.com',\000d\000a    'MECHANIC',\000d\000a    NULL,\000d\000a    FALSE\000d\000a)[*]:"; SQL statement:
+INSERT INTO USERS (
+    id,
+    login,
+    password,
+    email,
+    role,
+    image_path,
+    is_deleted
+)
+VALUES
+(
+    RANDOM_UUID(),
+    'manager1',
+    'hashed_password_1',
+    'manager1@gmail.com',
+    'MANAGER',
+    NULL,
+    FALSE
+),
+(
+    RANDOM_UUID(),
+    'manager2',
+    'hashed_password_2',
+    'manager2@gmail.com',
+    'MANAGER',
+    NULL,
+    FALSE
+),
+(
+    RANDOM_UUID(),
+    'mechanic1',
+    'hashed_password_3',
+    'mechanic1@gmail.com',
+    'MECHANIC',
+    NULL,
+    FALSE
+): [42000-240]

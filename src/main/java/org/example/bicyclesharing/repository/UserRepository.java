@@ -9,4 +9,5 @@ public interface UserRepository extends Repository<User, UUID> {
 
   User findByLogin(String login);
   List<User> findByFilters(String search, Role role);
+  boolean existsByLoginActive(String login);
 }

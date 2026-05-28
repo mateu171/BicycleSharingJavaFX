@@ -11,8 +11,7 @@ import org.example.bicyclesharing.dto.LatestMaintenanceInfo;
 import org.example.bicyclesharing.repository.MaintenanceRecordRepository;
 import org.springframework.jdbc.core.RowMapper;
 
-public class MaintenanceRecordRepositoryDB
-    extends BaseRepositoryDB<MaintenanceRecord, UUID>
+public class MaintenanceRecordRepositoryDB extends BaseRepositoryDB<MaintenanceRecord, UUID>
     implements MaintenanceRecordRepository {
 
   public MaintenanceRecordRepositoryDB() {
@@ -24,56 +23,8 @@ public class MaintenanceRecordRepositoryDB
   }
 
   @Override
-  public List<MaintenanceRecord> findByBicycleId(UUID bicycleId) {
-    String sql = "SELECT * FROM MAINTENANCE_RECORDS WHERE bicycle_id = ?";
-    return jdbcTemplate.query(sql, rowMapper(), bicycleId.toString());
-  }
-
-  @Override
-  public long countByMechanicId(UUID mechanicId) {
-
-    String sql = """
-      SELECT COUNT(*)
-      FROM maintenance_records
-      WHERE mechanic_id = ?
-      """;
-
-    Long res = jdbcTemplate.queryForObject(
-        sql,
-        Long.class,
-        mechanicId.toString()
-    );
-
-    return res == null ? 0 : res;
-  }
-
-  @Override
-  public LatestMaintenanceInfo getLatestMaintenanceInfo() {
-
-    String sql = """
-      SELECT
-          b.model,
-          mr.type,
-          mr.created_at
-      FROM maintenance_records mr
-      JOIN bicycles b
-          ON b.id = mr.bicycle_id
-      ORDER BY mr.created_at DESC
-      LIMIT 1
-      """;
-
-    List<LatestMaintenanceInfo> list = jdbcTemplate.query(
-        sql,
-        (rs, rowNum) -> new LatestMaintenanceInfo(
-            rs.getString("model"),
-            rs.getString("type"),
-            rs.getTimestamp("created_at").toLocalDateTime()
-        )
-    );
-
-    return list.isEmpty()
-        ? null
-        : list.get(0);
+  protected String getTableName() {
+    return "MAINTENANCE_RECORDS";
   }
 
   @Override
@@ -86,13 +37,9 @@ public class MaintenanceRecordRepositoryDB
         "description TEXT," +
         "result TEXT," +
         "action VARCHAR(50) NOT NULL," +
-        "created_at TIMESTAMP NOT NULL" +
+        "created_at TIMESTAMP NOT NULL," +
+        "is_deleted BOOLEAN DEFAULT FALSE NOT NULL" +
         ")";
-  }
-
-  @Override
-  protected String getTableName() {
-    return "MAINTENANCE_RECORDS";
   }
 
   @Override
@@ -102,22 +49,21 @@ public class MaintenanceRecordRepositoryDB
 
   @Override
   protected RowMapper<MaintenanceRecord> rowMapper() {
-    return (rs, rowNum) ->
-      MaintenanceRecord.fromDatabase(
-          UUID.fromString(rs.getString("id")),
-          UUID.fromString(rs.getString("bicycle_id")),
-          UUID.fromString(rs.getString("mechanic_id")),
-          MaintenanceType.valueOf(rs.getString("type")),
-          rs.getString("description"),
-          rs.getString("result"),
-          MaintenanceAction.valueOf(rs.getString("action")),
-          rs.getTimestamp("created_at").toLocalDateTime()
-      );
+    return (rs, rowNum) -> MaintenanceRecord.fromDatabase(
+        UUID.fromString(rs.getString("id")),
+        UUID.fromString(rs.getString("bicycle_id")),
+        UUID.fromString(rs.getString("mechanic_id")),
+        MaintenanceType.valueOf(rs.getString("type")),
+        rs.getString("description"),
+        rs.getString("result"),
+        MaintenanceAction.valueOf(rs.getString("action")),
+        rs.getTimestamp("created_at").toLocalDateTime()
+    );
   }
 
   @Override
   protected Object[] getInsertValues(MaintenanceRecord entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getId().toString(),
         entity.getBicycleId().toString(),
         entity.getMechanicId().toString(),
@@ -125,13 +71,14 @@ public class MaintenanceRecordRepositoryDB
         entity.getDescription(),
         entity.getResult(),
         entity.getAction().name(),
-        Timestamp.valueOf(entity.getCreatedAt())
+        Timestamp.valueOf(entity.getCreatedAt()),
+        false
     };
   }
 
   @Override
   protected Object[] getUpdateValues(MaintenanceRecord entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getBicycleId().toString(),
         entity.getMechanicId().toString(),
         entity.getType().name(),
@@ -145,19 +92,50 @@ public class MaintenanceRecordRepositoryDB
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[] {
-        "bicycle_id",
-        "mechanic_id",
-        "type",
-        "description",
-        "result",
-        "action",
-        "created_at"
-    };
+    return new String[]{"bicycle_id", "mechanic_id", "type", "description", "result", "action", "created_at"};
   }
 
   @Override
   protected String getIdColumn() {
     return "id";
+  }
+
+
+  @Override
+  public List<MaintenanceRecord> findByBicycleId(UUID bicycleId) {
+    String sql = "SELECT * FROM MAINTENANCE_RECORDS WHERE is_deleted = FALSE AND bicycle_id = ?";
+    return jdbcTemplate.query(sql, rowMapper(), bicycleId.toString());
+  }
+
+  @Override
+  public long countByMechanicId(UUID mechanicId) {
+    String sql = """
+            SELECT COUNT(*) 
+            FROM MAINTENANCE_RECORDS 
+            WHERE is_deleted = FALSE AND mechanic_id = ?
+            """;
+    Long res = jdbcTemplate.queryForObject(sql, Long.class, mechanicId.toString());
+    return res == null ? 0 : res;
+  }
+
+  @Override
+  public LatestMaintenanceInfo getLatestMaintenanceInfo() {
+    String sql = """
+            SELECT b.model, mr.type, mr.created_at 
+            FROM MAINTENANCE_RECORDS mr 
+            JOIN bicycles b ON b.id = mr.bicycle_id 
+            WHERE mr.is_deleted = FALSE 
+            ORDER BY mr.created_at DESC LIMIT 1
+            """;
+
+    List<LatestMaintenanceInfo> list = jdbcTemplate.query(
+        sql,
+        (rs, rowNum) -> new LatestMaintenanceInfo(
+            rs.getString("model"),
+            rs.getString("type"),
+            rs.getTimestamp("created_at").toLocalDateTime()
+        )
+    );
+    return list.isEmpty() ? null : list.get(0);
   }
 }

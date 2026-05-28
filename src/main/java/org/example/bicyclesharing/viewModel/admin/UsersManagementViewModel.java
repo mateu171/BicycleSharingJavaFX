@@ -118,8 +118,7 @@ public class UsersManagementViewModel extends AsyncViewModel {
     User user = item.getUser();
 
     userService.validateCanDelete(user, currentUser);
-    userService.deleteById(user.getId());
-
+    userService.delete(user);
     refreshAsync();
   }
 

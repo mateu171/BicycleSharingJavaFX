@@ -8,14 +8,12 @@ import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Reservation;
 import org.example.bicyclesharing.domain.enums.DocumentType;
 import org.example.bicyclesharing.domain.enums.ReservationStatus;
-import org.example.bicyclesharing.domain.enums.StateBicycle;
-import org.example.bicyclesharing.dto.LatestRentalInfo;
 import org.example.bicyclesharing.dto.LatestReservationInfo;
 import org.example.bicyclesharing.repository.ReservationRepository;
 import org.springframework.jdbc.core.RowMapper;
 
-public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID> implements
-    ReservationRepository {
+public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
+    implements ReservationRepository {
 
   public ReservationRepositoryDB() {
     super();
@@ -39,7 +37,8 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
         "deposit_amount DOUBLE NOT NULL," +
         "deposit_paid BOOLEAN NOT NULL," +
         "inventory_issued BOOLEAN NOT NULL," +
-        "status VARCHAR(50) NOT NULL" +
+        "status VARCHAR(50) NOT NULL," +
+        "is_deleted BOOLEAN DEFAULT FALSE NOT NULL" +
         ")";
   }
 
@@ -73,7 +72,7 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
 
   @Override
   protected Object[] getInsertValues(Reservation entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getId().toString(),
         entity.getCustomerId().toString(),
         entity.getBicycleId().toString(),
@@ -85,13 +84,14 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
         entity.getDepositAmount(),
         entity.isDepositPaid(),
         entity.isInventoryIssued(),
-        entity.getStatus().name()
+        entity.getStatus().name(),
+        false
     };
   }
 
   @Override
   protected Object[] getUpdateValues(Reservation entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getCustomerId().toString(),
         entity.getBicycleId().toString(),
         entity.getManagerId().toString(),
@@ -109,18 +109,10 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[] {
-        "customer_id",
-        "bicycle_id",
-        "manager_id",
-        "start_time",
-        "end_time",
-        "document_type",
-        "document_number",
-        "deposit_amount",
-        "deposit_paid",
-        "inventory_issued",
-        "status"
+    return new String[]{
+        "customer_id", "bicycle_id", "manager_id", "start_time", "end_time",
+        "document_type", "document_number", "deposit_amount",
+        "deposit_paid", "inventory_issued", "status"
     };
   }
 
@@ -129,14 +121,15 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
     return "id";
   }
 
+
   @Override
   public List<Reservation> findByFilters(String search, ReservationStatus status) {
     QueryData query = new QueryData("""
-        SELECT r.*
-        FROM RESERVATIONS r
-        JOIN CUSTOMERS c ON c.id = r.customer_id
-        WHERE 1=1
-        """);
+            SELECT r.*
+            FROM RESERVATIONS r
+            JOIN CUSTOMERS c ON c.id = r.customer_id
+            WHERE r.is_deleted = FALSE
+            """);
 
     if (search != null && !search.isBlank()) {
       String pattern = "%" + search.trim() + "%";
@@ -147,17 +140,18 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
       query.addEqualsCondition("r.status", status.name());
     }
 
-    query.addOrderBy("r.start_time","DESC");
+    query.addOrderBy("r.start_time", "DESC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
 
   public List<Reservation> findNotIssuedButStarted(LocalDateTime now) {
     String sql = """
-      SELECT * FROM RESERVATIONS
-      WHERE status = 'NEW'
-      AND start_time <= ?
-      """;
+            SELECT * FROM RESERVATIONS
+            WHERE is_deleted = FALSE 
+              AND status = 'NEW'
+              AND start_time <= ?
+            """;
 
     return jdbcTemplate.query(sql, rowMapper(), Timestamp.valueOf(now));
   }
@@ -166,8 +160,11 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
   public long countByStatuses(ReservationStatus reservationStatus,
       ReservationStatus reservationStatus1) {
     String sql = """
-        SELECT COUNT(*) FROM RESERVATIONS WHERE status = ? OR status = ?
-      """;
+            SELECT COUNT(*) 
+            FROM RESERVATIONS 
+            WHERE is_deleted = FALSE 
+              AND (status = ? OR status = ?)
+            """;
 
     Long count = jdbcTemplate.queryForObject(
         sql,
@@ -181,34 +178,28 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
 
   @Override
   public LatestReservationInfo getLatestReservationInfo() {
-
     String sql = """
-    SELECT
-        c.full_name,
-        b.model,
-        r.start_time
-    FROM RESERVATIONS r
-    JOIN CUSTOMERS c
-        ON c.id = r.customer_id
-    JOIN BICYCLES b
-        ON b.id = r.bicycle_id
-    ORDER BY r.start_time DESC
-    LIMIT 1
-""";
+            SELECT
+                c.full_name,
+                b.model,
+                r.start_time
+            FROM RESERVATIONS r
+            JOIN CUSTOMERS c ON c.id = r.customer_id
+            JOIN BICYCLES b ON b.id = r.bicycle_id
+            WHERE r.is_deleted = FALSE
+            ORDER BY r.start_time DESC
+            LIMIT 1
+            """;
 
     List<LatestReservationInfo> result = jdbcTemplate.query(
         sql,
-        (rs, rowNum) ->
-            new LatestReservationInfo(
-                rs.getString("full_name"),
-                rs.getString("model"),
-                rs.getTimestamp("start_time")
-                    .toLocalDateTime()
-            )
+        (rs, rowNum) -> new LatestReservationInfo(
+            rs.getString("full_name"),
+            rs.getString("model"),
+            rs.getTimestamp("start_time").toLocalDateTime()
+        )
     );
 
-    return result.isEmpty()
-        ? null
-        : result.getFirst();
+    return result.isEmpty() ? null : result.getFirst();
   }
 }

@@ -17,22 +17,19 @@ import org.example.bicyclesharing.util.LocalizationManager;
 
 public class AddEditUserViewModel {
 
-  private static final String DEFAULT_IMAGE =
-      "/org/example/bicyclesharing/art/image/defaultImg.jpg";
+  private static final String DEFAULT_IMAGE = "/org/example/bicyclesharing/art/image/defaultImg.jpg";
 
   private final UserService userService;
   private final VerificationService verificationService;
   private final User editingUser;
 
   private final StringProperty titleText = new SimpleStringProperty();
-
   private final StringProperty saveButtonText = LocalizationManager.getStringProperty("save.button");
   private final StringProperty cancelButtonText = LocalizationManager.getStringProperty("cancel.button");
   private final StringProperty uploadButtonText = LocalizationManager.getStringProperty("uploadPhoto.button.text");
   private final StringProperty sendCodeButtonText = LocalizationManager.getStringProperty("button.send.code");
   private final StringProperty backButtonText = LocalizationManager.getStringProperty("button.back");
   private final StringProperty codeInfoText = LocalizationManager.getStringProperty("verification.code.info");
-
   private final StringProperty loginLabelText = LocalizationManager.getStringProperty("register.login");
   private final StringProperty passwordLabelText = LocalizationManager.getStringProperty("register.password");
   private final StringProperty emailLabelText = LocalizationManager.getStringProperty("register.email");
@@ -57,13 +54,9 @@ public class AddEditUserViewModel {
   private final BooleanProperty sendingCode = new SimpleBooleanProperty(false);
 
   private final ObjectProperty<Role> selectedRole = new SimpleObjectProperty<>();
-
-  private final ObjectProperty<ObservableList<Role>> roles =
-      new SimpleObjectProperty<>(FXCollections.observableArrayList(
-          Role.ADMIN,
-          Role.MANAGER,
-          Role.MECHANIC
-      ));
+  private final ObjectProperty<ObservableList<Role>> roles = new SimpleObjectProperty<>(
+      FXCollections.observableArrayList(Role.ADMIN, Role.MANAGER, Role.MECHANIC)
+  );
 
   private final StringProperty photoPreviewPath = new SimpleStringProperty(DEFAULT_IMAGE);
 
@@ -72,11 +65,9 @@ public class AddEditUserViewModel {
   private File selectedPhotoFile;
   private String imagePath;
 
-  public AddEditUserViewModel(
-      UserService userService,
+  public AddEditUserViewModel(UserService userService,
       VerificationService verificationService,
-      User editingUser
-  ) {
+      User editingUser) {
     this.userService = userService;
     this.verificationService = verificationService;
     this.editingUser = editingUser;
@@ -98,7 +89,6 @@ public class AddEditUserViewModel {
 
   private void initializeEditMode() {
     titleText.set(LocalizationManager.getStringByKey("admin.users.edit.title"));
-
     login.set(editingUser.getLogin());
     email.set(editingUser.getEmail());
     selectedRole.set(editingUser.getRole());
@@ -112,16 +102,10 @@ public class AddEditUserViewModel {
   }
 
   public void sendCodeAsync() {
-    if (sendingCode.get()) {
-      return;
-    }
-
-    if (!prepareForCodeSending()) {
-      return;
-    }
+    if (sendingCode.get()) return;
+    if (!prepareForCodeSending()) return;
 
     sendingCode.set(true);
-
     String targetEmail = pendingUserEmail();
 
     Task<Integer> task = new Task<>() {
@@ -149,7 +133,6 @@ public class AddEditUserViewModel {
 
   private boolean prepareForCodeSending() {
     clearErrors();
-
     try {
       User validatedUser = User.create(
           login.get(),
@@ -158,7 +141,7 @@ public class AddEditUserViewModel {
           selectedRole.get()
       );
 
-      userService.validateLoginIsUnique(validatedUser.getLogin());
+      userService.validateLoginIsUniqueForCreation(validatedUser.getLogin());
 
       pendingUser = validatedUser;
       return true;
@@ -173,30 +156,22 @@ public class AddEditUserViewModel {
   }
 
   public boolean save() {
-    if (sendingCode.get()) {
-      return false;
-    }
+    if (sendingCode.get()) return false;
 
     clearErrors();
-
-    if (!saveSelectedPhotoIfNeeded()) {
-      return false;
-    }
+    if (!saveSelectedPhotoIfNeeded()) return false;
 
     try {
       if (isEditMode()) {
         updateUser();
         return true;
+      } else {
+        return createUser();
       }
-
-      return createUser();
-
-    }
-    catch (CustomEntityValidationExeption e) {
+    } catch (CustomEntityValidationExeption e) {
       applyValidationErrors(e);
       return false;
-    }
-    catch (BusinessException e) {
+    } catch (BusinessException e) {
       applyBusinessError(e);
       return false;
     }
@@ -207,12 +182,10 @@ public class AddEditUserViewModel {
       codeError.set(LocalizationManager.getStringByKey("admin.users.send.code.first"));
       return false;
     }
-
     if (isBlank(code.get())) {
       codeError.set(LocalizationManager.getStringByKey("admin.users.code.required"));
       return false;
     }
-
     if (!String.valueOf(sentCode).equals(code.get().trim())) {
       codeError.set(LocalizationManager.getStringByKey("error.email.code_invalid"));
       return false;
@@ -228,13 +201,10 @@ public class AddEditUserViewModel {
     String emailValue = isBlank(email.get()) ? editingUser.getEmail() : email.get().trim();
     Role roleValue = selectedRole.get() != null ? selectedRole.get() : editingUser.getRole();
     String passwordValue = isBlank(password.get()) ? null : password.get().trim();
-
-    String finalImagePath = imagePath != null && !imagePath.isBlank()
-        ? imagePath
-        : editingUser.getImagePath();
+    String finalImagePath = imagePath != null && !imagePath.isBlank() ? imagePath : editingUser.getImagePath();
 
     if (!loginValue.equals(editingUser.getLogin())) {
-      userService.validateLoginIsUnique(loginValue);
+      userService.validateLoginIsUniqueForCreation(loginValue);
     }
 
     userService.validateRoleChange(editingUser, roleValue);
@@ -249,9 +219,7 @@ public class AddEditUserViewModel {
   }
 
   private boolean saveSelectedPhotoIfNeeded() {
-    if (selectedPhotoFile == null) {
-      return true;
-    }
+    if (selectedPhotoFile == null) return true;
 
     try {
       imagePath = ImageStorageUtil.saveImage(selectedPhotoFile, "users");
@@ -279,7 +247,6 @@ public class AddEditUserViewModel {
     if (pendingUser != null && pendingUser.getEmail() != null && !pendingUser.getEmail().isBlank()) {
       return pendingUser.getEmail();
     }
-
     return email.get() == null ? "" : email.get().trim();
   }
 
@@ -294,7 +261,6 @@ public class AddEditUserViewModel {
         case "password" -> passwordError.set(text);
         case "email" -> emailError.set(text);
         case "role" -> roleError.set(text);
-        case "code" -> codeError.set(text);
         case "imagePath" -> photoError.set(text);
       }
     });
@@ -305,7 +271,7 @@ public class AddEditUserViewModel {
     String message = LocalizationManager.getStringByKey(key);
 
     switch (key) {
-      case "error.login.exists" -> loginError.set(message);
+      case "error.user.login.exists", "error.login.exists" -> loginError.set(message);
       case "error.user.edit.last_admin_role", "error.user.not_found" -> roleError.set(message);
       default -> roleError.set(message);
     }
@@ -335,7 +301,6 @@ public class AddEditUserViewModel {
   public StringProperty sendCodeButtonTextProperty() { return sendCodeButtonText; }
   public StringProperty backButtonTextProperty() { return backButtonText; }
   public StringProperty codeInfoTextProperty() { return codeInfoText; }
-
   public StringProperty loginLabelTextProperty() { return loginLabelText; }
   public StringProperty passwordLabelTextProperty() { return passwordLabelText; }
   public StringProperty emailLabelTextProperty() { return emailLabelText; }
@@ -358,9 +323,7 @@ public class AddEditUserViewModel {
 
   public BooleanProperty codeStepProperty() { return codeStep; }
   public BooleanProperty sendingCodeProperty() { return sendingCode; }
-
   public ObjectProperty<Role> selectedRoleProperty() { return selectedRole; }
   public ObjectProperty<ObservableList<Role>> rolesProperty() { return roles; }
-
   public StringProperty photoPreviewPathProperty() { return photoPreviewPath; }
 }

@@ -19,23 +19,19 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
   public StationRepositoryDB(DataSource dataSource) {
     super(dataSource);
   }
-  @Override
-  public Station getById(UUID id) {
-    String sql = "SELECT * FROM STATIONS WHERE id = ?";
-    return jdbcTemplate.queryForObject(sql, rowMapper(), id.toString());
-  }
 
   @Override
   protected String getCreateTableSQL() {
     return """
-        CREATE TABLE IF NOT EXISTS STATIONS (
-            id VARCHAR(36) PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            latitude DOUBLE NOT NULL,
-            longitude DOUBLE NOT NULL,
-            bicycles_id TEXT
-        )
-        """;
+            CREATE TABLE IF NOT EXISTS STATIONS (
+                id VARCHAR(36) PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                latitude DOUBLE NOT NULL,
+                longitude DOUBLE NOT NULL,
+                bicycles_id TEXT,
+                is_deleted BOOLEAN DEFAULT FALSE NOT NULL
+            )
+            """;
   }
 
   @Override
@@ -70,17 +66,19 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
 
   @Override
   protected Object[] getInsertValues(Station entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getId().toString(),
         entity.getName(),
         entity.getLatitude(),
         entity.getLongitude(),
-        toCsv(entity.getBicyclesId())};
+        toCsv(entity.getBicyclesId()),
+        false
+    };
   }
 
   @Override
   protected Object[] getUpdateValues(Station entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getName(),
         entity.getLatitude(),
         entity.getLongitude(),
@@ -91,12 +89,7 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[] {
-        "name",
-        "latitude",
-        "longitude",
-        "bicycles_id"
-    };
+    return new String[]{"name", "latitude", "longitude", "bicycles_id"};
   }
 
   @Override
@@ -108,7 +101,6 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
     if (ids == null || ids.isEmpty()) {
       return "";
     }
-
     return ids.stream()
         .map(UUID::toString)
         .collect(Collectors.joining(","));
@@ -118,7 +110,6 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
     if (raw == null || raw.isBlank()) {
       return new ArrayList<>();
     }
-
     return Arrays.stream(raw.split(","))
         .map(String::trim)
         .filter(s -> !s.isEmpty())
@@ -126,9 +117,16 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
         .collect(Collectors.toList());
   }
 
+
+  @Override
+  public Station getById(UUID id) {
+    String sql = "SELECT * FROM STATIONS WHERE is_deleted = FALSE AND id = ?";
+    return jdbcTemplate.queryForObject(sql, rowMapper(), id.toString());
+  }
+
   @Override
   public List<Station> findByFilters(String search) {
-    QueryData query = new QueryData("SELECT * FROM STATIONS WHERE 1=1");
+    QueryData query = new QueryData("SELECT * FROM STATIONS WHERE is_deleted = FALSE");
 
     query.addLikeCondition("name", search);
     query.addOrderBy("name", "ASC");

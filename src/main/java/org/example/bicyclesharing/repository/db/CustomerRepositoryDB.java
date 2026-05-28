@@ -2,13 +2,21 @@ package org.example.bicyclesharing.repository.db;
 
 import java.util.List;
 import java.util.UUID;
-
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.Customer;
 import org.example.bicyclesharing.dto.LatestCustomerInfo;
 import org.example.bicyclesharing.repository.CustomerRepository;
 import org.springframework.jdbc.core.RowMapper;
 
 public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> implements CustomerRepository {
+
+  public CustomerRepositoryDB() {
+    super();
+  }
+
+  public CustomerRepositoryDB(DataSource dataSource) {
+    super(dataSource);
+  }
 
   @Override
   protected String getTableName() {
@@ -18,15 +26,16 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
   @Override
   protected String getCreateTableSQL() {
     return """
-      CREATE TABLE IF NOT EXISTS customers (
-        id VARCHAR(36) PRIMARY KEY,
-        full_name VARCHAR(255) NOT NULL,
-        phone_number VARCHAR(50) NOT NULL,
-        document_number VARCHAR(36),
-        active_rent VARCHAR(36),
-        active_reservation VARCHAR(36)
-      )
-    """;
+            CREATE TABLE IF NOT EXISTS customers (
+                id VARCHAR(36) PRIMARY KEY,
+                full_name VARCHAR(255) NOT NULL,
+                phone_number VARCHAR(50) NOT NULL,
+                document_number VARCHAR(36),
+                active_rent VARCHAR(36),
+                active_reservation VARCHAR(36),
+                is_deleted BOOLEAN DEFAULT FALSE NOT NULL
+            )
+            """;
   }
 
   @Override
@@ -54,7 +63,8 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
         e.getPhoneNumber(),
         e.getDocumentNumber(),
         e.getActiveRent() != null ? e.getActiveRent().toString() : null,
-        e.getActiveReservation() != null ? e.getActiveReservation().toString() : null
+        e.getActiveReservation() != null ? e.getActiveReservation().toString() : null,
+        false                                      // is_deleted
     };
   }
 
@@ -72,13 +82,7 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[]{
-        "full_name",
-        "phone_number",
-        "document_number",
-        "active_rent",
-        "active_reservation"
-    };
+    return new String[]{"full_name", "phone_number", "document_number", "active_rent", "active_reservation"};
   }
 
   @Override
@@ -88,34 +92,26 @@ public class CustomerRepositoryDB extends BaseRepositoryDB<Customer, UUID> imple
 
   @Override
   public List<Customer> findByFilters(String search) {
-    QueryData query = new QueryData("SELECT * FROM customers WHERE 1=1");
-
+    QueryData query = new QueryData("SELECT * FROM customers WHERE is_deleted = FALSE");
     query.addLikeCondition("full_name", search);
-    query.addOrderBy("full_name","ASC");
-
+    query.addOrderBy("full_name", "ASC");
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
   }
 
   @Override
   public LatestCustomerInfo getLatestCustomerInfo() {
     String sql = """
-      SELECT
-          full_name
-      FROM CUSTOMERS
-      ORDER BY full_name DESC
-      LIMIT 1
-      """;
+            SELECT full_name 
+            FROM customers 
+            WHERE is_deleted = FALSE 
+            ORDER BY full_name DESC LIMIT 1
+            """;
 
     List<LatestCustomerInfo> result = jdbcTemplate.query(
         sql,
-        (rs, rowNum) ->
-            new LatestCustomerInfo(
-                rs.getString("full_name")
-            )
+        (rs, rowNum) -> new LatestCustomerInfo(rs.getString("full_name"))
     );
 
-    return result.isEmpty()
-        ? null
-        : result.getFirst();
+    return result.isEmpty() ? null : result.getFirst();
   }
 }

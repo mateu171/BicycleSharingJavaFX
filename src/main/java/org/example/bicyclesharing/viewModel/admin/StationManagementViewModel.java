@@ -77,7 +77,7 @@ public class StationManagementViewModel extends AsyncViewModel {
       return;
     }
 
-    stationService.deleteStation(item.getStation());
+    stationService.deleteStation(item.getStation().getId());
     refreshAsync();
   }
 

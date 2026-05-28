@@ -47,49 +47,76 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
 
   @Override
   protected Object[] getInsertValues(User entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getId().toString(),
         entity.getLogin(),
         entity.getHashedPassword(),
         entity.getEmail(),
         entity.getRole().name(),
-        entity.getImagePath()
+        entity.getImagePath(),
+        false
     };
   }
 
   @Override
   protected Object[] getUpdateValues(User entity) {
-    return new Object[] {
+    return new Object[]{
         entity.getLogin(),
         entity.getHashedPassword(),
         entity.getEmail(),
         entity.getRole().name(),
         entity.getImagePath(),
+        entity.isDeleted(),
         entity.getId().toString()
     };
   }
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[] {
+    return new String[]{
         "login",
         "password",
         "email",
         "role",
-        "image_path"
+        "image_path",
+        "is_deleted"
     };
   }
 
   @Override
+  protected String getCreateTableSQL() {
+    return "CREATE TABLE IF NOT EXISTS USERS (" +
+        "id VARCHAR(36) PRIMARY KEY," +
+        "login VARCHAR(255) NOT NULL UNIQUE," +
+        "password VARCHAR(255) NOT NULL," +
+        "email VARCHAR(255) NOT NULL," +
+        "role VARCHAR(50) NOT NULL," +
+        "image_path VARCHAR(255)," +
+        "is_deleted BOOLEAN DEFAULT FALSE NOT NULL" +
+        ")";
+  }
+
+
+  @Override
   public User findByLogin(String login) {
-    String sql = "SELECT * FROM USERS WHERE login = ?";
+    String sql = "SELECT * FROM USERS WHERE is_deleted = FALSE AND login = ?";
     List<User> users = jdbcTemplate.query(sql, rowMapper(), login);
     return users.isEmpty() ? null : users.get(0);
   }
 
   @Override
+  public boolean existsByLoginActive(String login) {
+    String sql = """
+            SELECT COUNT(*) FROM USERS 
+            WHERE is_deleted = FALSE AND login = ?
+            """;
+    Long count = jdbcTemplate.queryForObject(sql, Long.class, login);
+    return count != null && count > 0;
+  }
+
+  @Override
   public List<User> findByFilters(String search, Role role) {
-    QueryData query = new QueryData("SELECT * FROM USERS WHERE 1=1");
+    QueryData query = new QueryData("SELECT * FROM USERS WHERE is_deleted = FALSE");
 
     if (search != null && !search.isBlank()) {
       String pattern = "%" + search.trim() + "%";
@@ -101,19 +128,8 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
       query.addEqualsCondition("role", role.name());
     }
 
-    query.addOrderBy("login","ASC");
+    query.addOrderBy("login", "ASC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
-  }
-
-  @Override
-  protected String getCreateTableSQL() {
-    return "CREATE TABLE IF NOT EXISTS USERS (" +
-        "id VARCHAR(36) PRIMARY KEY," +
-        "login VARCHAR(255) NOT NULL UNIQUE," +
-        "password VARCHAR(255) NOT NULL," +
-        "email VARCHAR(255) NOT NULL," +
-        "role VARCHAR(50) NOT NULL," +
-        "image_path VARCHAR(255)" + ")";
   }
 }

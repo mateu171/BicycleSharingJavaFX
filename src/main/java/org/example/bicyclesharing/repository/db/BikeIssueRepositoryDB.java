@@ -3,7 +3,7 @@ package org.example.bicyclesharing.repository.db;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-
+import javax.sql.DataSource;
 import org.example.bicyclesharing.domain.Impl.BikeIssue;
 import org.example.bicyclesharing.domain.enums.IssueStatus;
 import org.example.bicyclesharing.dto.LatestIssueInfo;
@@ -28,17 +28,18 @@ public class BikeIssueRepositoryDB extends BaseRepositoryDB<BikeIssue, UUID> imp
   @Override
   protected String getCreateTableSQL() {
     return """
-      CREATE TABLE IF NOT EXISTS bike_issues (
-        id VARCHAR(36) PRIMARY KEY,
-        rental_id VARCHAR(36) NOT NULL,
-        bicycle_id VARCHAR(36) NOT NULL,
-        problem_type VARCHAR(100) NOT NULL,
-        comment VARCHAR(500),
-        technical_problem BOOLEAN NOT NULL,
-        created_at TIMESTAMP NOT NULL,
-        status VARCHAR(50) NOT NULL
-      )
-    """;
+            CREATE TABLE IF NOT EXISTS bike_issues (
+                id VARCHAR(36) PRIMARY KEY,
+                rental_id VARCHAR(36) NOT NULL,
+                bicycle_id VARCHAR(36) NOT NULL,
+                problem_type VARCHAR(100) NOT NULL,
+                comment VARCHAR(500),
+                technical_problem BOOLEAN NOT NULL,
+                created_at TIMESTAMP NOT NULL,
+                status VARCHAR(50) NOT NULL,
+                is_deleted BOOLEAN DEFAULT FALSE NOT NULL
+            )
+            """;
   }
 
   @Override
@@ -70,7 +71,8 @@ public class BikeIssueRepositoryDB extends BaseRepositoryDB<BikeIssue, UUID> imp
         e.getComment(),
         e.isTechnicalProblem(),
         Timestamp.valueOf(e.getCreatedAt()),
-        e.getStatus().name()
+        e.getStatus().name(),
+        false                          // is_deleted
     };
   }
 
@@ -90,15 +92,7 @@ public class BikeIssueRepositoryDB extends BaseRepositoryDB<BikeIssue, UUID> imp
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[]{
-        "rental_id",
-        "bicycle_id",
-        "problem_type",
-        "comment",
-        "technical_problem",
-        "created_at",
-        "status"
-    };
+    return new String[]{"rental_id", "bicycle_id", "problem_type", "comment", "technical_problem", "created_at", "status"};
   }
 
   @Override
@@ -108,49 +102,40 @@ public class BikeIssueRepositoryDB extends BaseRepositoryDB<BikeIssue, UUID> imp
 
   @Override
   public LatestIssueInfo getLatestIssueInfo() {
-
     String sql = """
-      SELECT
-          b.model,
-          i.problem_type,
-          i.created_at
-      FROM bike_issues i
-      JOIN bicycles b ON b.id = i.bicycle_id
-      ORDER BY i.created_at DESC
-      LIMIT 1
-    """;
+            SELECT b.model, i.problem_type, i.created_at 
+            FROM bike_issues i 
+            JOIN bicycles b ON b.id = i.bicycle_id 
+            WHERE i.is_deleted = FALSE 
+            ORDER BY i.created_at DESC LIMIT 1
+            """;
 
-    List<LatestIssueInfo> list = jdbcTemplate.query(sql, (rs, rowNum) ->
-        new LatestIssueInfo(
+    List<LatestIssueInfo> list = jdbcTemplate.query(
+        sql,
+        (rs, rowNum) -> new LatestIssueInfo(
             rs.getString("model"),
             rs.getString("problem_type"),
             rs.getTimestamp("created_at").toLocalDateTime()
         )
     );
-
     return list.isEmpty() ? null : list.getFirst();
   }
 
   @Override
   public long countTechnicalIssues() {
     String sql = """
-    SELECT COUNT(*)
-    FROM bike_issues
-    WHERE technical_problem = TRUE
-    """;
-
-    Long res = jdbcTemplate.queryForObject(
-        sql,
-        Long.class
-    );
-
+            SELECT COUNT(*) 
+            FROM bike_issues 
+            WHERE is_deleted = FALSE AND technical_problem = TRUE
+            """;
+    Long res = jdbcTemplate.queryForObject(sql, Long.class);
     return res == null ? 0 : res;
   }
 
   @Override
   public List<BikeIssue> findByStatus(IssueStatus status) {
     return jdbcTemplate.query(
-        "SELECT * FROM bike_issues WHERE status = ?",
+        "SELECT * FROM bike_issues WHERE is_deleted = FALSE AND status = ?",
         rowMapper(),
         status.name()
     );
@@ -159,7 +144,7 @@ public class BikeIssueRepositoryDB extends BaseRepositoryDB<BikeIssue, UUID> imp
   @Override
   public List<BikeIssue> findByBicycleId(UUID bicycleId) {
     return jdbcTemplate.query(
-        "SELECT * FROM bike_issues WHERE bicycle_id = ?",
+        "SELECT * FROM bike_issues WHERE is_deleted = FALSE AND bicycle_id = ?",
         rowMapper(),
         bicycleId.toString()
     );
@@ -167,11 +152,12 @@ public class BikeIssueRepositoryDB extends BaseRepositoryDB<BikeIssue, UUID> imp
 
   @Override
   public long countByIssueStatus(IssueStatus status) {
-    Long res = jdbcTemplate.queryForObject(
-        "SELECT COUNT(*) FROM bike_issues WHERE status = ?",
-        Long.class,
-        status.name()
-    );
+    String sql = """
+            SELECT COUNT(*) 
+            FROM bike_issues 
+            WHERE is_deleted = FALSE AND status = ?
+            """;
+    Long res = jdbcTemplate.queryForObject(sql, Long.class, status.name());
     return res == null ? 0 : res;
   }
 }

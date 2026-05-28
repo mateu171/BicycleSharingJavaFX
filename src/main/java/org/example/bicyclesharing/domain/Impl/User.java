@@ -69,6 +69,11 @@ public class User extends BaseEntity {
     }
   }
 
+  public void prepareForSoftDelete() {
+    markAsDeleted();
+    this.login = this.login + "_deleted_" + this.getId();
+  }
+
   public String getLogin() {
     return login;
   }

@@ -9,11 +9,13 @@ import org.example.bicyclesharing.domain.interfaces.Entity;
 public abstract class BaseEntity implements Entity {
 
   private UUID id;
+  private boolean isDeleted;
   protected HashMap<String, List<String>> errors;
 
   protected BaseEntity() {
     this.id = UUID.randomUUID();
     this.errors = new HashMap<>();
+    this.isDeleted = false;
   }
 
   protected void addError(String field, String message) {
@@ -57,5 +59,13 @@ public abstract class BaseEntity implements Entity {
   @Override
   public void setId(UUID id) {
     this.id = id;
+  }
+
+  public boolean isDeleted() {
+    return isDeleted;
+  }
+
+  public void markAsDeleted() {
+    this.isDeleted = true;
   }
 }

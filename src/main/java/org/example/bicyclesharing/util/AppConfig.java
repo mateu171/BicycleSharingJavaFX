@@ -119,7 +119,7 @@ public final class AppConfig {
       new CustomerService(CUSTOMER_REPOSITORY);
 
   private static final UserService USER_SERVICE =
-      new UserService(USER_REPOSITORY, PASSWORD_HASHER);
+      new UserService(USER_REPOSITORY);
 
   private static final AuthService AUTH_SERVICE =
       new AuthService(USER_REPOSITORY);

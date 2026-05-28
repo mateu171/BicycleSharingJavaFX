@@ -31,22 +31,28 @@ public class StationService extends BaseService<Station, UUID>{
     return repository.findByFilters(search);
   }
 
-  public void deleteStation(Station station) {
+  public void deleteStation(UUID stationId) {
+
+    Station station = getById(stationId);
     if (station == null) {
       throw new BusinessException("error.station.not_found");
     }
 
     executeInTransaction(() -> {
       for (UUID bicycleId : station.getBicyclesId()) {
-        Bicycle bicycle = bicycleService.getById(bicycleId).orElse(null);
-
-        if (bicycle != null) {
+        System.out.println("Processing bicycle: " + bicycleId);
+        bicycleService.getById(bicycleId).ifPresent(bicycle -> {
           bicycle.setStationId(null);
           bicycleService.update(bicycle);
-        }
+          System.out.println("Bicycle " + bicycleId + " detached");
+        });
       }
 
-      deleteById(station.getId());
+      boolean deleted = repository.deleteById(stationId);
+
+      if (!deleted) {
+        throw new BusinessException("error.station.delete.failed");
+      }
     });
   }
 }

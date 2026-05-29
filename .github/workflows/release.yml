@@ -1,211 +1,225 @@
-  name: Build Installers
+name: Build Installers
 
-  on:
-    workflow_dispatch:
+on:
+  workflow_dispatch:
 
-    push:
-      tags:
-        - "v*.*.*"
+  push:
+    tags:
+      - "v*.*.*"
 
-  permissions:
-    contents: write
+permissions:
+  contents: write
 
-  env:
-    APP_NAME: BicycleSharing
-    MAIN_JAR: BicycleSharing-fat.jar
-    MAIN_CLASS: org.example.bicyclesharing.Launcher
+env:
+  APP_NAME: BicycleSharing
+  MAIN_JAR: BicycleSharing-1.0-SNAPSHOT.jar
+  MAIN_CLASS: org.example.bicyclesharing.Launcher
 
-  jobs:
+jobs:
 
-    build-windows:
-      runs-on: windows-latest
+  build-windows:
+    runs-on: windows-latest
 
-      steps:
-        - uses: actions/checkout@v4
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Setup JDK
-          uses: actions/setup-java@v4
-          with:
-            distribution: temurin
-            java-version: 25
-            cache: maven
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
 
-        - name: Install WiX
-          run: choco install wixtoolset --yes
+      - name: Install WiX
+        shell: powershell
+        run: choco install wixtoolset --yes --no-progress
 
-        - name: Build project
-          run: mvn clean package -DskipTests
+      - name: Build project
+        run: mvn clean package -DskipTests
 
-        - name: Build MSI
-          shell: powershell
-          run: |
-            jpackage `
-              --type msi `
-              --name "${{ env.APP_NAME }}" `
-              --app-version "${{ github.ref_name }}" `
-              --vendor "Serhii" `
-              --input target `
-              --main-jar "${{ env.MAIN_JAR }}" `
-              --main-class "${{ env.MAIN_CLASS }}" `
-              --dest dist `
-              --win-dir-chooser `
-              --win-menu `
-              --win-shortcut
+      - name: Show target files
+        run: dir target
 
-        - name: Rename installer
-          shell: powershell
-          run: |
-            $file = Get-ChildItem dist/*.msi | Select-Object -First 1
-            Move-Item $file.FullName "dist/${{ env.APP_NAME }}-Windows.msi"
+      - name: Build MSI
+        shell: powershell
+        run: |
+          jpackage `
+            --type msi `
+            --name "BicycleSharing" `
+            --app-version "${{ github.ref_name }}" `
+            --vendor "Serhii" `
+            --input target `
+            --main-jar "${{ env.MAIN_JAR }}" `
+            --main-class "${{ env.MAIN_CLASS }}" `
+            --dest dist `
+            --win-dir-chooser `
+            --win-menu `
+            --win-shortcut
 
-        - name: Upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: windows-installer
-            path: dist/*.msi
-            compression-level: 0
+      - name: Rename installer
+        shell: powershell
+        run: |
+          $file = Get-ChildItem dist/*.msi | Select-Object -First 1
+          Move-Item $file.FullName "dist/${{ env.APP_NAME }}-Windows.msi"
 
-    build-macos-intel:
-      runs-on: macos-15-intel
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/*.msi
+          compression-level: 0
 
-      steps:
-        - uses: actions/checkout@v4
 
-        - name: Setup JDK
-          uses: actions/setup-java@v4
-          with:
-            distribution: temurin
-            java-version: 25
-            cache: maven
+  build-macos-intel:
+    runs-on: macos-13
 
-        - name: Build project
-          run: mvn clean package -DskipTests
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Build DMG Intel
-          run: |
-            jpackage \
-              --type dmg \
-              --name "${{ env.APP_NAME }}" \
-              --app-version "${{ github.ref_name }}" \
-              --vendor "Serhii" \
-              --input target \
-              --main-jar "${{ env.MAIN_JAR }}" \
-              --main-class "${{ env.MAIN_CLASS }}" \
-              --dest dist
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
 
-        - name: Rename installer
-          run: |
-            mv dist/*.dmg dist/${{ env.APP_NAME }}-macOS-Intel.dmg
+      - name: Build project
+        run: mvn clean package -DskipTests
 
-        - name: Upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: macos-intel-installer
-            path: dist/*.dmg
-            compression-level: 0
+      - name: Show target files
+        run: ls -la target
 
-    build-macos-apple:
-      runs-on: macos-14
+      - name: Build DMG Intel
+        run: |
+          jpackage \
+            --type dmg \
+            --name "BicycleSharing" \
+            --app-version "${{ github.ref_name }}" \
+            --vendor "Serhii" \
+            --input target \
+            --main-jar "${{ env.MAIN_JAR }}" \
+            --main-class "${{ env.MAIN_CLASS }}" \
+            --dest dist
 
-      steps:
-        - uses: actions/checkout@v4
+      - name: Rename installer
+        run: mv dist/*.dmg dist/${{ env.APP_NAME }}-macOS-Intel.dmg
 
-        - name: Setup JDK
-          uses: actions/setup-java@v4
-          with:
-            distribution: temurin
-            java-version: 25
-            cache: maven
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-intel-installer
+          path: dist/*.dmg
+          compression-level: 0
 
-        - name: Build project
-          run: mvn clean package -DskipTests
 
-        - name: Build DMG Apple Silicon
-          run: |
-            jpackage \
-              --type dmg \
-              --name "${{ env.APP_NAME }}" \
-              --app-version "${{ github.ref_name }}" \
-              --vendor "Serhii" \
-              --input target \
-              --main-jar "${{ env.MAIN_JAR }}" \
-              --main-class "${{ env.MAIN_CLASS }}" \
-              --dest dist
+  build-macos-apple:
+    runs-on: macos-14
 
-        - name: Rename installer
-          run: |
-            mv dist/*.dmg dist/${{ env.APP_NAME }}-macOS-AppleSilicon.dmg
+    steps:
+      - uses: actions/checkout@v4
 
-        - name: Upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: macos-apple-installer
-            path: dist/*.dmg
-            compression-level: 0
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
 
-    build-linux:
-      runs-on: ubuntu-latest
+      - name: Build project
+        run: mvn clean package -DskipTests
 
-      steps:
-        - uses: actions/checkout@v4
+      - name: Show target files
+        run: ls -la target
 
-        - name: Setup JDK
-          uses: actions/setup-java@v4
-          with:
-            distribution: temurin
-            java-version: 25
-            cache: maven
+      - name: Build DMG Apple Silicon
+        run: |
+          jpackage \
+            --type dmg \
+            --name "BicycleSharing" \
+            --app-version "${{ github.ref_name }}" \
+            --vendor "Serhii" \
+            --input target \
+            --main-jar "${{ env.MAIN_JAR }}" \
+            --main-class "${{ env.MAIN_CLASS }}" \
+            --dest dist
 
-        - name: Build project
-          run: mvn clean package -DskipTests
+      - name: Rename installer
+        run: mv dist/*.dmg dist/${{ env.APP_NAME }}-macOS-AppleSilicon.dmg
 
-        - name: Build DEB
-          run: |
-            jpackage \
-              --type deb \
-              --name "bicyclesharing" \
-              --app-version "${{ github.ref_name }}" \
-              --vendor "Serhii" \
-              --input target \
-              --main-jar "${{ env.MAIN_JAR }}" \
-              --main-class "${{ env.MAIN_CLASS }}" \
-              --dest dist \
-              --linux-shortcut
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-apple-installer
+          path: dist/*.dmg
+          compression-level: 0
 
-        - name: Rename installer
-          run: |
-            mv dist/*.deb dist/${{ env.APP_NAME }}-Linux.deb
 
-        - name: Upload artifact
-          uses: actions/upload-artifact@v4
-          with:
-            name: linux-installer
-            path: dist/*.deb
-            compression-level: 0
+  build-linux:
+    runs-on: ubuntu-latest
 
-    publish-release:
-      needs:
-        - build-windows
-        - build-macos-intel
-        - build-macos-apple
-        - build-linux
+    steps:
+      - uses: actions/checkout@v4
 
-      runs-on: ubuntu-latest
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
 
-      steps:
-        - name: Download artifacts
-          uses: actions/download-artifact@v4
-          with:
-            path: release-files
-            merge-multiple: true
+      - name: Build project
+        run: mvn clean package -DskipTests
 
-        - name: Show files
-          run: ls -la release-files
+      - name: Show target files
+        run: ls -la target
 
-        - name: Create GitHub Release
-          uses: softprops/action-gh-release@v2
-          with:
-            name: "${{ env.APP_NAME }} ${{ github.ref_name }}"
-            generate_release_notes: true
-            files: |
-              release-files/*
+      - name: Build DEB
+        run: |
+          jpackage \
+            --type deb \
+            --name "BicycleSharing" \
+            --app-version "${{ github.ref_name }}" \
+            --vendor "Serhii" \
+            --input target \
+            --main-jar "${{ env.MAIN_JAR }}" \
+            --main-class "${{ env.MAIN_CLASS }}" \
+            --dest dist \
+            --linux-shortcut
+
+      - name: Rename installer
+        run: mv dist/*.deb dist/${{ env.APP_NAME }}-Linux.deb
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-installer
+          path: dist/*.deb
+          compression-level: 0
+
+
+  publish-release:
+    needs:
+      - build-windows
+      - build-macos-intel
+      - build-macos-apple
+      - build-linux
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-files
+          merge-multiple: true
+
+      - name: Show files
+        run: ls -la release-files
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ env.APP_NAME }} ${{ github.ref_name }}"
+          generate_release_notes: true
+          files: |
+            release-files/*

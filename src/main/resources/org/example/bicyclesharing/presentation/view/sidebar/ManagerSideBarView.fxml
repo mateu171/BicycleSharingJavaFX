@@ -32,7 +32,7 @@
   <HBox styleClass="menu-container" spacing="10" alignment="CENTER_LEFT">
     <ImageView fitHeight="20" fitWidth="20" preserveRatio="true">
       <image>
-        <Image url="@../../../art/icon/rent.png" />
+        <Image url="@../../../art/icon/bikeRental.png" />
       </image>
     </ImageView>
     <Button fx:id="btnManagerActiveRentals" styleClass="menu-button" onAction="#onShowActiveRentals"/>

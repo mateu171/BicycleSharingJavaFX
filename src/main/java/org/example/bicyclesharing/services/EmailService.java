@@ -1,19 +1,14 @@
 package org.example.bicyclesharing.services;
 
-import jakarta.mail.Authenticator;
-import jakarta.mail.Message;
-import jakarta.mail.PasswordAuthentication;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
+import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import org.example.bicyclesharing.exception.EmailExeption;
 
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
-
-import org.example.bicyclesharing.exception.EmailExeption;
 
 public class EmailService {
 
@@ -23,10 +18,24 @@ public class EmailService {
   public EmailService() {
 
     Properties config = new Properties();
+    InputStream input = null;
 
-    try (InputStream input = Files.newInputStream(
-        Paths.get("config", "email.properties")
-    )) {
+    try {
+      if (Files.exists(Paths.get("config/email.properties"))) {
+        input = Files.newInputStream(Paths.get("config/email.properties"));
+      }
+
+      if (input == null) {
+        input = getClass().getClassLoader()
+            .getResourceAsStream("config/email.properties");
+      }
+
+      if (input == null) {
+        throw new RuntimeException(
+            "Не знайдено config/email.properties ні в файловій системі, ні в resources"
+        );
+      }
+
       config.load(input);
 
       fromEmail = config.getProperty("email.username");
@@ -34,19 +43,23 @@ public class EmailService {
 
     } catch (Exception e) {
       throw new RuntimeException("Помилка завантаження email конфігурації", e);
+    } finally {
+      try {
+        if (input != null) input.close();
+      } catch (Exception ignored) {}
     }
   }
 
   public void send(String to, String subject, String text) {
 
     try {
-      Properties properties = new Properties();
-      properties.put("mail.smtp.auth", "true");
-      properties.put("mail.smtp.starttls.enable", "true");
-      properties.put("mail.smtp.host", "smtp.gmail.com");
-      properties.put("mail.smtp.port", "587");
+      Properties props = new Properties();
+      props.put("mail.smtp.auth", "true");
+      props.put("mail.smtp.starttls.enable", "true");
+      props.put("mail.smtp.host", "smtp.gmail.com");
+      props.put("mail.smtp.port", "587");
 
-      Session session = Session.getInstance(properties, new Authenticator() {
+      Session session = Session.getInstance(props, new Authenticator() {
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
           return new PasswordAuthentication(fromEmail, password);

@@ -8,54 +8,44 @@ import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 import org.example.bicyclesharing.exception.EmailExeption;
 
 public class EmailService {
 
-  private final String fromEmail;
-  private final String password;
+  private static final String FROM_EMAIL = "morgus288@gmail.com";
 
-  public EmailService() {
-
-    Properties config = new Properties();
-
-    try (InputStream input = Files.newInputStream(
-        Paths.get("config", "email.properties")
-    )) {
-      config.load(input);
-
-      fromEmail = config.getProperty("email.username");
-      password = config.getProperty("email.password");
-
-    } catch (Exception e) {
-      throw new RuntimeException("Помилка завантаження email конфігурації", e);
-    }
-  }
+  private static final String PASSWORD = "zbnb qxcn qpmm deks";
 
   public void send(String to, String subject, String text) {
 
     try {
-      Properties properties = new Properties();
-      properties.put("mail.smtp.auth", "true");
-      properties.put("mail.smtp.starttls.enable", "true");
-      properties.put("mail.smtp.host", "smtp.gmail.com");
-      properties.put("mail.smtp.port", "587");
 
-      Session session = Session.getInstance(properties, new Authenticator() {
+      Properties props = new Properties();
+
+      props.put("mail.smtp.auth", "true");
+      props.put("mail.smtp.starttls.enable", "true");
+      props.put("mail.smtp.host", "smtp.gmail.com");
+      props.put("mail.smtp.port", "587");
+
+      Session session = Session.getInstance(props, new Authenticator() {
+
         @Override
         protected PasswordAuthentication getPasswordAuthentication() {
-          return new PasswordAuthentication(fromEmail, password);
+          return new PasswordAuthentication(FROM_EMAIL, PASSWORD);
         }
       });
 
       MimeMessage message = new MimeMessage(session);
-      message.setFrom(new InternetAddress(fromEmail));
-      message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+
+      message.setFrom(new InternetAddress(FROM_EMAIL));
+
+      message.setRecipients(
+          Message.RecipientType.TO,
+          InternetAddress.parse(to)
+      );
+
       message.setSubject(subject, "UTF-8");
       message.setText(text, "UTF-8");
 

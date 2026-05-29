@@ -29,7 +29,7 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Build
+      - name: Build project
         run: mvn clean package -DskipTests
 
       - name: Prepare input
@@ -41,7 +41,9 @@ jobs:
 
       - name: Get version
         shell: powershell
-        run: echo "VERSION=${{ github.ref_name }}" -replace "^v","" >> $env:GITHUB_ENV
+        run: |
+          $ver = "${{ github.ref_name }}" -replace "^v",""
+          echo "VERSION=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Build MSI
         shell: powershell
@@ -49,14 +51,14 @@ jobs:
           jpackage `
             --type msi `
             --name "${{ env.APP_NAME }}" `
-            --app-version "${{ env.VERSION }}" `
+            --app-version "$env:VERSION" `
             --vendor "Serhii" `
             --input jpackage-input `
             --main-jar app.jar `
             --main-class "${{ env.MAIN_CLASS }}" `
             --dest dist
 
-      - name: Upload
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows
@@ -77,7 +79,7 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Build
+      - name: Build project
         run: mvn clean package -DskipTests
 
       - name: Prepare input
@@ -93,14 +95,14 @@ jobs:
           jpackage \
             --type deb \
             --name "${APP_NAME}" \
-            --app-version "${VERSION}" \
+            --app-version "$VERSION" \
             --vendor "Serhii" \
             --input jpackage-input \
             --main-jar app.jar \
             --main-class "${MAIN_CLASS}" \
             --dest dist
 
-      - name: Upload
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: linux
@@ -121,7 +123,7 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Build
+      - name: Build project
         run: mvn clean package -DskipTests
 
       - name: Prepare input
@@ -137,14 +139,14 @@ jobs:
           jpackage \
             --type dmg \
             --name "${APP_NAME}" \
-            --app-version "${VERSION}" \
+            --app-version "$VERSION" \
             --vendor "Serhii" \
             --input jpackage-input \
             --main-jar app.jar \
             --main-class "${MAIN_CLASS}" \
             --dest dist
 
-      - name: Upload
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: macos
@@ -169,6 +171,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "${{ env.APP_NAME }} ${{ github.ref_name }}"
+          name: "BicycleSharing ${{ github.ref_name }}"
           generate_release_notes: true
           files: release/*

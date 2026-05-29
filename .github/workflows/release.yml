@@ -36,15 +36,21 @@ jobs:
       - name: Build project
         run: mvn clean package -DskipTests
 
-      - name: Debug target folder
+      - name: Debug target
         shell: powershell
         run: dir target
 
-      - name: Detect JAR automatically
+      - name: Detect JAR
         shell: powershell
         run: |
           $jar = Get-ChildItem target/*.jar | Where-Object { $_.Name -notlike "*sources*" } | Select-Object -First 1
           echo "JAR_NAME=$($jar.Name)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Clean version
+        shell: powershell
+        run: |
+          $ver = "${{ github.ref_name }}" -replace "^v", ""
+          echo "VERSION=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Build MSI
         shell: powershell
@@ -52,7 +58,7 @@ jobs:
           jpackage `
             --type msi `
             --name "${{ env.APP_NAME }}" `
-            --app-version "${{ github.ref_name }}" `
+            --app-version "${{ env.VERSION }}" `
             --vendor "Serhii" `
             --input target `
             --main-jar "${{ env.JAR_NAME }}" `
@@ -91,17 +97,24 @@ jobs:
       - name: Build project
         run: mvn clean package -DskipTests
 
-      - name: Detect JAR automatically
+      - name: Debug target
+        run: ls -la target
+
+      - name: Detect JAR
         run: |
           JAR=$(ls target/*.jar | grep -v sources | head -n 1)
           echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
+
+      - name: Clean version
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Build DMG
         run: |
           jpackage \
             --type dmg \
             --name "${{ env.APP_NAME }}" \
-            --app-version "${{ github.ref_name }}" \
+            --app-version "${{ env.VERSION }}" \
             --vendor "Serhii" \
             --input target \
             --main-jar "${{ env.JAR_NAME }}" \
@@ -134,20 +147,24 @@ jobs:
       - name: Build project
         run: mvn clean package -DskipTests
 
-      - name: Debug target folder
+      - name: Debug target
         run: ls -la target
 
-      - name: Detect JAR automatically
+      - name: Detect JAR
         run: |
           JAR=$(ls target/*.jar | grep -v sources | head -n 1)
           echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
+
+      - name: Clean version
+        run: |
+          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Build DEB
         run: |
           jpackage \
             --type deb \
             --name "${{ env.APP_NAME }}" \
-            --app-version "${{ github.ref_name }}" \
+            --app-version "${{ env.VERSION }}" \
             --vendor "Serhii" \
             --input target \
             --main-jar "${{ env.JAR_NAME }}" \
@@ -182,6 +199,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "${{ env.APP_NAME }} ${{ github.ref_name }}"
+          name: "${{ env.APP_NAME }} ${GITHUB_REF_NAME#v}"
           generate_release_notes: true
           files: release-files/*

@@ -148,7 +148,8 @@ public class UsersManagementController extends BaseController {
               )
       );
     } catch (Exception e) {
-      DialogUtil.showError(LocalizationManager.getStringByKey("error.operation.failed"));
+      DialogUtil.showError("error.operation.failed");
+      System.out.println(e.getMessage());
     }
   }
 

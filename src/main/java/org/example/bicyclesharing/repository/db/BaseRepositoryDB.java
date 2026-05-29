@@ -17,7 +17,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 public abstract class BaseRepositoryDB<T, ID> implements Repository<T, ID> {
 
-  private static final Path DB_DIRECTORY = Path.of(System.getProperty("user.dir"), "db");
+  private static final Path DB_DIRECTORY = getDatabaseDirectory();
 
   private static final String DB_URL =
       "jdbc:h2:file:" +
@@ -26,6 +26,40 @@ public abstract class BaseRepositoryDB<T, ID> implements Repository<T, ID> {
               .toString()
               .replace("\\", "/") +
           ";DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE";
+
+  private static Path getDatabaseDirectory() {
+
+    String os = System.getProperty("os.name").toLowerCase();
+
+    if (os.contains("win")) {
+
+      return Path.of(
+          System.getenv("LOCALAPPDATA"),
+          "BicycleSharing",
+          "db"
+      );
+
+    } else if (os.contains("mac")) {
+
+      return Path.of(
+          System.getProperty("user.home"),
+          "Library",
+          "Application Support",
+          "BicycleSharing",
+          "db"
+      );
+
+    } else {
+
+      return Path.of(
+          System.getProperty("user.home"),
+          ".local",
+          "share",
+          "BicycleSharing",
+          "db"
+      );
+    }
+  }
 
   private static final Set<String> ALLOWED_COLUMNS = Set.of(
       "model", "start_time", "login", "created_at", "name"

@@ -2,7 +2,6 @@ name: Build Installers
 
 on:
   workflow_dispatch:
-
   push:
     tags:
       - "v*.*.*"
@@ -29,14 +28,10 @@ jobs:
           java-version: 25
           cache: maven
 
-      - name: Install WiX
-        shell: powershell
-        run: choco install wixtoolset --yes --no-progress
-
       - name: Build project
         run: mvn clean package -DskipTests
 
-      - name: Debug target
+      - name: Show target
         shell: powershell
         run: dir target
 
@@ -52,6 +47,13 @@ jobs:
           $ver = "${{ github.ref_name }}" -replace "^v", ""
           echo "VERSION=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append
 
+      - name: Create runtime (jlink)
+        shell: powershell
+        run: |
+          jlink `
+            --add-modules java.base,java.desktop `
+            --output runtime
+
       - name: Build MSI
         shell: powershell
         run: |
@@ -63,72 +65,23 @@ jobs:
             --input target `
             --main-jar "${{ env.JAR_NAME }}" `
             --main-class "${{ env.MAIN_CLASS }}" `
+            --runtime-image runtime `
             --dest dist `
             --win-dir-chooser `
             --win-menu `
             --win-shortcut
 
-      - name: Rename installer
+      - name: Rename
         shell: powershell
         run: |
           $file = Get-ChildItem dist/*.msi | Select-Object -First 1
           Move-Item $file.FullName "dist/${{ env.APP_NAME }}-Windows.msi"
 
-      - name: Upload artifact
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: windows-installer
+          name: windows
           path: dist/*.msi
-
-
-  build-macos:
-    runs-on: macos-14
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 25
-          cache: maven
-
-      - name: Build project
-        run: mvn clean package -DskipTests
-
-      - name: Debug target
-        run: ls -la target
-
-      - name: Detect JAR
-        run: |
-          JAR=$(ls target/*.jar | grep -v sources | head -n 1)
-          echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
-
-      - name: Clean version
-        run: |
-          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-
-      - name: Build DMG
-        run: |
-          jpackage \
-            --type dmg \
-            --name "${{ env.APP_NAME }}" \
-            --app-version "${{ env.VERSION }}" \
-            --vendor "Serhii" \
-            --input target \
-            --main-jar "${{ env.JAR_NAME }}" \
-            --main-class "${{ env.MAIN_CLASS }}" \
-            --dest dist
-
-      - name: Rename installer
-        run: mv dist/*.dmg dist/${{ env.APP_NAME }}-macOS.dmg
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-installer
-          path: dist/*.dmg
 
 
   build-linux:
@@ -147,17 +100,19 @@ jobs:
       - name: Build project
         run: mvn clean package -DskipTests
 
-      - name: Debug target
-        run: ls -la target
-
       - name: Detect JAR
         run: |
           JAR=$(ls target/*.jar | grep -v sources | head -n 1)
           echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
 
       - name: Clean version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
+      - name: Create runtime (jlink)
         run: |
-          echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+          jlink \
+            --add-modules java.base,java.desktop \
+            --output runtime
 
       - name: Build DEB
         run: |
@@ -169,36 +124,90 @@ jobs:
             --input target \
             --main-jar "${{ env.JAR_NAME }}" \
             --main-class "${{ env.MAIN_CLASS }}" \
+            --runtime-image runtime \
             --dest dist \
             --linux-shortcut
 
-      - name: Rename installer
+      - name: Rename
         run: mv dist/*.deb dist/${{ env.APP_NAME }}-Linux.deb
 
-      - name: Upload artifact
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: linux-installer
+          name: linux
           path: dist/*.deb
 
 
+  build-macos:
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: Build project
+        run: mvn clean package -DskipTests
+
+      - name: Detect JAR
+        run: |
+          JAR=$(ls target/*.jar | grep -v sources | head -n 1)
+          echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
+
+      - name: Clean version
+        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+
+      - name: Create runtime (jlink)
+        run: |
+          jlink \
+            --add-modules java.base,java.desktop \
+            --output runtime
+
+      - name: Build DMG
+        run: |
+          jpackage \
+            --type dmg \
+            --name "${{ env.APP_NAME }}" \
+            --app-version "${{ env.VERSION }}" \
+            --vendor "Serhii" \
+            --input target \
+            --main-jar "${{ env.JAR_NAME }}" \
+            --main-class "${{ env.MAIN_CLASS }}" \
+            --runtime-image runtime \
+            --dest dist
+
+      - name: Rename
+        run: mv dist/*.dmg dist/${{ env.APP_NAME }}-macOS.dmg
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/*.dmg
+
+
   publish-release:
-    needs: [build-windows, build-macos, build-linux]
+    needs: [build-windows, build-linux, build-macos]
     runs-on: ubuntu-latest
 
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          path: release-files
+          path: release
           merge-multiple: true
 
       - name: Show files
-        run: ls -la release-files
+        run: ls -la release
 
-      - name: Create GitHub Release
+      - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           name: "${{ env.APP_NAME }} ${GITHUB_REF_NAME#v}"
           generate_release_notes: true
-          files: release-files/*
+          files: release/*

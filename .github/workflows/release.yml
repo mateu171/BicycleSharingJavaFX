@@ -1,4 +1,4 @@
-name: Build Installers
+name: Build & Release
 
 on:
   workflow_dispatch:
@@ -15,7 +15,8 @@ env:
 
 jobs:
 
-  build-windows:
+  # ================= WINDOWS =================
+  windows:
     runs-on: windows-latest
 
     steps:
@@ -25,34 +26,22 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 25
+          java-version: 21
           cache: maven
 
-      - name: Build project
+      - name: Build
         run: mvn clean package -DskipTests
 
-      - name: Show target
-        shell: powershell
-        run: dir target
-
-      - name: Detect JAR
+      - name: Prepare input
         shell: powershell
         run: |
-          $jar = Get-ChildItem target/*.jar | Where-Object { $_.Name -notlike "*sources*" } | Select-Object -First 1
-          echo "JAR_NAME=$($jar.Name)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          mkdir jpackage-input
+          copy target\*-all.jar jpackage-input\app.jar
+          mkdir dist
 
-      - name: Clean version
+      - name: Get version
         shell: powershell
-        run: |
-          $ver = "${{ github.ref_name }}" -replace "^v", ""
-          echo "VERSION=$ver" | Out-File -FilePath $env:GITHUB_ENV -Append
-
-      - name: Create runtime (jlink)
-        shell: powershell
-        run: |
-          jlink `
-            --add-modules java.base,java.desktop `
-            --output runtime
+        run: echo "VERSION=${{ github.ref_name }}" -replace "^v","" >> $env:GITHUB_ENV
 
       - name: Build MSI
         shell: powershell
@@ -62,20 +51,10 @@ jobs:
             --name "${{ env.APP_NAME }}" `
             --app-version "${{ env.VERSION }}" `
             --vendor "Serhii" `
-            --input target `
-            --main-jar "${{ env.JAR_NAME }}" `
+            --input jpackage-input `
+            --main-jar app.jar `
             --main-class "${{ env.MAIN_CLASS }}" `
-            --runtime-image runtime `
-            --dest dist `
-            --win-dir-chooser `
-            --win-menu `
-            --win-shortcut
-
-      - name: Rename
-        shell: powershell
-        run: |
-          $file = Get-ChildItem dist/*.msi | Select-Object -First 1
-          Move-Item $file.FullName "dist/${{ env.APP_NAME }}-Windows.msi"
+            --dest dist
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -84,7 +63,8 @@ jobs:
           path: dist/*.msi
 
 
-  build-linux:
+  # ================= LINUX =================
+  linux:
     runs-on: ubuntu-latest
 
     steps:
@@ -94,42 +74,31 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 25
+          java-version: 21
           cache: maven
 
-      - name: Build project
+      - name: Build
         run: mvn clean package -DskipTests
 
-      - name: Detect JAR
+      - name: Prepare input
         run: |
-          JAR=$(ls target/*.jar | grep -v sources | head -n 1)
-          echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
+          mkdir -p jpackage-input dist
+          cp target/*-all.jar jpackage-input/app.jar
 
-      - name: Clean version
+      - name: Version
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-
-      - name: Create runtime (jlink)
-        run: |
-          jlink \
-            --add-modules java.base,java.desktop \
-            --output runtime
 
       - name: Build DEB
         run: |
           jpackage \
             --type deb \
-            --name "${{ env.APP_NAME }}" \
-            --app-version "${{ env.VERSION }}" \
+            --name "${APP_NAME}" \
+            --app-version "${VERSION}" \
             --vendor "Serhii" \
-            --input target \
-            --main-jar "${{ env.JAR_NAME }}" \
-            --main-class "${{ env.MAIN_CLASS }}" \
-            --runtime-image runtime \
-            --dest dist \
-            --linux-shortcut
-
-      - name: Rename
-        run: mv dist/*.deb dist/${{ env.APP_NAME }}-Linux.deb
+            --input jpackage-input \
+            --main-jar app.jar \
+            --main-class "${MAIN_CLASS}" \
+            --dest dist
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -138,7 +107,8 @@ jobs:
           path: dist/*.deb
 
 
-  build-macos:
+  # ================= MACOS =================
+  macos:
     runs-on: macos-14
 
     steps:
@@ -148,41 +118,31 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 25
+          java-version: 21
           cache: maven
 
-      - name: Build project
+      - name: Build
         run: mvn clean package -DskipTests
 
-      - name: Detect JAR
+      - name: Prepare input
         run: |
-          JAR=$(ls target/*.jar | grep -v sources | head -n 1)
-          echo "JAR_NAME=$(basename $JAR)" >> $GITHUB_ENV
+          mkdir -p jpackage-input dist
+          cp target/*-all.jar jpackage-input/app.jar
 
-      - name: Clean version
+      - name: Version
         run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-
-      - name: Create runtime (jlink)
-        run: |
-          jlink \
-            --add-modules java.base,java.desktop \
-            --output runtime
 
       - name: Build DMG
         run: |
           jpackage \
             --type dmg \
-            --name "${{ env.APP_NAME }}" \
-            --app-version "${{ env.VERSION }}" \
+            --name "${APP_NAME}" \
+            --app-version "${VERSION}" \
             --vendor "Serhii" \
-            --input target \
-            --main-jar "${{ env.JAR_NAME }}" \
-            --main-class "${{ env.MAIN_CLASS }}" \
-            --runtime-image runtime \
+            --input jpackage-input \
+            --main-jar app.jar \
+            --main-class "${MAIN_CLASS}" \
             --dest dist
-
-      - name: Rename
-        run: mv dist/*.dmg dist/${{ env.APP_NAME }}-macOS.dmg
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -191,8 +151,9 @@ jobs:
           path: dist/*.dmg
 
 
-  publish-release:
-    needs: [build-windows, build-linux, build-macos]
+  # ================= RELEASE =================
+  release:
+    needs: [windows, linux, macos]
     runs-on: ubuntu-latest
 
     steps:
@@ -202,12 +163,12 @@ jobs:
           path: release
           merge-multiple: true
 
-      - name: Show files
-        run: ls -la release
+      - name: List files
+        run: ls -R release
 
-      - name: Create release
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "${{ env.APP_NAME }} ${GITHUB_REF_NAME#v}"
+          name: "${{ env.APP_NAME }} ${{ github.ref_name }}"
           generate_release_notes: true
           files: release/*

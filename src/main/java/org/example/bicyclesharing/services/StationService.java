@@ -55,4 +55,8 @@ public class StationService extends BaseService<Station, UUID>{
       }
     });
   }
+
+  public Station getByManagerId(UUID id) {
+   return repository.findByManagerId(id);
+  }
 }

@@ -2,6 +2,7 @@ package org.example.bicyclesharing.controller.window;
 
 import java.util.Locale;
 import javafx.fxml.FXML;
+import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class StartController extends BaseWindowController{
@@ -15,6 +16,7 @@ public class StartController extends BaseWindowController{
   {
     super.initialize();
     showLogin();
+    AppConfig.userService();
   }
 
   public void closeWindow()

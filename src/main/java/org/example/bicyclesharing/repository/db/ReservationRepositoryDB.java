@@ -202,4 +202,15 @@ public class ReservationRepositoryDB extends BaseRepositoryDB<Reservation, UUID>
 
     return result.isEmpty() ? null : result.getFirst();
   }
+
+  @Override
+  public List<Reservation> findByBicycleId(UUID id) {
+    String sql = """
+      SELECT *
+      FROM RESERVATIONS
+      WHERE bicycle_id = ? AND is_deleted = FALSE
+  """;
+
+    return jdbcTemplate.query(sql, rowMapper(), id.toString());
+  }
 }

@@ -130,4 +130,8 @@ public class BicycleService extends BaseService<Bicycle, UUID> {
   public LatestInspectionInfo getLatestInspectionInfo() {
     return repository.getLatestInspectionInfo();
   }
+
+  public List<Bicycle> getAvailableByStation(UUID stationId) {
+    return repository.findAvailableByStationId(stationId);
+  }
 }

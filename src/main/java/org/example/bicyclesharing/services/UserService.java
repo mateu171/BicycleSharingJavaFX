@@ -1,7 +1,6 @@
 package org.example.bicyclesharing.services;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.domain.enums.Role;
@@ -15,6 +14,7 @@ public class UserService extends BaseService<User, UUID> {
 
   public UserService(UserRepository userRepository) {
     this.userRepository = userRepository;
+    System.out.println("UserService created");
     createDefaultAdminIfNotExists();
   }
 
@@ -24,8 +24,13 @@ public class UserService extends BaseService<User, UUID> {
   }
 
 
-  public List<User> findByFilters(String search, Role role) {
+  public List<User> getByFilters(String search, Role role) {
     return userRepository.findByFilters(search, role);
+  }
+
+  public List<User> getByRole(Role role)
+  {
+    return userRepository.findByRole(role);
   }
 
   public void validateLoginIsUniqueForCreation(String login) {
@@ -91,5 +96,9 @@ public class UserService extends BaseService<User, UUID> {
     userRepository.update(entity);
 
     return true;
+  }
+
+  public User getById(UUID managerId) {
+    return  userRepository.findById(managerId).orElse(null);
   }
 }

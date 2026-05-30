@@ -5,11 +5,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import org.example.bicyclesharing.domain.Impl.Station;
+import org.example.bicyclesharing.domain.Impl.User;
 import org.example.bicyclesharing.util.AppConfig;
 import org.example.bicyclesharing.util.DialogUtil;
 import org.example.bicyclesharing.util.LocalizationManager;
@@ -18,14 +21,17 @@ import org.example.bicyclesharing.viewModel.admin.modalViewModal.AddEditStationV
 public class AddEditStationController {
 
   @FXML private Label titleLabel;
+  @FXML private Label managerLabel;
   @FXML private Label nameLabel;
   @FXML private TextField nameField;
   @FXML private Label nameErrorLabel;
   @FXML private Label latitudeErrorLabel;
+  @FXML private Label managerErrorLabel;
   @FXML private Button cancelButton;
   @FXML private Button saveButton;
   @FXML private Button pickOnMapButton;
   @FXML private Label locationInfoLabel;
+  @FXML private ComboBox<User> managerComboBox;
 
   private AddEditStationViewModel viewModel;
   private Runnable onSaved;
@@ -34,11 +40,13 @@ public class AddEditStationController {
     this.onSaved = onSaved;
     this.viewModel = new AddEditStationViewModel(
         AppConfig.stationService(),
+        AppConfig.userService(),
         station
     );
 
     bind();
     viewModel.initialize();
+    setupComboBox();
   }
 
   private void bind() {
@@ -51,6 +59,25 @@ public class AddEditStationController {
     locationInfoLabel.textProperty().bind(viewModel.locationInfoProperty());
     nameErrorLabel.textProperty().bind(viewModel.nameErrorProperty());
     latitudeErrorLabel.textProperty().bind(viewModel.coordinatesErrorProperty());
+    managerLabel.textProperty().bind(viewModel.managerLabelTextProperty());
+    managerComboBox.itemsProperty().bind(viewModel.managersProperty());
+    managerComboBox.valueProperty().bindBidirectional(viewModel.managerSelectedProperty());
+    managerErrorLabel.textProperty().bind(viewModel.managerErrorProperty());
+  }
+
+  private void setupComboBox()
+  {
+    managerComboBox.setConverter(new StringConverter<>() {
+      @Override
+      public String toString(User user) {
+        return user == null ? "" : user.getLogin();
+      }
+
+      @Override
+      public User fromString(String string) {
+        return null;
+      }
+    });
   }
 
   @FXML

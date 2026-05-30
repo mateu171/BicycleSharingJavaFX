@@ -13,4 +13,6 @@ public interface BicycleRepository extends Repository<Bicycle, UUID> {
   List<Bicycle> findByState(StateBicycle state);
   long countByState(StateBicycle state);
   LatestInspectionInfo getLatestInspectionInfo();
+
+  List<Bicycle> findAvailableByStationId(UUID stationId);
 }

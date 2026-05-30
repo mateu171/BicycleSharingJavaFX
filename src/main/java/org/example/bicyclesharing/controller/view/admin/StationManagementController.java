@@ -122,7 +122,8 @@ public class StationManagementController extends BaseController {
       );
 
     } catch (Exception e) {
-      DialogUtil.showError(LocalizationManager.getStringByKey("error.operation.failed"));
+      DialogUtil.showError(("error.operation.failed"));
+      System.out.println(e.getMessage());
     }
   }
 
@@ -132,7 +133,8 @@ public class StationManagementController extends BaseController {
     } catch (BusinessException e) {
       DialogUtil.showError(e.getMessage());
     } catch (Exception e) {
-      DialogUtil.showError(LocalizationManager.getStringByKey("error.delete.failed"));
+      DialogUtil.showError("error.delete.failed");
+      System.out.println(e.getMessage());
     }
   }
 }

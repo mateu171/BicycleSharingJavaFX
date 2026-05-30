@@ -46,7 +46,7 @@
         <Label fx:id="startTimeLabel" styleClass="form-label"/>
         <HBox spacing="8">
           <DatePicker fx:id="startDatePicker" HBox.hgrow="ALWAYS" styleClass="modal-date-picker"/>
-          <TextField fx:id="startTimeField" promptText="10:00" styleClass="modal-text-field"/>
+          <ComboBox fx:id="startHourComboBox" styleClass="settings-combo"/>
         </HBox>
         <Label fx:id="startTimeErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>
@@ -55,7 +55,7 @@
         <Label fx:id="endTimeLabel" styleClass="form-label"/>
         <HBox spacing="8">
           <DatePicker fx:id="endDatePicker" HBox.hgrow="ALWAYS" styleClass="modal-date-picker"/>
-          <TextField fx:id="endTimeField" promptText="12:00" styleClass="modal-text-field"/>
+          <ComboBox fx:id="endHourComboBox" styleClass="settings-combo"/>
         </HBox>
         <Label fx:id="endTimeErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>

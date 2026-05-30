@@ -115,6 +115,13 @@ public class UserRepositoryDB extends BaseRepositoryDB<User, UUID> implements Us
   }
 
   @Override
+  public List<User> findByRole(Role role) {
+    String sql = "SELECT * FROM USERS WHERE is_deleted = FALSE AND role = ?";
+
+    return jdbcTemplate.query(sql, rowMapper(), role.name());
+  }
+
+  @Override
   public List<User> findByFilters(String search, Role role) {
     QueryData query = new QueryData("SELECT * FROM USERS WHERE is_deleted = FALSE");
 

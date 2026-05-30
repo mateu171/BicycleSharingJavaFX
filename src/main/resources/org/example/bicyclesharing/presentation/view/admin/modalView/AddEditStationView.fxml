@@ -23,6 +23,12 @@
         <Label fx:id="nameErrorLabel" styleClass="label-error" wrapText="true"/>
       </VBox>
 
+      <VBox>
+        <Label fx:id="managerLabel" styleClass="form-label"/>
+        <ComboBox fx:id="managerComboBox" styleClass="modal-combo"/>
+        <Label fx:id="managerErrorLabel" styleClass="label-error" wrapText="true"/>
+      </VBox>
+
       <VBox spacing="4">
         <Label text="Локація" styleClass="form-label"/>
         <Button fx:id="pickOnMapButton"

@@ -29,6 +29,7 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
                 latitude DOUBLE NOT NULL,
                 longitude DOUBLE NOT NULL,
                 bicycles_id TEXT,
+                manager_id VARCHAR(36),
                 is_deleted BOOLEAN DEFAULT FALSE NOT NULL
             )
             """;
@@ -51,6 +52,7 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
       String name = rs.getString("name");
       double latitude = rs.getDouble("latitude");
       double longitude = rs.getDouble("longitude");
+      UUID managerId = UUID.fromString(rs.getString("manager_id"));
 
       String bicyclesRaw = rs.getString("bicycles_id");
       List<UUID> bicyclesId = parseUuidList(bicyclesRaw);
@@ -60,7 +62,9 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
           name,
           latitude,
           longitude,
-          bicyclesId);
+          bicyclesId,
+          managerId
+          );
     };
   }
 
@@ -72,6 +76,7 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
         entity.getLatitude(),
         entity.getLongitude(),
         toCsv(entity.getBicyclesId()),
+        entity.getManagerId(),
         false
     };
   }
@@ -83,13 +88,14 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
         entity.getLatitude(),
         entity.getLongitude(),
         toCsv(entity.getBicyclesId()),
+        entity.getManagerId(),
         entity.getId().toString()
     };
   }
 
   @Override
   protected String[] getUpdateColumns() {
-    return new String[]{"name", "latitude", "longitude", "bicycles_id"};
+    return new String[]{"name", "latitude", "longitude", "bicycles_id","manager_id"};
   }
 
   @Override
@@ -132,5 +138,18 @@ public class StationRepositoryDB extends BaseRepositoryDB<Station, UUID> impleme
     query.addOrderBy("name", "ASC");
 
     return jdbcTemplate.query(query.getSql(), rowMapper(), query.getParams());
+  }
+
+  @Override
+  public Station findByManagerId(UUID managerId) {
+    String sql = """
+      SELECT * FROM STATIONS
+      WHERE manager_id = ?
+        AND is_deleted = FALSE
+      """;
+
+    List<Station> result = jdbcTemplate.query(sql, rowMapper(), managerId.toString());
+
+    return result.isEmpty() ? null : result.get(0);
   }
 }

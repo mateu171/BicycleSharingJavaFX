@@ -89,7 +89,7 @@ public class UsersManagementViewModel extends AsyncViewModel {
     Role roleFilter = resolveSelectedRole();
 
     runAsync(
-        () -> userService.findByFilters(search, roleFilter),
+        () -> userService.getByFilters(search, roleFilter),
         result -> {
           setUsers(result);
           loading.set(false);

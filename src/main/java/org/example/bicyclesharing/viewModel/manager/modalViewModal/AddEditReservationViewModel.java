@@ -1,30 +1,26 @@
 package org.example.bicyclesharing.viewModel.manager.modalViewModal;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.example.bicyclesharing.domain.Impl.Bicycle;
-import org.example.bicyclesharing.domain.Impl.Customer;
-import org.example.bicyclesharing.domain.Impl.Reservation;
-import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.domain.Impl.*;
 import org.example.bicyclesharing.domain.enums.DocumentType;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
-import org.example.bicyclesharing.services.BicycleService;
-import org.example.bicyclesharing.services.CustomerService;
-import org.example.bicyclesharing.services.ReservationService;
+import org.example.bicyclesharing.services.*;
 import org.example.bicyclesharing.util.LocalizationManager;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class AddEditReservationViewModel {
 
   private final ReservationService reservationService;
   private final CustomerService customerService;
   private final BicycleService bicycleService;
+  private final StationService stationService;
   private final Reservation editingReservation;
   private final User currentUser;
 
@@ -32,7 +28,30 @@ public class AddEditReservationViewModel {
   private final ObservableList<Bicycle> bicycles = FXCollections.observableArrayList();
   private final ObservableList<DocumentType> documentTypes = FXCollections.observableArrayList();
 
-  private final StringProperty titleText = new SimpleStringProperty();
+  private final ObservableList<String> allHours = FXCollections.observableArrayList();
+  private final ObservableList<String> availableStartHours = FXCollections.observableArrayList();
+  private final ObservableList<String> availableEndHours = FXCollections.observableArrayList();
+
+  private final ObjectProperty<Customer> selectedCustomer = new SimpleObjectProperty<>();
+  private final ObjectProperty<Bicycle> selectedBicycle = new SimpleObjectProperty<>();
+  private final ObjectProperty<DocumentType> selectedDocumentType = new SimpleObjectProperty<>();
+
+  private final ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>();
+  private final ObjectProperty<LocalDate> endDate = new SimpleObjectProperty<>();
+
+  private final StringProperty startTime = new SimpleStringProperty("");
+  private final StringProperty endTime = new SimpleStringProperty("");
+
+  private final StringProperty documentNumber = new SimpleStringProperty("");
+  private final StringProperty depositAmount = new SimpleStringProperty("");
+
+  private final StringProperty customerError = new SimpleStringProperty("");
+  private final StringProperty bicycleError = new SimpleStringProperty("");
+  private final StringProperty startTimeError = new SimpleStringProperty("");
+  private final StringProperty endTimeError = new SimpleStringProperty("");
+  private final StringProperty documentTypeError = new SimpleStringProperty("");
+  private final StringProperty documentNumberError = new SimpleStringProperty("");
+  private final StringProperty depositAmountError = new SimpleStringProperty("");
 
   private final StringProperty saveButtonText =
       LocalizationManager.getStringProperty("save.button");
@@ -60,110 +79,149 @@ public class AddEditReservationViewModel {
 
   private final StringProperty depositAmountLabelText =
       LocalizationManager.getStringProperty("manager.reservation.deposit");
-
-  private final ObjectProperty<Customer> selectedCustomer = new SimpleObjectProperty<>();
-  private final ObjectProperty<Bicycle> selectedBicycle = new SimpleObjectProperty<>();
-  private final ObjectProperty<DocumentType> selectedDocumentType = new SimpleObjectProperty<>();
-
-  private final ObjectProperty<LocalDate> startDate = new SimpleObjectProperty<>();
-  private final ObjectProperty<LocalDate> endDate = new SimpleObjectProperty<>();
-
-  private final StringProperty startTime = new SimpleStringProperty("");
-  private final StringProperty endTime = new SimpleStringProperty("");
-  private final StringProperty documentNumber = new SimpleStringProperty("");
-  private final StringProperty depositAmount = new SimpleStringProperty("");
-
-  private final StringProperty customerError = new SimpleStringProperty("");
-  private final StringProperty bicycleError = new SimpleStringProperty("");
-  private final StringProperty startTimeError = new SimpleStringProperty("");
-  private final StringProperty endTimeError = new SimpleStringProperty("");
-  private final StringProperty documentTypeError = new SimpleStringProperty("");
-  private final StringProperty documentNumberError = new SimpleStringProperty("");
-  private final StringProperty depositAmountError = new SimpleStringProperty("");
+  private final StringProperty titleText = new SimpleStringProperty();
 
   public AddEditReservationViewModel(
       User currentUser,
       ReservationService reservationService,
       CustomerService customerService,
       BicycleService bicycleService,
-      Reservation editingReservation) {
-
+      StationService stationService,
+      Reservation editingReservation
+  ) {
     this.currentUser = currentUser;
     this.reservationService = reservationService;
     this.customerService = customerService;
     this.bicycleService = bicycleService;
+    this.stationService = stationService;
     this.editingReservation = editingReservation;
   }
 
-  public void initialize()
-  {
-    loadOptions();
+  public void initialize() {
+    loadData();
+    initHours();
+    setupListeners();
 
-    if(isEditMode())
-      initializeEditMode();
-    else
-      initializeAddMode();
+    titleText.set(isEditMode()
+        ? LocalizationManager.getStringByKey("manager.reservation.edit.title")
+        : LocalizationManager.getStringByKey("manager.reservation.add.title"));
+
+    refreshHours();
   }
 
-  private void initializeAddMode() {
-    titleText.set(LocalizationManager.getStringByKey("manager.reservation.add.title"));
-  }
+  private void loadData() {
 
-  private void initializeEditMode() {
-    titleText.set(LocalizationManager.getStringByKey("manager.reservation.edit.title"));
-    startDate.set(editingReservation.getStartTime().toLocalDate());
-    startTime.set(editingReservation.getStartTime().toLocalTime().toString());
+    Station station = stationService.getByManagerId(currentUser.getId());
 
-    endDate.set(editingReservation.getEndTime().toLocalDate());
-    endTime.set(editingReservation.getEndTime().toLocalTime().toString());
-
-    documentNumber.set(editingReservation.getDocumentNumber());
-    depositAmount.set(String.valueOf(editingReservation.getDepositAmount()));
-
-    Customer customer = customerService.getById(editingReservation.getCustomerId()).orElse(null);
-    Bicycle bicycle = bicycleService.getById(editingReservation.getBicycleId()).orElse(null);
-
-    if (customer != null && !customers.contains(customer)) {
-      customers.add(customer);
+    if (station != null) {
+      bicycles.setAll(
+          bicycleService.getAvailableByStation(station.getId())
+      );
+    } else {
+      bicycles.clear();
     }
 
-    if (bicycle != null && !bicycles.contains(bicycle)) {
-      bicycles.add(bicycle);
-    }
-
-    selectedCustomer.set(customer);
-    selectedBicycle.set(bicycle);
-    selectedDocumentType.set(editingReservation.getDocumentType());
-  }
-
-  private void loadOptions() {
-    customers.setAll(customerService.getAll().stream()
-        .filter(c -> c.getActiveRent() == null)
-        .collect(Collectors.toList()));
-
-    bicycles.setAll(bicycleService.getAvailable());
+    customers.setAll(customerService.getAll());
     documentTypes.setAll(DocumentType.values());
+  }
+
+  private void initHours() {
+    allHours.setAll(
+        IntStream.range(0, 24)
+            .mapToObj(i -> String.format("%02d:00", i))
+            .collect(Collectors.toList())
+    );
+
+    availableStartHours.setAll(allHours);
+    availableEndHours.setAll(allHours);
+  }
+
+  private void setupListeners() {
+
+    selectedBicycle.addListener((o, a, b) -> refreshHours());
+    startDate.addListener((o, a, b) -> refreshHours());
+    endDate.addListener((o, a, b) -> refreshHours());
+    startTime.addListener((o, a, b) -> updateEndHours());
+  }
+
+  private void updateEndHours() {
+
+    if (selectedBicycle.get() == null
+        || startDate.get() == null
+        || startTime.get() == null
+        || startTime.get().isBlank()) {
+
+      availableEndHours.setAll(allHours);
+      return;
+    }
+
+    List<String> blocked = reservationService
+        .getByBicycleId(selectedBicycle.get().getId())
+        .stream()
+        .filter(this::isSameDate)
+        .flatMap(r -> extractHours(r).stream())
+        .distinct()
+        .sorted()
+        .toList();
+
+    String firstBlockedAfterStart = blocked.stream()
+        .filter(h -> h.compareTo(startTime.get()) > 0)
+        .findFirst()
+        .orElse(null);
+
+    availableEndHours.setAll(
+        allHours.stream()
+            .filter(h -> h.compareTo(startTime.get()) > 0)
+            .filter(h ->
+                firstBlockedAfterStart == null
+                    || h.compareTo(firstBlockedAfterStart) <= 0
+            )
+            .toList()
+    );
   }
 
   public boolean save() {
     clearErrors();
 
     try {
-      if(isEditMode()) {
-        updateReservation();
-      }
-      else {
-        createReservation();
-      }
-      return  true;
+      Reservation r = build();
+
+      if (isEditMode()) reservationService.update(r);
+      else reservationService.add(r);
+
+      return true;
+
     } catch (CustomEntityValidationExeption e) {
-     applyValidationErrors(e);
+      applyValidationErrors(e);
       return false;
     }
   }
 
-  private void applyValidationErrors(CustomEntityValidationExeption e)
-  {
+  private Reservation build() {
+    return new Reservation(
+        selectedCustomer.get() == null ? null : selectedCustomer.get().getId(),
+        selectedBicycle.get() == null ? null : selectedBicycle.get().getId(),
+        currentUser.getId(),
+        startDate.get() + "T" + startTime.get(),
+        endDate.get() + "T" + endTime.get(),
+        selectedDocumentType.get(),
+        documentNumber.get(),
+        depositAmount.get()
+    );
+  }
+
+  private void clearErrors() {
+    customerError.set("");
+    bicycleError.set("");
+    startTimeError.set("");
+    endTimeError.set("");
+  }
+
+  public boolean isEditMode() {
+    return editingReservation != null;
+  }
+
+  private void applyValidationErrors(CustomEntityValidationExeption e) {
     e.getErrors().forEach((field, messages) -> {
       String text = messages.stream()
           .map(LocalizationManager::getStringByKey)
@@ -181,88 +239,80 @@ public class AddEditReservationViewModel {
     });
   }
 
-  private void createReservation() {
-    Reservation reservation = buildReservation();
+  private void refreshHours() {
 
-    if(selectedCustomer.get() != null)
-    {
-      selectedCustomer.get().setActiveReservation(reservation.getId());
+    if (selectedBicycle.get() == null || startDate.get() == null) {
+      availableStartHours.setAll(allHours);
+      updateEndHours();
+      return;
     }
 
-    reservationService.add(reservation);
+    List<String> blocked = reservationService
+        .getByBicycleId(selectedBicycle.get().getId())
+        .stream()
+        .filter(this::isSameDate)
+        .flatMap(r -> extractHours(r).stream())
+        .distinct()
+        .toList();
 
-    if(selectedCustomer.get() != null)
-    {
-      customerService.update(selectedCustomer.get());
-    }
-  }
+    List<String> result = allHours.stream()
+        .filter(h -> !blocked.contains(h))
+        .collect(Collectors.toList());
 
-  private void updateReservation() {
-    Reservation validated = buildReservation();
+    if (startDate.get() != null && startDate.get().isEqual(LocalDate.now())) {
 
-    editingReservation.setCustomerId(validated.getCustomerId());
-    editingReservation.setBicycleId(validated.getBicycleId());
-    editingReservation.setManagerId(validated.getManagerId());
-    editingReservation.setStartTime(validated.getStartTime().toString());
-    editingReservation.setEndTime(validated.getEndTime().toString());
-    editingReservation.setDocumentType(validated.getDocumentType());
-    editingReservation.setDocumentNumber(validated.getDocumentNumber());
-    editingReservation.setDepositAmount(String.valueOf(validated.getDepositAmount()));
+      String now = String.format("%02d:00", LocalTime.now().getHour());
 
-    reservationService.update(editingReservation);
-  }
-
-  private Reservation buildReservation()
-  {
-    return new Reservation(
-        selectedCustomer.get() == null ? null : selectedCustomer.get().getId(),
-        selectedBicycle.get() == null ? null : selectedBicycle.get().getId(),
-        currentUser.getId(),
-        buildDateTime(startDate.get(),startTime.get()),
-        buildDateTime(endDate.get(),endTime.get()),
-        selectedDocumentType.get(),
-        documentNumber.get(),
-        depositAmount.get()
-    );
-  }
-
-  private String buildDateTime(LocalDate date,String timeText)
-  {
-    String time = timeText == null ? "" : timeText.trim();
-
-    if(date == null || time.isBlank())
-    {
-      return  "";
+      result = result.stream()
+          .filter(h -> h.compareTo(now) > 0)
+          .toList();
     }
 
-    return date + "T" + time;
+    availableStartHours.setAll(result);
+    updateEndHours();
   }
 
-  public boolean isEditMode() {
-    return editingReservation != null;
+  public boolean isSameDate(Reservation r) {
+    return r.getStartTime().toLocalDate().equals(startDate.get());
   }
 
-  private void clearErrors() {
-    customerError.set("");
-    bicycleError.set("");
-    startTimeError.set("");
-    endTimeError.set("");
-    documentTypeError.set("");
-    documentNumberError.set("");
-    depositAmountError.set("");
+  public List<String> extractHours(Reservation r) {
+
+    LocalTime start = r.getStartTime().toLocalTime();
+    LocalTime end = r.getEndTime().toLocalTime();
+
+    return IntStream
+        .range(start.getHour(), end.getHour() + 1)
+        .mapToObj(i -> String.format("%02d:00", i))
+        .toList();
   }
 
-  public ObservableList<Customer> getCustomers() {
-    return customers;
-  }
+  public ObservableList<Customer> getCustomers() { return customers; }
+  public ObservableList<Bicycle> getBicycles() { return bicycles; }
+  public ObservableList<DocumentType> getDocumentTypes() { return documentTypes; }
 
-  public ObservableList<Bicycle> getBicycles() {
-    return bicycles;
-  }
+  public ObservableList<String> getAvailableStartHours() { return availableStartHours; }
+  public ObservableList<String> getAvailableEndHours() { return availableEndHours; }
 
-  public ObservableList<DocumentType> getDocumentTypes() {
-    return documentTypes;
+  public ObjectProperty<Customer> selectedCustomerProperty() { return selectedCustomer; }
+  public ObjectProperty<Bicycle> selectedBicycleProperty() { return selectedBicycle; }
+  public ObjectProperty<DocumentType> selectedDocumentTypeProperty() { return selectedDocumentType; }
+
+  public ObjectProperty<LocalDate> startDateProperty() { return startDate; }
+  public ObjectProperty<LocalDate> endDateProperty() { return endDate; }
+
+  public StringProperty startTimeProperty() { return startTime; }
+  public StringProperty endTimeProperty() { return endTime; }
+  public StringProperty documentNumberProperty() {
+    return documentNumber;
   }
+  public StringProperty depositAmountProperty() {
+    return depositAmount;
+  }
+  public StringProperty customerErrorProperty() { return customerError; }
+  public StringProperty bicycleErrorProperty() { return bicycleError; }
+  public StringProperty startTimeErrorProperty() { return startTimeError; }
+  public StringProperty endTimeErrorProperty() { return endTimeError; }
 
   public StringProperty titleTextProperty() {
     return titleText;
@@ -304,58 +354,6 @@ public class AddEditReservationViewModel {
     return depositAmountLabelText;
   }
 
-  public ObjectProperty<Customer> selectedCustomerProperty() {
-    return selectedCustomer;
-  }
-
-  public ObjectProperty<Bicycle> selectedBicycleProperty() {
-    return selectedBicycle;
-  }
-
-  public ObjectProperty<DocumentType> selectedDocumentTypeProperty() {
-    return selectedDocumentType;
-  }
-
-  public ObjectProperty<LocalDate> startDateProperty() {
-    return startDate;
-  }
-
-  public ObjectProperty<LocalDate> endDateProperty() {
-    return endDate;
-  }
-
-  public StringProperty startTimeProperty() {
-    return startTime;
-  }
-
-  public StringProperty endTimeProperty() {
-    return endTime;
-  }
-
-  public StringProperty documentNumberProperty() {
-    return documentNumber;
-  }
-
-  public StringProperty depositAmountProperty() {
-    return depositAmount;
-  }
-
-  public StringProperty customerErrorProperty() {
-    return customerError;
-  }
-
-  public StringProperty bicycleErrorProperty() {
-    return bicycleError;
-  }
-
-  public StringProperty startTimeErrorProperty() {
-    return startTimeError;
-  }
-
-  public StringProperty endTimeErrorProperty() {
-    return endTimeError;
-  }
-
   public StringProperty documentTypeErrorProperty() {
     return documentTypeError;
   }
@@ -367,4 +365,5 @@ public class AddEditReservationViewModel {
   public StringProperty depositAmountErrorProperty() {
     return depositAmountError;
   }
+
 }

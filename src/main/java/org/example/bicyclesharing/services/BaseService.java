@@ -65,4 +65,5 @@ public abstract class BaseService<T, ID> {
   public long count() {
     return getRepository().count();
   }
+
 }

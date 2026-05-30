@@ -68,4 +68,8 @@ public class ReservationService extends BaseService<Reservation, UUID>{
   public long countByStatuses(ReservationStatus reservationStatus, ReservationStatus reservationStatus1) {
     return  reservationRepository.countByStatuses(reservationStatus,reservationStatus1);
   }
+
+  public List<Reservation> getByBicycleId(UUID id) {
+    return  reservationRepository.findByBicycleId(id);
+  }
 }

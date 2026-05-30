@@ -14,4 +14,6 @@ public interface ReservationRepository extends Repository<Reservation, UUID>{
 
   long countByStatuses(ReservationStatus reservationStatus, ReservationStatus reservationStatus1);
   LatestReservationInfo getLatestReservationInfo();
+
+  List<Reservation> findByBicycleId(UUID id);
 }

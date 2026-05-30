@@ -11,17 +11,19 @@ public class Station extends BaseEntity {
   private double latitude;
   private double longitude;
   private List<UUID> bicyclesId;
+  private UUID managerId;
 
   private Station() {
     super();
     this.bicyclesId = new ArrayList<>();
   }
 
-  public Station(String name, String latitude, String longitude) {
+  public Station(String name, String latitude, String longitude,UUID managerId) {
     this();
     setName(name);
     setLatitude(latitude);
     setLongitude(longitude);
+    setManagerId(managerId);
 
     if (!isValid()) {
       throw new CustomEntityValidationExeption(getErrors());
@@ -32,13 +34,15 @@ public class Station extends BaseEntity {
       String name,
       double latitude,
       double longitude,
-      List<UUID> bicyclesId) {
+      List<UUID> bicyclesId,
+      UUID managerId) {
     Station station = new Station();
     station.setId(id);
     station.name = name;
     station.latitude = latitude;
     station.longitude = longitude;
     station.bicyclesId = bicyclesId != null ? bicyclesId : new ArrayList<>();
+    station.managerId = managerId;
     return station;
   }
 
@@ -106,6 +110,21 @@ public class Station extends BaseEntity {
     } catch (NumberFormatException e) {
       addError("longitude", "station.longitude.invalid");
     }
+  }
+
+  public void setManagerId(UUID id)
+  {
+    cleanErrors("managerId");
+    if(id == null)
+    {
+      addError("managerId","error.station.managerId.null");
+    }
+    this.managerId = id;
+  }
+
+  public UUID getManagerId()
+  {
+    return managerId;
   }
 
   public List<UUID> getBicyclesId() {

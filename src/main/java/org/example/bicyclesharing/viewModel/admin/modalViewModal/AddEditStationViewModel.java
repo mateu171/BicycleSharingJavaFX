@@ -1,16 +1,25 @@
 package org.example.bicyclesharing.viewModel.admin.modalViewModal;
 
 import java.util.stream.Collectors;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.example.bicyclesharing.domain.Impl.Station;
+import org.example.bicyclesharing.domain.Impl.User;
+import org.example.bicyclesharing.domain.enums.Role;
 import org.example.bicyclesharing.exception.CustomEntityValidationExeption;
 import org.example.bicyclesharing.services.StationService;
+import org.example.bicyclesharing.services.UserService;
 import org.example.bicyclesharing.util.LocalizationManager;
 
 public class AddEditStationViewModel {
 
   private final StationService stationService;
+  private final UserService userService;
   private final Station editingStation;
 
   private final StringProperty titleText = new SimpleStringProperty();
@@ -18,6 +27,10 @@ public class AddEditStationViewModel {
   private final StringProperty cancelButtonText = LocalizationManager.getStringProperty("cancel.button");
   private final StringProperty pickOnMapButtonText = LocalizationManager.getStringProperty("station.pick.on.map");
   private final StringProperty nameLabelText = LocalizationManager.getStringProperty("admin.stations.name");
+  private final StringProperty managerLabelText = LocalizationManager.getStringProperty("admin.manger");
+
+  private final ObjectProperty<User> selectedManager = new SimpleObjectProperty<>();
+  private final ObjectProperty<ObservableList<User>> managers = new SimpleObjectProperty<>(FXCollections.observableArrayList());
 
   private final StringProperty name = new SimpleStringProperty("");
   private final StringProperty latitude = new SimpleStringProperty("");
@@ -26,26 +39,34 @@ public class AddEditStationViewModel {
 
   private final StringProperty nameError = new SimpleStringProperty("");
   private final StringProperty coordinatesError = new SimpleStringProperty("");
+  private final StringProperty managerError = new SimpleStringProperty("");
 
   public AddEditStationViewModel(
-      StationService stationService,
+      StationService stationService, UserService userService,
       Station editingStation
   ) {
     this.stationService = stationService;
+    this.userService = userService;
     this.editingStation = editingStation;
   }
 
-  public void initialize()
-  {
-    if(isEditMode())
+  public void initialize() {
+    managers.get().setAll(userService.getByRole(Role.MANAGER));
+
+    if (isEditMode()) {
       initializeEditMode();
-    else
+    } else {
       initializeAddMode();
+    }
   }
 
   private void initializeAddMode() {
     titleText.set(LocalizationManager.getStringByKey("admin.stations.add.title"));
     locationInfo.set(LocalizationManager.getStringByKey("station.location.not.selected"));
+
+    if (!managers.get().isEmpty()) {
+      selectedManager.set(managers.get().get(0));
+    }
   }
 
   private void initializeEditMode() {
@@ -53,6 +74,12 @@ public class AddEditStationViewModel {
 
     name.set(editingStation.getName());
     setCoordinates(editingStation.getLatitude(), editingStation.getLongitude());
+    selectedManager.set(
+        managers.get().stream()
+            .filter(u -> u.getId().equals(editingStation.getManagerId()))
+            .findFirst()
+            .orElse(null)
+    );
   }
 
   public boolean isEditMode() {
@@ -85,6 +112,7 @@ public class AddEditStationViewModel {
       switch (field) {
         case "name" -> nameError.set(text);
         case "latitude", "longitude" -> coordinatesError.set(text);
+        case "managerId" -> managerError.set(text);
       }
     });
   }
@@ -93,7 +121,8 @@ public class AddEditStationViewModel {
     Station station = new Station(
         name.get(),
         latitude.get(),
-        longitude.get()
+        longitude.get(),
+        selectedManager.get() == null ? null : selectedManager.get().getId()
     );
 
     stationService.add(station);
@@ -105,12 +134,14 @@ public class AddEditStationViewModel {
     Station validated = new Station(
         nameValue,
         latitude.get(),
-        longitude.get()
+        longitude.get(),
+        selectedManager.get() == null ? null : selectedManager.get().getId()
     );
 
     editingStation.setName(validated.getName());
     editingStation.setLatitude(String.valueOf(validated.getLatitude()));
     editingStation.setLongitude(String.valueOf(validated.getLongitude()));
+    editingStation.setManagerId(validated.getManagerId());
 
     if (!editingStation.isValid()) {
       throw new CustomEntityValidationExeption(editingStation.getErrors());
@@ -137,6 +168,7 @@ public class AddEditStationViewModel {
   private void clearErrors() {
     nameError.set("");
     coordinatesError.set("");
+    managerError.set("");
   }
 
   public StringProperty titleTextProperty() {
@@ -173,5 +205,11 @@ public class AddEditStationViewModel {
 
   public StringProperty coordinatesErrorProperty() {
     return coordinatesError;
+  }
+  public StringProperty managerErrorProperty() {return managerError;}
+  public StringProperty managerLabelTextProperty() {return  managerLabelText;}
+  public ObjectProperty<User> managerSelectedProperty() {return selectedManager;}
+  public ObjectProperty<ObservableList<User>> managersProperty() {
+    return managers;
   }
 }

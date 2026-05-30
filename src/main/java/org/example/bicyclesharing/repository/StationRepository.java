@@ -7,4 +7,6 @@ import org.example.bicyclesharing.domain.Impl.Station;
 public interface StationRepository extends Repository<Station, UUID> {
   Station getById(UUID id);
   List<Station> findByFilters(String search);
+
+  Station findByManagerId(UUID managerId);
 }

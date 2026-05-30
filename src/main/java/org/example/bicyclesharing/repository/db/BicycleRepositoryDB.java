@@ -160,4 +160,21 @@ public class BicycleRepositoryDB
 
     return list.isEmpty() ? null : list.getFirst();
   }
+
+  @Override
+  public List<Bicycle> findAvailableByStationId(UUID stationId) {
+    String sql = """
+      SELECT * FROM BICYCLES
+      WHERE station_id = ?
+        AND state = ?
+        AND is_deleted = FALSE
+      """;
+
+    return jdbcTemplate.query(
+        sql,
+        rowMapper(),
+        stationId.toString(),
+        StateBicycle.AVAILABLE.name()
+    );
+  }
 }

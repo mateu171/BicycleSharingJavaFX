@@ -112,7 +112,6 @@ public class AddEditReservationViewModel {
   private void loadData() {
 
     Station station = stationService.getByManagerId(currentUser.getId());
-
     if (station != null) {
       bicycles.setAll(
           bicycleService.getAvailableByStation(station.getId())

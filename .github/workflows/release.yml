@@ -56,6 +56,9 @@ jobs:
             --input jpackage-input `
             --main-jar app.jar `
             --main-class "${{ env.MAIN_CLASS }}" `
+            --win-dir-chooser `
+            --win-shortcut `
+            --win-menu `
             --dest dist
 
       - name: Upload artifact
@@ -63,7 +66,6 @@ jobs:
         with:
           name: windows
           path: dist/*.msi
-
 
   # ================= LINUX =================
   linux:
